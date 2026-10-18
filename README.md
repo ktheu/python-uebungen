@@ -4,6 +4,8 @@
 
 | Thema | Notebook öffnen |
 |---|---|
+| Bedingungen | [bedingungen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=bedingungen.ipynb) |
+| Schleifen | [schleifen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=schleifen.ipynb) |
 | Strings | [strings.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=strings.ipynb) |
 | Listen | [listen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=listen.ipynb) |
 | Tupel | [tupel.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=tupel.ipynb) |
