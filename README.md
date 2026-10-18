@@ -17,6 +17,16 @@
 | itertools | [itertools.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=itertools.ipynb) |
 | Zufallszahlen mit random | [random.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=random.ipynb) |
 
+## Übungen zu den Unterrichtseinheiten
+
+| Einheit | Notebook öffnen |
+|---|---|
+| Grundlagen | [grundlagen_uebungen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=grundlagen/grundlagen_uebungen.ipynb) |
+| Bedingungen und Schleifen | [bedingungen_uebungen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=bedingungen/bedingungen_uebungen.ipynb) |
+| Listen, Zufall, Funktionen, Dateien | [listen_uebungen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=listen/listen_uebungen.ipynb) |
+| Fehler, Debugger, Einfache Algorithmen | [fehler_uebungen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=fehler/fehler_uebungen.ipynb) |
+| Datenbanken | zuerst [tabellen_erstellen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=datenbanken/tabellen_erstellen.ipynb) ausführen, dann [sql_uebungen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=datenbanken/sql_uebungen.ipynb) |
+
 Alle Notebooks auf einmal: [JupyterLab](https://ktheu.github.io/python-uebungen/lab/index.html)
 
 ## Hinweise
