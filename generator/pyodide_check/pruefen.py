@@ -12,6 +12,7 @@ Ablauf:
 
 Einmalig vorher in diesem Ordner: npm install
 """
+import glob
 import json
 import os
 import shutil
@@ -74,10 +75,15 @@ def node_programm():
 
 def main():
     if len(sys.argv) < 2:
-        sys.exit(__doc__)
+        sys.exit('Bitte einen oder mehrere Generatoren angeben, zum Beispiel:\n'
+                 '    py -3.13 generator/pyodide_check/pruefen.py generator/gen_numpy_2d.py\n'
+                 '    py -3.13 generator/pyodide_check/pruefen.py generator/gen_*.py')
     node = node_programm()
+    generatoren = []
+    for muster in sys.argv[1:]:  # Muster wie gen_*.py selbst auflösen (PowerShell tut das nicht)
+        generatoren += sorted(glob.glob(muster)) or [muster]
     fehler = 0
-    for generator in sys.argv[1:]:
+    for generator in generatoren:
         ordner = tempfile.mkdtemp()
         try:
             items = zellen(generator, ordner)
