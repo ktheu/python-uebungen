@@ -8,9 +8,10 @@
 # Jede Code-Zelle enthält genau EINE SQL-Anweisung (der Kernel führt nur die erste aus). Keine Zelle nur mit Kommentar.
 # Ergebnisse ohne ORDER BY haben in SQLite eine feste Reihenfolge (gleiche Datei, gleiche Version), trotzdem meist sortieren.
 import os
+import sqlite3
 
 from nbgen import sec, expl, task, predict, generate, setup
-from sqlnb import sql_ausfuehrung
+from sqlnb import sql_ausfuehrung, html_tabelle
 from kino_db import erzeuge, er_bild
 
 INHALT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'content')
@@ -34,12 +35,24 @@ def a(text, tabellen, loesung):
     task(text + BILD, solution=loesung, anhaenge=tabellen_bild(tabellen))
 
 
-def v(code, tabellen, error=None):
-    """Vorhersage-Aufgabe, mit Diagramm, wenn Tabellen beteiligt sind."""
+def inhalt(tabelle):
+    """Der vollständige Inhalt einer (kleinen) Tabelle als HTML, damit man ein Ergebnis wirklich vorhersagen kann."""
+    con = sqlite3.connect(os.path.join(INHALT, 'kino.db'))
+    try:
+        return f'Inhalt der Tabelle `{tabelle}`:\n\n' + html_tabelle(con, con.execute(f'SELECT * FROM {tabelle}'))
+    finally:
+        con.close()
+
+
+def v(code, tabellen, error=None, hinweis='', zeige=()):
+    """Vorhersage-Aufgabe, mit Diagramm, wenn Tabellen beteiligt sind.
+    hinweis: Text vor der Frage (z. B. Zeilenzahlen); zeige: Tabellen, deren Inhalt in der Aufgabe steht.
+    Vorhersagen müssen ohne Ausführen lösbar sein: nur mit Angaben, die in der Aufgabe stehen."""
+    text = ''.join(inhalt(t) + '\n' for t in zeige) + (hinweis + '\n\n' if hinweis else '')
     if tabellen:
-        predict(code, error=error, anhaenge=tabellen_bild(tabellen), text='![Tabellen](attachment:tabellen.png)\n\n')
+        predict(code, error=error, anhaenge=tabellen_bild(tabellen), text='![Tabellen](attachment:tabellen.png)\n\n' + text)
     else:
-        predict(code, error=error)
+        predict(code, error=error, text=text)
 
 
 ALLE = ['film', 'saal', 'vorstellung', 'kunde', 'ticket']
@@ -137,7 +150,7 @@ a('''Gib für die ersten 5 Vorstellungen Datum, Uhrzeit, Preis und den Preis fü
 a('Gib für die ersten 5 Kunden Vorname, Nachname und das Alter im Jahr 2026 (Spalte `alter_2026`) aus.', ['kunde'],
   'SELECT vorname, nachname, 2026 - geburtsjahr AS alter_2026 FROM kunde LIMIT 5;')
 v('SELECT 3 + 4 * 2 AS a, 7 / 2 AS b, 7 / 2.0 AS c, 7 % 2 AS d;', [])
-v('SELECT DISTINCT ausstattung FROM saal;', ['saal'])
+v('SELECT DISTINCT ausstattung FROM saal;', ['saal'], zeige=['saal'])
 
 # ---------------------------------------------------------------- 3
 sec('Zeilen auswählen mit WHERE')
@@ -195,7 +208,7 @@ a('Gib alle Vorstellungen (alle Spalten) am 6. November aus, die um 20:00 Uhr od
   "SELECT * FROM vorstellung WHERE datum = '2026-11-06' AND uhrzeit >= '20:00';")
 a('Gib Titel, Genre und FSK aller Filme aus, die **keine** Komödie sind und FSK unter 12 haben. Verwende `NOT`.', F,
   "SELECT titel, genre, fsk FROM film WHERE NOT genre = 'Komödie' AND fsk < 12;")
-v("SELECT name FROM saal WHERE plaetze > 100 AND ausstattung = 'Standard';", ['saal'])
+v("SELECT name FROM saal WHERE plaetze > 100 AND ausstattung = 'Standard';", ['saal'], zeige=['saal'])
 v('SELECT vorname FROM kunde WHERE email = NULL;', K)
 
 # ---------------------------------------------------------------- 4
@@ -227,7 +240,7 @@ a('Gib die Plätze 4 bis 6 der Rangliste der längsten Filme aus (Titel und Daue
 a('Gib Datum, Uhrzeit und Preis der 3 teuersten Vorstellungen aus. Bei gleichem Preis die frühere zuerst (nach Datum, dann Uhrzeit).', ['vorstellung'],
   'SELECT datum, uhrzeit, preis FROM vorstellung ORDER BY preis DESC, datum, uhrzeit LIMIT 3;')
 a('Gib alle Wohnorte jeweils einmal in alphabetischer Reihenfolge aus.', K, 'SELECT DISTINCT wohnort FROM kunde ORDER BY wohnort;')
-v('SELECT name, plaetze FROM saal ORDER BY ausstattung DESC LIMIT 2;', ['saal'])
+v('SELECT name, plaetze FROM saal ORDER BY ausstattung DESC LIMIT 2;', ['saal'], zeige=['saal'])
 
 # ---------------------------------------------------------------- 5
 sec('Aggregatfunktionen')
@@ -265,7 +278,8 @@ a('Gib aus, wie viele Tickets für die Vorstellung mit der Nummer 18 verkauft wu
   'SELECT COUNT(*) AS tickets FROM ticket WHERE vorstellung_id = 18;')
 a('Gib den niedrigsten, den höchsten und den durchschnittlichen Eintrittspreis aus (Durchschnitt auf zwei Stellen gerundet).', ['vorstellung'],
   'SELECT MIN(preis) AS min, MAX(preis) AS max, ROUND(AVG(preis), 2) AS schnitt FROM vorstellung;')
-v('SELECT COUNT(*), COUNT(email), COUNT(DISTINCT wohnort) FROM kunde;', K)
+a('Gib in einer Zeile aus, wie viele Kunden es gibt (`kunden`), wie viele davon eine E-Mail-Adresse haben (`mit_email`) und aus wie vielen verschiedenen Orten sie kommen (`orte`).', K,
+  'SELECT COUNT(*) AS kunden, COUNT(email) AS mit_email, COUNT(DISTINCT wohnort) AS orte FROM kunde;')
 
 # ---------------------------------------------------------------- 6
 sec('Gruppieren mit GROUP BY und HAVING')
@@ -312,7 +326,8 @@ a('Gib für jedes Genre die Anzahl der Filme aus, zähle aber nur Filme ab 2024.
   'SELECT genre, COUNT(*) AS anzahl FROM film WHERE jahr >= 2024 GROUP BY genre ORDER BY anzahl DESC, genre;')
 a('Gib für jede Kunden-Nummer die Anzahl der gekauften Tickets aus, aber nur für Kunden mit mehr als 8 Tickets.', ['ticket'],
   'SELECT kunde_id, COUNT(*) AS tickets FROM ticket GROUP BY kunde_id HAVING COUNT(*) > 8;')
-v('SELECT genre, COUNT(*) FROM film WHERE fsk >= 12 GROUP BY genre HAVING COUNT(*) > 1;', F)
+a('Gib die Genres aus, zu denen es mehr als einen Film mit FSK 12 oder höher gibt, mit der Anzahl dieser Filme (`anzahl`), nach Genre sortiert.', F,
+  'SELECT genre, COUNT(*) AS anzahl FROM film WHERE fsk >= 12 GROUP BY genre HAVING COUNT(*) > 1 ORDER BY genre;')
 
 # ---------------------------------------------------------------- 7
 sec('Tabellen verbinden mit JOIN')
@@ -378,9 +393,10 @@ a('Gib für die Vorstellungen 1 bis 6 die Nummer, die Ausstattung des Saals und 
   '''SELECT v.vorstellung_id, s.ausstattung, v.preis
 FROM vorstellung v JOIN saal s ON v.saal_id = s.saal_id
 WHERE v.vorstellung_id <= 6;''')
-v('SELECT COUNT(*) FROM film, saal;', ['film', 'saal'])
+v('SELECT COUNT(*) FROM film, saal;', ['film', 'saal'], hinweis='Die Tabelle `film` hat 21 Zeilen, die Tabelle `saal` hat 4 Zeilen.')
 v('''SELECT COUNT(*)
-FROM vorstellung v JOIN film f ON v.film_id = f.film_id;''', FV)
+FROM vorstellung v JOIN film f ON v.film_id = f.film_id;''', FV,
+  hinweis='Die Tabelle `vorstellung` hat 46 Zeilen, die Tabelle `film` hat 21 Zeilen. Jede Vorstellung gehört zu genau einem Film.')
 
 # ---------------------------------------------------------------- 8
 sec('Mehrere Tabellen verbinden')
@@ -573,7 +589,8 @@ FROM film f LEFT JOIN vorstellung v ON v.film_id = f.film_id
 GROUP BY f.genre
 ORDER BY f.genre;''')
 v('''SELECT COUNT(*)
-FROM film f LEFT JOIN vorstellung v ON v.film_id = f.film_id;''', FV)
+FROM film f LEFT JOIN vorstellung v ON v.film_id = f.film_id;''', FV,
+  hinweis='Die Tabelle `vorstellung` hat 46 Zeilen, die Tabelle `film` hat 21 Zeilen. 4 der Filme haben keine Vorstellung.')
 
 # ---------------------------------------------------------------- 11
 sec('Unterabfragen')
@@ -619,7 +636,8 @@ a('Gib die Titel aller Filme aus dem Genre des Films „Kettenreaktion“ aus (o
   '''SELECT titel
 FROM film
 WHERE genre = (SELECT genre FROM film WHERE titel = 'Kettenreaktion') AND titel <> 'Kettenreaktion';''')
-v('SELECT COUNT(*) FROM film WHERE film_id NOT IN (SELECT film_id FROM vorstellung);', FV)
+a('Gib aus, wie viele Filme keine einzige Vorstellung haben (`ohne_vorstellung`). Verwende eine Unterabfrage mit `NOT IN`.', FV,
+  'SELECT COUNT(*) AS ohne_vorstellung FROM film WHERE film_id NOT IN (SELECT film_id FROM vorstellung);')
 
 # ---------------------------------------------------------------- 12
 sec('Funktionen und CASE')
