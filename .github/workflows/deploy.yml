@@ -25,6 +25,11 @@ jobs:
           python-version: '3.12'
       - name: JupyterLite installieren
         run: pip install -r requirements.txt
+      # jupyterlite-xeus braucht micromamba, um die Kernel aus environment.yml (xeus-sqlite) zu installieren
+      - name: micromamba installieren
+        run: |
+          curl -Ls https://micro.mamba.pm/api/micromamba/linux-64/latest | tar -xvj bin/micromamba
+          echo "$PWD/bin" >> $GITHUB_PATH
       - name: Seite bauen
         run: jupyter lite build --contents content --output-dir _site
       - uses: actions/upload-pages-artifact@v5

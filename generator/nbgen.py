@@ -23,6 +23,26 @@ sys.stdout.reconfigure(encoding='utf-8')
 sections = []
 setup_cell = None
 
+# Sprache des Notebooks, gesetzt von generate(..., sprache=...): Kernel, Platzhalter in den Aufgabenzellen,
+# Sprache der Codeblöcke in Markdown. Bei 'python' werden erwartete Ausgaben als Codeblock gezeigt,
+# sonst liefert die Ausführungsfunktion fertiges Markdown (z. B. eine Tabelle bei SQL).
+SPRACHEN = {
+    'python': {
+        'kernelspec': {'display_name': 'Python 3 (ipykernel)', 'language': 'python', 'name': 'python3'},
+        'language_info': {'codemirror_mode': {'name': 'ipython', 'version': 3}, 'file_extension': '.py',
+                          'mimetype': 'text/x-python', 'name': 'python', 'nbconvert_exporter': 'python',
+                          'pygments_lexer': 'ipython3', 'version': '3.12.8'},
+        'platzhalter': '# your code',
+        'codeblock': 'python'},
+    'sqlite': {
+        'kernelspec': {'display_name': 'SQLite (xsqlite)', 'language': 'sqlite', 'name': 'xsqlite'},
+        'language_info': {'name': 'sqlite'},
+        'platzhalter': '',  # leere Zelle: wird nicht ausgeführt (eine Zelle nur mit Kommentar gibt im Kernel einen Fehler)
+        'codeblock': 'sql'},
+}
+aktuelle_sprache = 'python'
+ausfuehrung = None  # Funktion code -> (ausgabe, fehler, bilder); None bedeutet run_mit_bildern
+
 
 def setup(md, code):
     """Zelle, die am Anfang beider Notebooks steht (z. B. zum Anlegen von Beispieldateien).
@@ -35,19 +55,23 @@ def sec(title, intro=None):
     sections.append({'title': title, 'intro': intro, 'items': []})
 
 
-def expl(md, code):
-    sections[-1]['items'].append({'type': 'expl', 'md': md, 'code': code})
+def expl(md, code, anhaenge=None):
+    """anhaenge: {name: PNG-Daten}, im Markdown als ![...](attachment:name) eingebunden (z. B. ER-Diagramme)."""
+    sections[-1]['items'].append({'type': 'expl', 'md': md, 'code': code, 'anhaenge': anhaenge or {}})
 
 
-def task(text, given='', solution='', kind='normal', error=None):
-    """kind: 'normal' (mit erwarteter Ausgabe), 'free' (ohne erwartete Ausgabe), 'predict'."""
+def task(text, given='', solution='', kind='normal', error=None, anhaenge=None):
+    """kind: 'normal' (mit erwarteter Ausgabe), 'free' (ohne erwartete Ausgabe), 'predict'.
+    anhaenge: {name: PNG-Daten} für Bilder im Aufgabentext (![...](attachment:name))."""
     sections[-1]['items'].append({'type': 'task', 'text': text, 'given': given.strip('\n'),
-                                  'solution': solution.strip('\n'), 'kind': kind, 'error': error})
+                                  'solution': solution.strip('\n'), 'kind': kind, 'error': error,
+                                  'anhaenge': anhaenge or {}})
 
 
-def predict(code, error=None):
-    task('Was wird ausgegeben? Überlege zuerst, was ausgegeben wird. Führe dann die Zelle aus und vergleiche.',
-         given=code, solution=code, kind='predict', error=error)
+def predict(code, error=None, anhaenge=None, text=''):
+    """text: steht vor der Frage (z. B. ein Diagramm der beteiligten Tabellen)."""
+    task(text + 'Was wird ausgegeben? Überlege zuerst, was ausgegeben wird. Führe dann die Zelle aus und vergleiche.',
+         given=code, solution=code, kind='predict', error=error, anhaenge=anhaenge)
 
 
 # ---------------------------------------------------------------- run solutions
@@ -100,21 +124,22 @@ def check():
 
 def _check():
     problems = 0
+    ausf = ausfuehrung or run_mit_bildern  # bei SQL usw. die eigene Ausführungsfunktion
     if setup_cell:
-        out, err, bilder = run_mit_bildern(setup_cell['code'])
+        out, err, bilder = ausf(setup_cell['code'])
         if err:
             print('SETUP ERROR', err); problems += 1
     for s_i, s in enumerate(sections, 1):
         n = 0
         for it in s['items']:
             if it['type'] == 'expl':
-                out, err, bilder = run_mit_bildern(it['code'])
+                out, err, bilder = ausf(it['code'])
                 if err:
                     print('EXPL ERROR', s['title'], err); problems += 1
                 continue
             n += 1
             it['nr'] = f'{s_i}.{n}'
-            out, err, it['bilder'] = run_mit_bildern(it['solution'])
+            out, err, it['bilder'] = ausf(it['solution'])
             if it['error']:
                 if not isinstance(err, it['error']):
                     print('EXPECTED ERROR MISSING', it['nr']); problems += 1
@@ -146,10 +171,12 @@ def bild_name(it, k):
 def task_md(it):
     text = f'#### Aufgabe {it["nr"]}\n\n'
     if it['kind'] == 'predict':
-        text += it['text'] + f'\n```python\n{it["given"]}\n```'
+        text += it['text'] + f'\n```{SPRACHEN[aktuelle_sprache]["codeblock"]}\n{it["given"]}\n```'
     else:
         text += it['text']
-        if it['kind'] == 'normal':
+        if it['kind'] == 'normal' and aktuelle_sprache != 'python':
+            text += '\n\n**Erwartete Ausgabe:**\n\n' + it['out'].rstrip()
+        elif it['kind'] == 'normal':
             text += '\n\n**Erwartete Ausgabe:**'
             if it['out'].strip() or not it['bilder']:
                 text += f'\n```\n{it["out"].rstrip()}\n```'
@@ -163,11 +190,15 @@ def bilder_anhang(it):
             for k, b in enumerate(it['bilder'])}
 
 
+def png_anhang(anhaenge):
+    return {name: {'image/png': base64.b64encode(b).decode('ascii')} for name, b in anhaenge.items()}
+
+
 def loesung_md(it):
     """Aufklappbare Lösung unter der Codezelle (nicht bei Vorhersage-Aufgaben)."""
     titel = 'Beispiellösung anzeigen' if it['kind'] == 'free' else 'Lösung anzeigen'
     return (f'<details>\n<summary>{titel} (erst selbst probieren!)</summary>\n\n'
-            f'```python\n{it["solution"]}\n```\n\n</details>')
+            f'```{SPRACHEN[aktuelle_sprache]["codeblock"]}\n{it["solution"]}\n```\n\n</details>')
 
 
 AUFKLAPP_HINWEIS = '''Unter den Aufgaben kannst du jeweils die Lösung aufklappen. Versuche es aber immer zuerst selbst!
@@ -191,17 +222,21 @@ def build(titel, intro, loesung, aufklappbar):
             if it['type'] == 'expl':
                 if not loesung:
                     cells.append(md(it['md']))
+                    if it['anhaenge']:
+                        cells[-1]['attachments'] = png_anhang(it['anhaenge'])
                     cells.append(code(it['code']))
                 continue
             cells.append(md(task_md(it)))
-            if it['kind'] == 'normal' and it['bilder']:
-                cells[-1]['attachments'] = bilder_anhang(it)
+            if it['anhaenge'] or (it['kind'] == 'normal' and it['bilder']):
+                cells[-1]['attachments'] = png_anhang(it['anhaenge'])
+                if it['kind'] == 'normal':
+                    cells[-1]['attachments'].update(bilder_anhang(it))
             if loesung or it['kind'] == 'predict':
                 cells.append(code(it['solution']))
             elif it['given']:
-                cells.append(code(it['given'] + '\n# your code'))
+                cells.append(code(it['given'] + '\n' + SPRACHEN[aktuelle_sprache]['platzhalter']))
             else:
-                cells.append(code('# your code'))
+                cells.append(code(SPRACHEN[aktuelle_sprache]['platzhalter']))
             if aufklappbar and not loesung and it['kind'] != 'predict':
                 cells.append(md(loesung_md(it)))
     for i, c in enumerate(cells):
@@ -211,10 +246,8 @@ def build(titel, intro, loesung, aufklappbar):
     return {
         'cells': cells,
         'metadata': {
-            'kernelspec': {'display_name': 'Python 3 (ipykernel)', 'language': 'python', 'name': 'python3'},
-            'language_info': {'codemirror_mode': {'name': 'ipython', 'version': 3}, 'file_extension': '.py',
-                              'mimetype': 'text/x-python', 'name': 'python', 'nbconvert_exporter': 'python',
-                              'pygments_lexer': 'ipython3', 'version': '3.12.8'}},
+            'kernelspec': SPRACHEN[aktuelle_sprache]['kernelspec'],
+            'language_info': SPRACHEN[aktuelle_sprache]['language_info']},
         'nbformat': 4, 'nbformat_minor': 5}
 
 
@@ -222,10 +255,15 @@ INTRO = '''Jeder Abschnitt beginnt mit kurzen Erklärungen und Beispielen. Führ
 Danach folgen viele kleine Übungen. Wenn etwas vorgegeben ist, steht es schon in der Codezelle.'''
 
 
-def generate(name, titel, intro=INTRO, aufklappbar=True, loesungsnotebook=False):
+def generate(name, titel, intro=INTRO, aufklappbar=True, loesungsnotebook=False, sprache='python', ausfuehren=None):
     """Schreibt <name>.ipynb nach ../content/.
     aufklappbar: Lösungen aufklappbar unter jede Aufgabe schreiben.
-    loesungsnotebook: zusätzlich ein getrenntes <name>_loesungen.ipynb schreiben (wird normalerweise nicht gebraucht)."""
+    loesungsnotebook: zusätzlich ein getrenntes <name>_loesungen.ipynb schreiben (wird normalerweise nicht gebraucht).
+    sprache: Schlüssel aus SPRACHEN ('python' oder 'sqlite').
+    ausfuehren: Funktion code -> (ausgabe, fehler, bilder) zum Prüfen der Zellen (Standard: Python mit run_mit_bildern)."""
+    global aktuelle_sprache, ausfuehrung
+    aktuelle_sprache = sprache
+    ausfuehrung = ausfuehren
     standard = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(sys.argv[0]))), 'content')
     out = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else standard)
     if check() != 0:

@@ -1,0 +1,8 @@
+# Zusätzliche Kernel für JupyterLite (jupyterlite-xeus). Wird beim Bauen der Seite gelesen.
+# xeus-sqlite: SQL-Notebooks (Kernel "xsqlite"), siehe generator/gen_sql_abfragen.py
+name: xeus-kernels
+channels:
+  - https://prefix.dev/emscripten-forge-4x
+  - https://prefix.dev/conda-forge
+dependencies:
+  - xeus-sqlite

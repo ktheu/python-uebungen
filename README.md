@@ -27,6 +27,7 @@
 | matplotlib: Diagrammtypen | [matplotlib_diagrammtypen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=matplotlib_diagrammtypen.ipynb) |
 | matplotlib: Layout, Bilder und Heatmaps | [matplotlib_layout.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=matplotlib_layout.ipynb) |
 | matplotlib: Anwendungen | [matplotlib_anwendungen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=matplotlib_anwendungen.ipynb) |
+| SQL-Abfragen mit SQLite | [sql_abfragen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=sql_abfragen.ipynb) |
 
 Alle Notebooks auf einmal: [JupyterLab](https://ktheu.github.io/python-uebungen/lab/index.html)
 
