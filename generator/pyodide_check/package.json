@@ -1,0 +1,10 @@
+{
+  "name": "pyodide-check",
+  "private": true,
+  "description": "Prüft die erwarteten Ausgaben der Notebooks in derselben Pyodide-Version wie JupyterLite",
+  "type": "module",
+  "dependencies": {
+    "node": "22.23.3",
+    "pyodide": "314.0.6"
+  }
+}
