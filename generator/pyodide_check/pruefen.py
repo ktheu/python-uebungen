@@ -48,17 +48,19 @@ def zellen(generator, ordner):
     os.chdir(tmp)  # wie in nbgen.check(): Setup und Zellen laufen in einem temporären Ordner
     try:
         if nbgen.setup_cell:
-            out, err = nbgen.run(nbgen.setup_cell['code'])
-            items.append({'nr': 'Setup', 'art': 'setup', 'code': nbgen.setup_cell['code'], 'out': out})
+            out, err, bilder = nbgen.run_mit_bildern(nbgen.setup_cell['code'])
+            items.append({'nr': 'Setup', 'art': 'setup', 'code': nbgen.setup_cell['code'], 'out': out, 'fehler': None})
         for s_i, s in enumerate(nbgen.sections, 1):
             b = 0
             for it in s['items']:
                 if it['type'] == 'expl':
                     b += 1
-                    out, err = nbgen.run(it['code'])
-                    items.append({'nr': f'{s_i}. Beispiel {b}', 'art': 'beispiel', 'code': it['code'], 'out': out})
+                    out, err, bilder = nbgen.run_mit_bildern(it['code'])
+                    items.append({'nr': f'{s_i}. Beispiel {b}', 'art': 'beispiel', 'code': it['code'], 'out': out,
+                                  'fehler': None})
                 else:
-                    items.append({'nr': it['nr'], 'art': it['kind'], 'code': it['solution'], 'out': it['out']})
+                    items.append({'nr': it['nr'], 'art': it['kind'], 'code': it['solution'], 'out': it['out'],
+                                  'fehler': it['error'].__name__ if it['error'] else None})
     finally:
         os.chdir(alt_dir)
         shutil.rmtree(tmp)

@@ -4,9 +4,12 @@ Ein Generator-Skript (z. B. gen_listen.py) beschreibt mit sec(), expl(), task() 
 die Abschnitte, Erklärungen und Aufgaben und ruft am Ende generate() auf.
 Dabei werden alle Beispiele und Musterlösungen ausgeführt. Die erwarteten Ausgaben in den
 Aufgaben stammen aus diesen Läufen. Geschrieben wird nur, wenn alles fehlerfrei läuft.
+Zeichnet eine Musterlösung matplotlib-Diagramme, werden sie als PNG an die Aufgabenzelle angehängt
+und als erwartete Ausgabe angezeigt (siehe run_mit_bildern()).
 
 Das Notebook landet in ../content/ (neben dem Ordner generator/) oder im als Argument angegebenen Ordner.
 """
+import base64
 import contextlib
 import io
 import json
@@ -59,6 +62,31 @@ def run(code):
     return buf.getvalue(), err
 
 
+BILD_DPI = 72  # Auflösung der erwarteten Diagramme (klein halten, die Bilder stehen im Notebook)
+
+
+def run_mit_bildern(code):
+    """Wie run(), sammelt aber zusätzlich alle matplotlib-Diagramme als PNG-Daten ein.
+    matplotlib wird nur angefasst, wenn der Code es verwendet."""
+    plt = None
+    if 'matplotlib' in code:
+        import matplotlib
+        matplotlib.use('Agg')
+        import matplotlib.pyplot as plt
+        plt.close('all')
+        matplotlib.rcdefaults()  # Stiländerungen einer Zelle sollen nicht in die nächste durchschlagen
+        plt.show = lambda *args, **kwargs: None  # im Notebook zeigt plt.show() das Bild, hier wird es danach eingesammelt
+    out, err = run(code)
+    bilder = []
+    if plt is not None:
+        for nr in plt.get_fignums():
+            buf = io.BytesIO()
+            plt.figure(nr).savefig(buf, format='png', dpi=BILD_DPI, bbox_inches='tight', metadata={'Software': None})
+            bilder.append(buf.getvalue())
+        plt.close('all')
+    return out, err, bilder
+
+
 def check():
     alt = os.getcwd()
     tmp = tempfile.mkdtemp()
@@ -73,20 +101,20 @@ def check():
 def _check():
     problems = 0
     if setup_cell:
-        out, err = run(setup_cell['code'])
+        out, err, bilder = run_mit_bildern(setup_cell['code'])
         if err:
             print('SETUP ERROR', err); problems += 1
     for s_i, s in enumerate(sections, 1):
         n = 0
         for it in s['items']:
             if it['type'] == 'expl':
-                out, err = run(it['code'])
+                out, err, bilder = run_mit_bildern(it['code'])
                 if err:
                     print('EXPL ERROR', s['title'], err); problems += 1
                 continue
             n += 1
             it['nr'] = f'{s_i}.{n}'
-            out, err = run(it['solution'])
+            out, err, it['bilder'] = run_mit_bildern(it['solution'])
             if it['error']:
                 if not isinstance(err, it['error']):
                     print('EXPECTED ERROR MISSING', it['nr']); problems += 1
@@ -96,6 +124,8 @@ def _check():
                 print('GIVEN MISMATCH', it['nr']); problems += 1
             it['out'] = out
             print(f'--- {it["nr"]} ({it["kind"]})\n{out}', end='')
+            for b in it['bilder']:
+                print(f'[Bild, {len(b) // 1024} KB]')
     print('PROBLEMS:', problems)
     return problems
 
@@ -109,6 +139,10 @@ def code(src):
     return {'cell_type': 'code', 'execution_count': None, 'metadata': {}, 'outputs': [], 'source': src}
 
 
+def bild_name(it, k):
+    return f'aufgabe-{it["nr"]}-{k}.png'
+
+
 def task_md(it):
     text = f'#### Aufgabe {it["nr"]}\n\n'
     if it['kind'] == 'predict':
@@ -116,8 +150,17 @@ def task_md(it):
     else:
         text += it['text']
         if it['kind'] == 'normal':
-            text += f'\n\n**Erwartete Ausgabe:**\n```\n{it["out"].rstrip()}\n```'
+            text += '\n\n**Erwartete Ausgabe:**'
+            if it['out'].strip() or not it['bilder']:
+                text += f'\n```\n{it["out"].rstrip()}\n```'
+            for k in range(len(it['bilder'])):  # Diagramme stehen als Anhang (attachment) in der Markdown-Zelle
+                text += f'\n\n![Erwartete Ausgabe](attachment:{bild_name(it, k + 1)})'
     return text
+
+
+def bilder_anhang(it):
+    return {bild_name(it, k + 1): {'image/png': base64.b64encode(b).decode('ascii')}
+            for k, b in enumerate(it['bilder'])}
 
 
 def loesung_md(it):
@@ -151,6 +194,8 @@ def build(titel, intro, loesung, aufklappbar):
                     cells.append(code(it['code']))
                 continue
             cells.append(md(task_md(it)))
+            if it['kind'] == 'normal' and it['bilder']:
+                cells[-1]['attachments'] = bilder_anhang(it)
             if loesung or it['kind'] == 'predict':
                 cells.append(code(it['solution']))
             elif it['given']:
