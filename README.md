@@ -17,6 +17,7 @@
 | itertools | [itertools.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=itertools.ipynb) |
 | Zufallszahlen mit random | [random.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=random.ipynb) |
 | Reguläre Ausdrücke | [regulaereAusdruecke.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=regulaereAusdruecke.ipynb) |
+| Datum und Uhrzeit mit datetime | [datetime.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=datetime.ipynb) |
 
 Alle Notebooks auf einmal: [JupyterLab](https://ktheu.github.io/python-uebungen/lab/index.html)
 
