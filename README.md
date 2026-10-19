@@ -19,6 +19,7 @@
 | Reguläre Ausdrücke | [regulaereAusdruecke.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=regulaereAusdruecke.ipynb) |
 | Datum und Uhrzeit mit datetime | [datetime.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=datetime.ipynb) |
 | numpy: Grundlagen | [numpy_grundlagen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=numpy_grundlagen.ipynb) |
+| numpy: Filtern und Auswählen | [numpy_filtern.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=numpy_filtern.ipynb) |
 
 Alle Notebooks auf einmal: [JupyterLab](https://ktheu.github.io/python-uebungen/lab/index.html)
 
