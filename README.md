@@ -24,6 +24,7 @@
 | numpy: Zufall und Statistik | [numpy_zufall_statistik.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=numpy_zufall_statistik.ipynb) |
 | numpy: Mathematik | [numpy_mathe.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=numpy_mathe.ipynb) |
 | matplotlib: Grundlagen | [matplotlib_grundlagen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=matplotlib_grundlagen.ipynb) |
+| matplotlib: Diagrammtypen | [matplotlib_diagrammtypen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=matplotlib_diagrammtypen.ipynb) |
 
 Alle Notebooks auf einmal: [JupyterLab](https://ktheu.github.io/python-uebungen/lab/index.html)
 
