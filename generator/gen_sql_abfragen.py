@@ -150,7 +150,6 @@ a('''Gib für die ersten 5 Vorstellungen Datum, Uhrzeit, Preis und den Preis fü
 a('Gib für die ersten 5 Kunden Vorname, Nachname und das Alter im Jahr 2026 (Spalte `alter_2026`) aus.', ['kunde'],
   'SELECT vorname, nachname, 2026 - geburtsjahr AS alter_2026 FROM kunde LIMIT 5;')
 v('SELECT 3 + 4 * 2 AS a, 7 / 2 AS b, 7 / 2.0 AS c, 7 % 2 AS d;', [])
-v('SELECT DISTINCT ausstattung FROM saal;', ['saal'], zeige=['saal'])
 
 # ---------------------------------------------------------------- 3
 sec('Zeilen auswählen mit WHERE')
