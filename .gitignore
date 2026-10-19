@@ -2,3 +2,6 @@ _site/
 .jupyterlite.doit.db
 __pycache__/
 .ipynb_checkpoints/
+
+# Hinweise für Claude Code, nur lokal (nicht auf GitHub)
+CLAUDE.md
