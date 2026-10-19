@@ -42,14 +42,16 @@ def tabelle(con, cursor):
 
 
 def html_tabelle(con, cursor):
-    """Wie tabelle(), aber als HTML-Tabelle, die linksbündig steht (Markdown-Tabellen zentriert JupyterLab)."""
+    """Wie tabelle(), aber als HTML-Tabelle, die linksbündig steht (Markdown-Tabellen zentriert JupyterLab).
+    Kopf und Zellen sind rechtsbündig wie in der Ausgabe des xeus-sqlite-Kernels (JupyterLab richtet Ausgabe-Tabellen rechts aus)."""
     if cursor.description is None:
         return ''
     kopf = [d[0] for d in cursor.description]
     zeilen = cursor.fetchall()
-    h = ['<table style="margin-left: 0">', '<tr>' + ''.join(f'<th>{k}</th>' for k in kopf) + '</tr>']
+    r = ' style="text-align: right"'
+    h = ['<table style="margin-left: 0">', '<tr>' + ''.join(f'<th{r}>{k}</th>' for k in kopf) + '</tr>']
     for z in zeilen:
-        h.append('<tr>' + ''.join(f'<td>{_text(con, w)}</td>' for w in z) + '</tr>')
+        h.append('<tr>' + ''.join(f'<td{r}>{_text(con, w)}</td>' for w in z) + '</tr>')
     h.append('</table>')
     h.append('')
     h.append(f'*{len(zeilen)} Zeile{"" if len(zeilen) == 1 else "n"}*')
