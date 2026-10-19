@@ -5,3 +5,5 @@ __pycache__/
 
 # Hinweise für Claude Code, nur lokal (nicht auf GitHub)
 CLAUDE.md
+prompts.md
+
