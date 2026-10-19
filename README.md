@@ -26,6 +26,7 @@
 | matplotlib: Grundlagen | [matplotlib_grundlagen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=matplotlib_grundlagen.ipynb) |
 | matplotlib: Diagrammtypen | [matplotlib_diagrammtypen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=matplotlib_diagrammtypen.ipynb) |
 | matplotlib: Layout, Bilder und Heatmaps | [matplotlib_layout.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=matplotlib_layout.ipynb) |
+| matplotlib: Anwendungen | [matplotlib_anwendungen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=matplotlib_anwendungen.ipynb) |
 
 Alle Notebooks auf einmal: [JupyterLab](https://ktheu.github.io/python-uebungen/lab/index.html)
 
