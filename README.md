@@ -29,6 +29,10 @@
 | matplotlib: Anwendungen | [matplotlib_anwendungen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=matplotlib_anwendungen.ipynb) |
 | SQL-Abfragen mit SQLite | [sql_abfragen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=sql_abfragen.ipynb) |
 
+**Merkhilfen** (PDF zum Ausdrucken, nur die Aufrufe als Erinnerung):
+[matplotlib](https://github.com/ktheu/python-uebungen/blob/main/merkhilfen/matplotlib.pdf) ·
+[SQL](https://github.com/ktheu/python-uebungen/blob/main/merkhilfen/sql.pdf)
+
 Alle Notebooks auf einmal: [JupyterLab](https://ktheu.github.io/python-uebungen/lab/index.html)
 
 Übungen zu den Unterrichtseinheiten (Grundlagen, Bedingungen, Listen, Fehler, Datenbanken): [Infokurs-Übungen](https://ktheu.github.io/Infokurs_Uebungen/)

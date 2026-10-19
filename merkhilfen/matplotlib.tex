@@ -1,0 +1,168 @@
+% Merkhilfe matplotlib zu den Notebooks matplotlib_grundlagen, _diagrammtypen, _layout, _anwendungen
+% (https://ktheu.github.io/python-uebungen/). Übersetzen (im Ordner merkhilfen):  latexmk -pdf matplotlib.tex
+\documentclass[9pt,a4paper,landscape]{extarticle}
+\usepackage{merkhilfe}
+
+\begin{document}
+\begin{multicols*}{3}
+\merktitel{Merkhilfe matplotlib}{ktheu.github.io/python-uebungen}
+
+\begin{merkblock}[1 Grundlagen]{Start}{matplotlib\_grundlagen}
+\lstinline!import matplotlib.pyplot as plt!\zl
+\lstinline!import numpy as np!\zl
+\lstinline!x = np.linspace(-3, 3, 200)!\quad\lstinline!np.arange(0, 10, 0.5)!\zl
+\lstinline!plt.plot(x, np.sin(x))!\zl
+\lstinline!plt.show()!\zl
+\end{merkblock}
+
+\begin{merkblock}{Farben, Linien, Marker}{}
+\lstinline!plt.plot(x, y, 'ro--')!\st{Kurzform}
+\lstinline!color='red'!\quad\lstinline!color='C1'!\quad\lstinline!'#1f77b4'!\zl
+\lstinline!linestyle='--'!\quad\lstinline!':'!\quad\lstinline!'-.'!\zl
+\lstinline!linewidth=2!\quad\lstinline!marker='o'!\quad\lstinline!'s' '^' 'x'!\zl
+\lstinline!markersize=8!\quad\lstinline!markerfacecolor='white'!\zl
+\end{merkblock}
+
+\begin{merkblock}{Beschriften}{}
+\lstinline!plt.title('Titel')!\zl
+\lstinline!plt.xlabel('x')!\quad\lstinline!plt.ylabel('y')!\zl
+\lstinline!plt.plot(x, y, label='sin')!\zl
+\lstinline!plt.legend()!\quad\lstinline!plt.legend(loc='upper left')!\zl
+\lstinline!plt.grid(True)!\quad\lstinline!plt.grid(axis='y')!\zl
+\end{merkblock}
+
+\begin{merkblock}{Achsen einstellen}{}
+\lstinline!plt.xlim(0, 10)!\quad\lstinline!plt.ylim(-1, 1)!\zl
+\lstinline!plt.xticks([0, 1, 2])!\zl
+\lstinline!plt.axhline(0, color='black', linewidth=1)!\zl
+\lstinline!plt.axvline(2, linestyle='--')!\zl
+\lstinline!plt.axis('equal')!\quad\lstinline!plt.axis('off')!\zl
+\end{merkblock}
+
+\begin{merkblock}{Text, Punkte, Pfeile}{}
+\lstinline!plt.plot(2, 4, 'o')!\st{einzelner Punkt}
+\lstinline!plt.text(2, 4, 'P', ha='center', fontsize=12)!\zl
+\lstinline!plt.annotate('Hochpunkt', xy=(1, 2),!\par
+\quad\lstinline!xytext=(2, 3), arrowprops=dict(arrowstyle='->'))!\zl
+\end{merkblock}
+
+\begin{merkblock}{Größe und Speichern}{}
+\lstinline!plt.figure(figsize=(8, 4))!\st{Zoll}
+\lstinline!plt.savefig('bild.png', dpi=150)!\st{vor show()}
+\end{merkblock}
+
+\begin{merkblock}[2 Diagrammtypen]{Streudiagramme}{matplotlib\_diagrammtypen}
+\lstinline!plt.scatter(x, y, s=40, color='C0', alpha=0.5)!\zl
+\lstinline!marker='s'!\quad\lstinline!edgecolor='black'!\zl
+\lstinline!plt.scatter(x, y, c=werte, cmap='viridis')!\zl
+\lstinline!plt.colorbar()!\zl
+\lstinline!m, b = np.polyfit(x, y, 1)!\st{Ausgleichsgerade}
+\lstinline!np.corrcoef(x, y)!\zl
+\end{merkblock}
+
+\begin{merkblock}{Balkendiagramme}{}
+\lstinline!b = plt.bar(namen, werte, color='C2', edgecolor='black')!\zl
+\lstinline!plt.bar_label(b)!\st{Werte an Balken}
+\lstinline!plt.barh(namen, werte)!\st{waagrecht}
+\lstinline!plt.bar(x - 0.2, a, width=0.4)!\st{gruppiert}
+\lstinline!plt.bar(x, b, bottom=a)!\quad\lstinline!plt.barh(x, b, left=a)!\st{gestapelt}
+\end{merkblock}
+
+\begin{merkblock}{Histogramme}{}
+\lstinline!plt.hist(daten, bins=10, edgecolor='black')!\zl
+\lstinline!density=True!\quad\lstinline!alpha=0.5!\quad\lstinline!rwidth=0.9!\zl
+\end{merkblock}
+
+\begin{merkblock}{Kreisdiagramme}{}
+\lstinline!plt.pie(werte, labels=namen, autopct='%1.0f%%')!\zl
+\lstinline!startangle=90!\quad\lstinline!counterclock=False!\zl
+\lstinline!explode=[0.1, 0, 0]!\quad\lstinline!colors=[...]!\zl
+\lstinline!wedgeprops=dict(width=0.4)!\st{Ring}
+\lstinline!pctdistance=0.8!\zl
+\end{merkblock}
+
+\begin{merkblock}{Boxplots}{}
+\lstinline!plt.boxplot([a, b], tick_labels=['A', 'B'])!\zl
+\lstinline!patch_artist=True!\quad\lstinline!orientation='horizontal'!\zl
+\lstinline!np.median(d)!\quad\lstinline!np.percentile(d, [25, 75])!\zl
+\end{merkblock}
+
+\begin{merkblock}{Fehlerbalken, Flächen, Stufen}{}
+\lstinline!plt.errorbar(x, y, yerr=f, fmt='o', capsize=4)!\zl
+\lstinline!plt.bar(x, y, yerr=f, capsize=4)!\zl
+\lstinline!plt.fill_between(x, y1, y2, alpha=0.3)!\zl
+\lstinline!plt.fill_between(x, y, where=y > 0)!\zl
+\lstinline!plt.step(x, y, where='post')!\zl
+\lstinline!np.cumsum(werte)!\st{Summen}
+\end{merkblock}
+
+\begin{merkblock}{Daten aus Dateien}{}
+\lstinline!d = np.loadtxt('daten.csv', delimiter=',',!\par
+\quad\lstinline!skiprows=1, encoding='utf-8')!\zl
+\lstinline!usecols=(0, 2)!\quad\lstinline!unpack=True!\quad\lstinline!dtype=str!\zl
+\end{merkblock}
+
+\begin{merkblock}[3 Layout]{Figure und Axes}{matplotlib\_layout}
+\lstinline!fig, ax = plt.subplots(figsize=(6, 4))!\zl
+\lstinline!ax.plot(x, y)!\quad\lstinline!ax.scatter!\quad\lstinline!ax.bar!\quad\lstinline!ax.hist!\zl
+\lstinline!ax.set_title('...')!\quad\lstinline!ax.set_xlabel('x')!\zl
+\lstinline!ax.set_xlim(a, b)!\quad\lstinline!ax.set_xticks([...])!\zl
+\lstinline!ax.legend()!\quad\lstinline!ax.grid(True)!\zl
+\lstinline!ax.set_aspect('equal')!\quad\lstinline!fig.suptitle('...')!\zl
+\end{merkblock}
+
+\begin{merkblock}{Mehrere Diagramme}{}
+\lstinline!fig, axs = plt.subplots(2, 3, layout='constrained')!\zl
+\lstinline!axs[0, 1].plot(x, y)!\zl
+\lstinline!sharex=True!\quad\lstinline!sharey=True!\zl
+\lstinline!plt.close(fig)!\zl
+\end{merkblock}
+
+\begin{merkblock}{Achsen-Tricks}{}
+\lstinline!ax2 = ax.twinx()!\st{zweite y-Achse}
+\lstinline!ax.set_yscale('log')!\quad\lstinline!ax.set_xscale('log')!\zl
+\lstinline!ax.invert_yaxis()!\zl
+\lstinline!ax.spines['top'].set_visible(False)!\zl
+\lstinline!ax.spines['left'].set_position('zero')!\zl
+\end{merkblock}
+
+\begin{merkblock}{Stile und Farben}{}
+\lstinline!plt.style.available!\zl
+\lstinline!with plt.style.context('ggplot'):!\zl
+\lstinline!cmap='viridis' 'coolwarm' 'Blues' 'gray'!\zl
+\end{merkblock}
+
+\begin{merkblock}{Bilder, Heatmaps, Spielfelder}{}
+\lstinline!b = ax.imshow(a, cmap='coolwarm', vmin=0, vmax=1)!\zl
+\lstinline!fig.colorbar(b, ax=ax)!\zl
+\lstinline!origin='lower'!\quad\lstinline!extent=[x0, x1, y0, y1]!\zl
+\lstinline!ax.text(j, i, wert, ha='center', va='center')!\zl
+\lstinline!from matplotlib.colors import ListedColormap!\zl
+\lstinline!ListedColormap(['white', 'black'])!\zl
+\end{merkblock}
+
+\begin{merkblock}{Höhenlinien}{}
+\lstinline!X, Y = np.meshgrid(xs, ys)!\zl
+\lstinline!cs = ax.contour(X, Y, Z, levels=10, colors='black')!\zl
+\lstinline!ax.clabel(cs)!\zl
+\lstinline!ax.contourf(X, Y, Z, levels=20, cmap='terrain')!\zl
+\end{merkblock}
+
+\begin{merkblock}[4 Anwendungen]{Funktionen und Daten}{matplotlib\_anwendungen}
+\lstinline!np.roots(p)!\quad\lstinline!np.polyval(p, x)!\zl
+\lstinline!np.polyder(p)!\quad\lstinline!np.polyint(p)!\zl
+\lstinline!np.diff(y)!\quad\lstinline!y.argmax()!\zl
+\lstinline!ax.annotate(...)!\quad\lstinline!ax.fill_between(..., where=...)!\zl
+\lstinline!ax.errorbar(x, y, yerr=f, fmt='o')!\zl
+\end{merkblock}
+
+\begin{merkblock}{Geometrie mit patches}{}
+\lstinline!from matplotlib.patches import Circle, Rectangle, Polygon!\zl
+\lstinline!ax.add_patch(Rectangle((x, y), b, h, facecolor='C0'))!\zl
+\lstinline!ax.add_patch(Circle((x, y), r, fill=False))!\zl
+\lstinline!ax.add_patch(Polygon(punkte, alpha=0.5))!\zl
+\lstinline!edgecolor='black'!\quad\lstinline!linewidth=2!\zl
+\lstinline!ax.fill(xs, ys, facecolor='C1')!\zl
+\end{merkblock}
+\end{multicols*}
+\end{document}

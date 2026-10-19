@@ -1,0 +1,55 @@
+% Gemeinsames Layout der Merkhilfen (A4 quer, Spalten, Abschnitte als Blöcke).
+% Verwendung:
+%   \documentclass[9pt,a4paper,landscape]{extarticle}
+%   \usepackage{merkhilfe}
+%   \begin{document}
+%   \begin{multicols*}{3}
+%   \merktitel{Merkhilfe matplotlib}{ktheu.github.io/python-uebungen}
+%   \begin{merkblock}[Gruppe]{1 Titel}{notebook\_name}
+%     \lstinline!plt.plot(x, y)!\st{Stichwort}
+%     \lstinline!plt.show()!\zl
+%   \end{merkblock}
+%   \end{multicols*}
+%   \end{document}
+% \st{...}: graues Stichwort rechts und Zeilenende, \zl: Zeilenende ohne Stichwort.
+% Ein merkblock bricht nicht über Spalten um; das optionale Argument setzt davor einen Gruppenbalken.
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{merkhilfe}[2026/10/19 Merkhilfen python-uebungen]
+
+\RequirePackage[utf8]{inputenc}
+\RequirePackage[T1]{fontenc}
+\RequirePackage{lmodern}
+\RequirePackage[varqu,varl]{zi4}
+\RequirePackage[ngerman]{babel}
+\RequirePackage[margin=8mm,top=7mm,bottom=9mm]{geometry}
+\RequirePackage{multicol}
+\RequirePackage{xcolor}
+\RequirePackage{listings}
+\RequirePackage{amsmath,amssymb}
+\RequirePackage{graphicx}
+
+\definecolor{blau}{RGB}{0,84,159}
+\definecolor{grau}{RGB}{105,105,105}
+
+\lstset{basicstyle=\ttfamily\small, columns=fullflexible, keepspaces=true, upquote=true}
+\setlength{\columnsep}{6mm}
+\setlength{\columnseprule}{0.3pt}
+\raggedcolumns
+\setlength{\parindent}{0pt}
+\pagestyle{empty}
+
+\newcommand{\merktitel}[2]{{\color{blau}\bfseries\Large #1}\hfill{\footnotesize\color{grau}#2}\par
+  \vspace{2pt}{\color{blau}\hrule height 1pt}\vspace{2pt}}
+\newcommand{\gruppe}[1]{\par\medskip\colorbox{blau}{\parbox{\dimexpr\columnwidth-2\fboxsep}{\color{white}\bfseries\normalsize #1}}\par\smallskip}
+\newcommand{\nb}[2]{\par\smallskip{\color{blau}\bfseries #1\hfill\mdseries\scriptsize\ttfamily #2}\par\vspace{0.5pt}{\color{blau}\hrule height 0.6pt}\vspace{2pt}}
+\newcommand{\st}[1]{\hfill{\footnotesize\color{grau}#1}\par}
+\newcommand{\zl}{\par\vspace{1pt}}
+\newcommand{\unter}[1]{\par\vspace{1pt}{\footnotesize\color{blau}#1}\par}
+
+\newenvironment{merkblock}[3][]{%
+  \par\noindent\begin{minipage}{\columnwidth}%
+  \if\relax\detokenize{#1}\relax\else\gruppe{#1}\fi
+  \nb{#2}{#3}}{%
+  \end{minipage}\par\vspace{2pt}}
+
+\endinput

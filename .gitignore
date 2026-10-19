@@ -7,3 +7,8 @@ __pycache__/
 CLAUDE.md
 prompts.md
 
+# LaTeX-Hilfsdateien (Merkhilfen)
+*.aux
+*.log
+*.fls
+*.fdb_latexmk
