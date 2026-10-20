@@ -21,6 +21,9 @@
 | Das Modul collections | [collections.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=collections.ipynb) |
 | Fehler und Ausnahmen (Exceptions) | [exceptions.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=exceptions.ipynb) |
 | OOP 1: Klassen und Objekte | [oop_klassen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=oop_klassen.ipynb) |
+| OOP 2: Datenkapselung | [oop_kapselung.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=oop_kapselung.ipynb) |
+| OOP 3: Beziehungen zwischen Klassen | [oop_beziehungen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=oop_beziehungen.ipynb) |
+| OOP 4: Vererbung | [oop_vererbung.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=oop_vererbung.ipynb) |
 | numpy: Grundlagen | [numpy_grundlagen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=numpy_grundlagen.ipynb) |
 | numpy: Filtern und Auswählen | [numpy_filtern.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=numpy_filtern.ipynb) |
 | numpy: Zweidimensionale Arrays | [numpy_2d.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=numpy_2d.ipynb) |
