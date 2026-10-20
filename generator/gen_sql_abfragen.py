@@ -108,8 +108,6 @@ SQLite speichert die Beschreibung der Datenbank selbst in einer Tabelle: `sqlite
      "SELECT name FROM sqlite_master WHERE type = 'table';")
 
 a('Gib die ganze Tabelle `film` aus.', ['film'], 'SELECT * FROM film;')
-a('Gib die ganze Tabelle `vorstellung` aus. (Sie ist lang. Schau dir an, wie Datum, Uhrzeit und Preis gespeichert sind.)', ['vorstellung'],
-  'SELECT * FROM vorstellung;')
 a('Gib mit `PRAGMA table_info(...)` die Spalten der Tabelle `ticket` aus.', ['ticket'], 'PRAGMA table_info(ticket);')
 a('Gib die Namen aller Tabellen aus, die es in der Datenbank gibt.', ALLE, "SELECT name FROM sqlite_master WHERE type = 'table';")
 
@@ -133,20 +131,12 @@ expl('''#### `DISTINCT`
      'SELECT DISTINCT wohnort FROM kunde;')
 
 a('Gib Name und Anzahl der Plätze aller Säle aus.', ['saal'], 'SELECT name, plaetze FROM saal;')
-a('Gib Vorname und Nachname der ersten 5 Kunden aus.', ['kunde'], 'SELECT vorname, nachname FROM kunde LIMIT 5;')
 a('Gib Titel und Erscheinungsjahr der ersten 8 Filme aus. Die Spalten sollen im Ergebnis `Film` und `Jahr` heißen.', ['film'],
   'SELECT titel AS Film, jahr AS Jahr FROM film LIMIT 8;')
-a('Gib für jeden Saal den Namen und die Anzahl der Plätze mit 10 zusätzlichen Notsitzen aus. Die zweite Spalte soll `mit_notsitzen` heißen.', ['saal'],
-  'SELECT name, plaetze + 10 AS mit_notsitzen FROM saal;')
-a('Gib für die ersten 5 Filme den Titel und die Dauer in Stunden aus, gerundet auf zwei Nachkommastellen (Spaltenname `stunden`).', ['film'],
-  'SELECT titel, ROUND(dauer / 60.0, 2) AS stunden FROM film LIMIT 5;')
 a("Gib für die ersten 6 Kunden den ganzen Namen in **einer** Spalte `name` aus, z. B. `Lena Hoffmann`.", ['kunde'],
   "SELECT vorname || ' ' || nachname AS name FROM kunde LIMIT 6;")
 a('Gib alle Genres aus, jedes nur einmal.', ['film'], 'SELECT DISTINCT genre FROM film;')
 a('Gib alle Tage aus, an denen Vorstellungen stattfinden, jeden nur einmal.', ['vorstellung'], 'SELECT DISTINCT datum FROM vorstellung;')
-a('Gib alle Uhrzeiten aus, zu denen Vorstellungen beginnen, jede nur einmal.', ['vorstellung'], 'SELECT DISTINCT uhrzeit FROM vorstellung;')
-a('''Gib für die ersten 5 Vorstellungen Datum, Uhrzeit, Preis und den Preis für eine Familie mit 4 Personen (Spalte `familie`) aus.''', ['vorstellung'],
-  'SELECT datum, uhrzeit, preis, preis * 4 AS familie FROM vorstellung LIMIT 5;')
 a('Gib für die ersten 5 Kunden Vorname, Nachname und das Alter im Jahr 2026 (Spalte `alter_2026`) aus.', ['kunde'],
   'SELECT vorname, nachname, 2026 - geburtsjahr AS alter_2026 FROM kunde LIMIT 5;')
 v('SELECT 3 + 4 * 2 AS a, 7 / 2 AS b, 7 / 2.0 AS c, 7 % 2 AS d;', [])
@@ -183,21 +173,15 @@ F = ['film']
 K = ['kunde']
 a('Gib die Titel aller Komödien aus.', F, "SELECT titel FROM film WHERE genre = 'Komödie';")
 a('Gib Titel und Dauer aller Filme aus, die länger als 120 Minuten sind.', F, 'SELECT titel, dauer FROM film WHERE dauer > 120;')
-a('Gib die Titel aller Filme ohne Altersbeschränkung (FSK 0) aus.', F, 'SELECT titel FROM film WHERE fsk = 0;')
-a('Gib Vorname und Nachname aller Kunden aus Greven aus.', K, "SELECT vorname, nachname FROM kunde WHERE wohnort = 'Greven';")
 a('Gib für alle Vorstellungen am 4. November 2026 die Uhrzeit, die Film-Nummer und die Saal-Nummer aus.', ['vorstellung'],
   "SELECT uhrzeit, film_id, saal_id FROM vorstellung WHERE datum = '2026-11-04';")
-a('Gib die Titel aller Filme aus dem Jahr 2025 mit FSK 12 aus.', F, 'SELECT titel FROM film WHERE jahr = 2025 AND fsk = 12;')
 a('Gib Titel und Genre aller Horrorfilme und Krimis aus. Verwende `OR`.', F,
   "SELECT titel, genre FROM film WHERE genre = 'Horror' OR genre = 'Krimi';")
 a('Gib Titel und Genre aller Horrorfilme und Krimis aus. Verwende diesmal `IN`.', F,
   "SELECT titel, genre FROM film WHERE genre IN ('Horror', 'Krimi');")
 a('Gib Vorname, Nachname und Geburtsjahr aller Kunden aus, die von 2000 bis 2009 geboren sind. Verwende `BETWEEN`.', K,
   'SELECT vorname, nachname, geburtsjahr FROM kunde WHERE geburtsjahr BETWEEN 2000 AND 2009;')
-a('Gib Vorname, Nachname und Wohnort aller Kunden aus Telgte, Senden oder Havixbeck aus.', K,
-  "SELECT vorname, nachname, wohnort FROM kunde WHERE wohnort IN ('Telgte', 'Senden', 'Havixbeck');")
 a('Gib die Titel aller Filme aus, die mit „Die “ beginnen.', F, "SELECT titel FROM film WHERE titel LIKE 'Die %';")
-a('Gib die Nachnamen aller Kunden aus, die auf „er“ enden.', K, "SELECT nachname FROM kunde WHERE nachname LIKE '%er';")
 a('Gib die Titel aller Filme aus, in deren Titel das Wort „der“ vorkommt (auch „Der“ am Anfang).', F,
   "SELECT titel FROM film WHERE titel LIKE '%der %';")
 a('Gib Vorname und Nachname aller Kunden aus, die **keine** E-Mail-Adresse haben.', K, 'SELECT vorname, nachname FROM kunde WHERE email IS NULL;')
@@ -224,12 +208,9 @@ FROM film
 ORDER BY dauer DESC
 LIMIT 3;''')
 
-a('Gib Name und Plätze aller Säle aus, den größten Saal zuerst.', ['saal'], 'SELECT name, plaetze FROM saal ORDER BY plaetze DESC;')
 a('Gib Titel und Dauer der 5 kürzesten Filme aus, den kürzesten zuerst.', F, 'SELECT titel, dauer FROM film ORDER BY dauer LIMIT 5;')
 a('Gib Vorname und Nachname aller Kunden aus Münster aus, sortiert nach Nachname.', K,
   "SELECT vorname, nachname FROM kunde WHERE wohnort = 'Münster' ORDER BY nachname;")
-a('Gib Uhrzeit, Film-Nummer und Preis aller Vorstellungen am 7. November aus, nach Uhrzeit sortiert, bei gleicher Uhrzeit nach Preis.', ['vorstellung'],
-  "SELECT uhrzeit, film_id, preis FROM vorstellung WHERE datum = '2026-11-07' ORDER BY uhrzeit, preis;")
 a('Gib Vorname, Nachname und Geburtsjahr der 5 jüngsten Kunden aus. Bei gleichem Geburtsjahr soll nach Nachname sortiert werden.', K,
   'SELECT vorname, nachname, geburtsjahr FROM kunde ORDER BY geburtsjahr DESC, nachname LIMIT 5;')
 a('Gib Titel, Genre und Jahr aller Filme aus 2025 aus, nach Genre sortiert und innerhalb eines Genres nach Titel.', F,
