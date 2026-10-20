@@ -55,9 +55,10 @@ def sec(title, intro=None):
     sections.append({'title': title, 'intro': intro, 'items': []})
 
 
-def expl(md, code, anhaenge=None):
-    """anhaenge: {name: PNG-Daten}, im Markdown als ![...](attachment:name) eingebunden (z. B. ER-Diagramme)."""
-    sections[-1]['items'].append({'type': 'expl', 'md': md, 'code': code, 'anhaenge': anhaenge or {}})
+def expl(md, code, anhaenge=None, error=None):
+    """anhaenge: {name: PNG-Daten}, im Markdown als ![...](attachment:name) eingebunden (z. B. ER-Diagramme).
+    error: Fehlertyp, mit dem das Beispiel absichtlich endet (z. B. ValueError), sonst muss es fehlerfrei laufen."""
+    sections[-1]['items'].append({'type': 'expl', 'md': md, 'code': code, 'anhaenge': anhaenge or {}, 'error': error})
 
 
 def task(text, given='', solution='', kind='normal', error=None, anhaenge=None):
@@ -134,7 +135,10 @@ def _check():
         for it in s['items']:
             if it['type'] == 'expl':
                 out, err, bilder = ausf(it['code'])
-                if err:
+                if it.get('error'):
+                    if not isinstance(err, it['error']):
+                        print('EXPL: EXPECTED ERROR MISSING', s['title']); problems += 1
+                elif err:
                     print('EXPL ERROR', s['title'], err); problems += 1
                 continue
             n += 1

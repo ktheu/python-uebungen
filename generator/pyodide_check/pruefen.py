@@ -57,7 +57,7 @@ def zellen(generator, ordner):
                     b += 1
                     out, err, bilder = nbgen.run_mit_bildern(it['code'])
                     items.append({'nr': f'{s_i}. Beispiel {b}', 'art': 'beispiel', 'code': it['code'], 'out': out,
-                                  'fehler': None})
+                                  'fehler': it['error'].__name__ if it.get('error') else None})
                 else:
                     items.append({'nr': it['nr'], 'art': it['kind'], 'code': it['solution'], 'out': it['out'],
                                   'fehler': it['error'].__name__ if it['error'] else None})
