@@ -1131,7 +1131,7 @@ t('Ergänze die Klasse `Person` um `anzahl_vorfahren()` (rekursiv). Gib sie für
                 anzahl += 1 + e.anzahl_vorfahren()
         return anzahl
 """ + STAMM_START + "\nprint(lea.anzahl_vorfahren(), mama.anzahl_vorfahren(), erika.anzahl_vorfahren())")
-t('Ergänze die Klasse `Person` um `get_mutter()`, `get_vater()` und `ist_geschwister(andere)`: `True`, wenn beide dieselbe (bekannte) Mutter oder denselben (bekannten) Vater haben. Teste mit Lea und Tim, Lea und Mama.',
+t('Ergänze die Klasse `Person` um `get_mutter()`, `get_vater()` und `ist_geschwister(other)`: `True`, wenn beide dieselbe (bekannte) Mutter oder denselben (bekannten) Vater haben. Teste mit Lea und Tim, Lea und Mama.',
   STAMM, """
     def get_mutter(self):
         return self.__mutter
@@ -1139,10 +1139,10 @@ t('Ergänze die Klasse `Person` um `get_mutter()`, `get_vater()` und `ist_geschw
     def get_vater(self):
         return self.__vater
 
-    def ist_geschwister(self, andere):
-        if self.__mutter is not None and self.__mutter is andere.get_mutter():
+    def ist_geschwister(self, other):
+        if self.__mutter is not None and self.__mutter is other.get_mutter():
             return True
-        return self.__vater is not None and self.__vater is andere.get_vater()
+        return self.__vater is not None and self.__vater is other.get_vater()
 """ + STAMM_START + "\nprint(lea.ist_geschwister(tim))\nprint(lea.ist_geschwister(mama))")
 t('Ergänze die Klasse `Person` um `generationen()`: Wie viele Generationen von Vorfahren sind bekannt? Ohne Eltern 0, sonst 1 plus das Maximum der Eltern. Gib den Wert für Lea, Papa und Hans aus.',
   STAMM, """
@@ -1164,9 +1164,9 @@ Eine Person kann beliebig viele Freunde haben (0..*), die selbst Personen sind. 
     def get_name(self):
         return self.__name
 
-    def befreunden(self, andere):
-        self.__freunde.append(andere)
-        andere.__freunde.append(self)
+    def befreunden(self, other):
+        self.__freunde.append(other)
+        other.__freunde.append(self)
 
     def freunde(self):
         namen = []
@@ -1181,19 +1181,19 @@ ali.befreunden(bea)
 cem.befreunden(ali)
 print(ali.freunde(), bea.freunde())""",
    'person_freunde.png',
-   {'Person': (['- name: str', '- freunde: list'], ['+ Person(name: str)', '+ get_name(): str', '+ befreunden(andere: Person): void', '+ freunde(): list'])},
+   {'Person': (['- name: str', '- freunde: list'], ['+ Person(name: str)', '+ get_name(): str', '+ befreunden(other: Person): void', '+ freunde(): list'])},
    [('Person', 'Person', 'assoziation', '0..*')])
 
 NETZ = ("class Person:\n    def __init__(self, name):\n        self.__name = name\n        self.__freunde = []\n\n    def get_name(self):\n        return self.__name\n\n"
-        "    def get_freunde(self):\n        return list(self.__freunde)\n\n    def befreunden(self, andere):\n        self.__freunde.append(andere)\n        andere.__freunde.append(self)\n")
+        "    def get_freunde(self):\n        return list(self.__freunde)\n\n    def befreunden(self, other):\n        self.__freunde.append(other)\n        other.__freunde.append(self)\n")
 NETZ_START = ("\nali, bea, cem, dana, emil = Person('Ali'), Person('Bea'), Person('Cem'), Person('Dana'), Person('Emil')\n"
               "ali.befreunden(bea)\nali.befreunden(cem)\nbea.befreunden(cem)\nbea.befreunden(dana)\ndana.befreunden(emil)")
-t('Ergänze die Klasse `Person` um `gemeinsame_freunde(andere)`, die die Namen der Freunde zurückgibt, die beide haben (sortiert). Gib sie für Ali und Bea und für Ali und Dana aus.',
+t('Ergänze die Klasse `Person` um `gemeinsame_freunde(other)`, die die Namen der Freunde zurückgibt, die beide haben (sortiert). Gib sie für Ali und Bea und für Ali und Dana aus.',
   NETZ, """
-    def gemeinsame_freunde(self, andere):
+    def gemeinsame_freunde(self, other):
         namen = []
         for f in self.__freunde:
-            if f in andere.get_freunde():
+            if f in other.get_freunde():
                 namen.append(f.get_name())
         return sorted(namen)
 """ + NETZ_START + "\nprint(ali.gemeinsame_freunde(bea))\nprint(ali.gemeinsame_freunde(dana))")

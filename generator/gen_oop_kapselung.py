@@ -1105,8 +1105,8 @@ weil der Code in derselben Klasse steht: Privat heißt „nur innerhalb der Klas
     def __init__(self, x):
         self.__x = x
 
-    def gleich(self, anderer):
-        return self.__x == anderer.__x
+    def gleich(self, other):
+        return self.__x == other.__x
 
 print(Punkt(3).gleich(Punkt(3)))""")
 t('''Schreibe eine Klasse `Highscore` mit einer privaten Liste von Paaren `(name, punkte)`. `eintragen(name, punkte)` fügt ein Paar hinzu und behält nur

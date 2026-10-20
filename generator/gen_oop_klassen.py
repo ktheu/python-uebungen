@@ -348,10 +348,14 @@ bello = Hund('Bello')
 luna = Hund('Luna')
 bello.bellen()
 luna.bellen()""")
+md, anh = uml('Konto', ['+ inhaber: str', '+ kontostand: float'],
+              ['+ Konto(inhaber: str)', '+ einzahlen(betrag: float): void', '+ ist_im_plus(): bool'])
 expl('''#### Methoden mit Parametern und Rückgabewert
 
 Methoden können weitere Parameter haben und mit `return` einen Wert zurückgeben, wie Funktionen.
-Methoden können auch **Attribute ändern**, z. B. `self.kontostand += betrag`.''',
+Methoden können auch **Attribute ändern**, z. B. `self.kontostand += betrag`.
+
+Das Klassendiagramm zur Klasse `Konto` aus dem Beispiel. Hinter `einzahlen` steht `void`, weil die Methode nichts zurückgibt.''' + md,
      """class Konto:
     def __init__(self, inhaber):
         self.inhaber = inhaber
@@ -367,23 +371,13 @@ k = Konto('Ali')
 print(k.ist_im_plus())
 k.einzahlen(50)
 k.einzahlen(25)
-print(k.kontostand, k.ist_im_plus())""")
-md, anh = uml('Konto', ['+ inhaber: str', '+ kontostand: float'],
-              ['+ Konto(inhaber: str)', '+ einzahlen(betrag: float): void', '+ ist_im_plus(): bool'])
-expl('''Das Klassendiagramm zur Klasse `Konto` aus dem Beispiel darüber. Hinter `einzahlen` steht `void`, weil die Methode nichts zurückgibt.''' + md,
-     """class Konto:
-    def __init__(self, inhaber):
-        self.inhaber = inhaber
-        self.kontostand = 0
-
-    def einzahlen(self, betrag):
-        self.kontostand += betrag
-
-    def ist_im_plus(self):
-        return self.kontostand > 0""", anhaenge=anh)
+print(k.kontostand, k.ist_im_plus())""", anhaenge=anh)
 expl('''#### Methoden rufen Methoden auf
 
-Innerhalb der Klasse ruft man eine andere Methode desselben Objekts mit `self.methode()` auf.''',
+Innerhalb der Klasse ruft man eine andere Methode desselben Objekts mit `self.methode()` auf.
+
+Bekommt eine Methode ein **zweites Objekt derselben Klasse** als Parameter, nennt man es meist `other`: `self` ist das eigene Objekt,
+`other` das andere. Mit `other.flaeche()` ruft man dessen Methode auf.''',
      """class Rechteck:
     def __init__(self, breite, hoehe):
         self.breite = breite
@@ -392,8 +386,8 @@ Innerhalb der Klasse ruft man eine andere Methode desselben Objekts mit `self.me
     def flaeche(self):
         return self.breite * self.hoehe
 
-    def ist_groesser_als(self, anderes):
-        return self.flaeche() > anderes.flaeche()
+    def ist_groesser_als(self, other):
+        return self.flaeche() > other.flaeche()
 
 a = Rechteck(3, 4)
 b = Rechteck(2, 5)
@@ -560,13 +554,13 @@ print(a.fahren(500), a.tank)
 print(a.fahren(300), a.tank)
 a.tanken(100)
 print(a.tank)""")
-t('''Ergänze die Klasse `Punkt` um eine Methode `abstand(anderer)`, die den Abstand zu einem anderen Punkt zurückgibt
+t('''Ergänze die Klasse `Punkt` um eine Methode `abstand(other)`, die den Abstand zu einem anderen Punkt zurückgibt
 (Wurzel mit `** 0.5`), und eine Methode `verschieben(dx, dy)`. Gib den Abstand von `p` zu `q` aus, verschiebe `p` um (3, 4)
 und gib den Abstand erneut aus.''',
   "class Punkt:\n    def __init__(self, x, y):\n        self.x = x\n        self.y = y",
   """
-    def abstand(self, anderer):
-        return ((self.x - anderer.x) ** 2 + (self.y - anderer.y) ** 2) ** 0.5
+    def abstand(self, other):
+        return ((self.x - other.x) ** 2 + (self.y - other.y) ** 2) ** 0.5
 
     def verschieben(self, dx, dy):
         self.x += dx
@@ -867,7 +861,7 @@ expl('''#### `is` und `==`
 
 Zwei **verschiedene** Objekte mit gleichen Attributen sind für Python zunächst **nicht** gleich: Ohne weitere Angaben bedeutet `==`
 bei eigenen Objekten dasselbe wie `is`. Will man Attribute vergleichen, vergleicht man sie einzeln
-(oder schreibt eine eigene Methode, z. B. `ist_gleich(anderer)`).''',
+(oder schreibt eine eigene Methode, z. B. `ist_gleich(other)`).''',
      """class Punkt:
     def __init__(self, x, y):
         self.x = x
@@ -947,12 +941,12 @@ t('Gib aus, welche der Variablen `a`, `b`, `c` auf dasselbe Objekt verweisen: `a
   "class Punkt:\n    def __init__(self, x, y):\n        self.x = x\n        self.y = y\n\na = Punkt(1, 1)\nb = Punkt(1, 1)\nc = a",
   """print(a is b, a is c, b is c)
 print(a == c)""")
-t('''Ergänze die Klasse `Punkt` um eine Methode `ist_gleich(anderer)`, die `True` zurückgibt, wenn beide Koordinaten übereinstimmen.
+t('''Ergänze die Klasse `Punkt` um eine Methode `ist_gleich(other)`, die `True` zurückgibt, wenn beide Koordinaten übereinstimmen.
 Vergleiche `p` mit `q` und `p` mit `r`, jeweils mit `==` und mit `ist_gleich()`.''',
   "class Punkt:\n    def __init__(self, x, y):\n        self.x = x\n        self.y = y",
   """
-    def ist_gleich(self, anderer):
-        return self.x == anderer.x and self.y == anderer.y
+    def ist_gleich(self, other):
+        return self.x == other.x and self.y == other.y
 
 p = Punkt(2, 3)
 q = Punkt(2, 3)
@@ -1088,7 +1082,7 @@ for f in [4, 0, 4, 8, 2]:
     spiel.zug(f)
 print(spiel)""")
 t('''Schreibe eine Klasse `Bruch` mit `zaehler` und `nenner`, `__str__` (Form `3/4`), einer Methode `wert()` (Kommazahl) und einer Methode
-`mal(anderer)`, die einen **neuen** Bruch mit dem Produkt zurückgibt (ohne Kürzen). Gib `Bruch(2, 3).mal(Bruch(3, 4))` und dessen Wert aus.''',
+`mal(other)`, die einen **neuen** Bruch mit dem Produkt zurückgibt (ohne Kürzen). Gib `Bruch(2, 3).mal(Bruch(3, 4))` und dessen Wert aus.''',
   body="""class Bruch:
     def __init__(self, zaehler, nenner):
         self.zaehler = zaehler
@@ -1100,8 +1094,8 @@ t('''Schreibe eine Klasse `Bruch` mit `zaehler` und `nenner`, `__str__` (Form `3
     def wert(self):
         return self.zaehler / self.nenner
 
-    def mal(self, anderer):
-        return Bruch(self.zaehler * anderer.zaehler, self.nenner * anderer.nenner)
+    def mal(self, other):
+        return Bruch(self.zaehler * other.zaehler, self.nenner * other.nenner)
 
 p = Bruch(2, 3).mal(Bruch(3, 4))
 print(p)
