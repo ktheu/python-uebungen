@@ -295,12 +295,15 @@ expl('''#### `HAVING`
 `WHERE` wählt **Zeilen** vor dem Gruppieren aus, `HAVING` wählt **Gruppen** nach dem Gruppieren aus.
 In `HAVING` darf man deshalb Aggregatfunktionen verwenden, in `WHERE` nicht.
 
+Hat die Aggregatfunktion im `SELECT` einen Namen bekommen (`COUNT(*) AS anzahl`), kann man in SQLite im `HAVING` diesen Namen verwenden: `HAVING anzahl >= 2`.
+Das ist kürzer und besser lesbar. (Nicht jedes Datenbanksystem erlaubt das; in Standard-SQL schreibt man `HAVING COUNT(*) >= 2`.)
+
 Reihenfolge: `SELECT ... FROM ... WHERE ... GROUP BY ... HAVING ... ORDER BY ... LIMIT ...`''',
      '''SELECT wohnort, COUNT(*) AS anzahl
 FROM kunde
 WHERE geburtsjahr < 2000
 GROUP BY wohnort
-HAVING COUNT(*) >= 2;''')
+HAVING anzahl >= 2;''')
 
 V = ['vorstellung']
 a('Gib für jedes Genre die Anzahl der Filme aus.', F, 'SELECT genre, COUNT(*) AS anzahl FROM film GROUP BY genre;')
@@ -312,9 +315,9 @@ a('Gib für jeden Tag die Anzahl der Vorstellungen aus.', V, 'SELECT datum, COUN
 a('Gib für jeden Saal (Saal-Nummer) die Anzahl der Vorstellungen und den Durchschnittspreis (zwei Stellen) aus.', V,
   'SELECT saal_id, COUNT(*) AS anzahl, ROUND(AVG(preis), 2) AS preis FROM vorstellung GROUP BY saal_id;')
 a('Gib die Genres aus, zu denen es mehr als 2 Filme gibt, mit der Anzahl.', F,
-  'SELECT genre, COUNT(*) AS anzahl FROM film GROUP BY genre HAVING COUNT(*) > 2;')
+  'SELECT genre, COUNT(*) AS anzahl FROM film GROUP BY genre HAVING anzahl > 2;')
 a('Gib die Tage aus, an denen mindestens 7 Vorstellungen stattfinden.', V,
-  'SELECT datum, COUNT(*) AS anzahl FROM vorstellung GROUP BY datum HAVING COUNT(*) >= 7;')
+  'SELECT datum, COUNT(*) AS anzahl FROM vorstellung GROUP BY datum HAVING anzahl >= 7;')
 a('Gib die Nummern der Vorstellungen aus, für die genau 6 Tickets verkauft wurden.', ['ticket'],
   'SELECT vorstellung_id FROM ticket GROUP BY vorstellung_id HAVING COUNT(*) = 6;')
 a('Gib für jede Altersfreigabe (FSK) die Anzahl der Filme aus, nach FSK sortiert.', F,
@@ -324,9 +327,9 @@ a('Gib für jede Anfangszeit den Durchschnittspreis aus (zwei Stellen).', V,
 a('Gib für jedes Genre die Anzahl der Filme aus, zähle aber nur Filme ab 2024. Nach Anzahl absteigend, bei Gleichheit nach Genre sortiert.', F,
   'SELECT genre, COUNT(*) AS anzahl FROM film WHERE jahr >= 2024 GROUP BY genre ORDER BY anzahl DESC, genre;')
 a('Gib für jede Kunden-Nummer die Anzahl der gekauften Tickets aus, aber nur für Kunden mit mehr als 8 Tickets.', ['ticket'],
-  'SELECT kunde_id, COUNT(*) AS tickets FROM ticket GROUP BY kunde_id HAVING COUNT(*) > 8;')
+  'SELECT kunde_id, COUNT(*) AS tickets FROM ticket GROUP BY kunde_id HAVING tickets > 8;')
 a('Gib die Genres aus, zu denen es mehr als einen Film mit FSK 12 oder höher gibt, mit der Anzahl dieser Filme (`anzahl`), nach Genre sortiert.', F,
-  'SELECT genre, COUNT(*) AS anzahl FROM film WHERE fsk >= 12 GROUP BY genre HAVING COUNT(*) > 1 ORDER BY genre;')
+  'SELECT genre, COUNT(*) AS anzahl FROM film WHERE fsk >= 12 GROUP BY genre HAVING anzahl > 1 ORDER BY genre;')
 
 # ---------------------------------------------------------------- 7
 sec('Tabellen verbinden mit JOIN')
@@ -535,7 +538,7 @@ FROM ticket t
 JOIN vorstellung v ON t.vorstellung_id = v.vorstellung_id
 JOIN film f ON v.film_id = f.film_id
 GROUP BY f.genre
-HAVING COUNT(*) >= 15;''')
+HAVING tickets >= 15;''')
 a('Gib für jeden Tag die Einnahmen aus allen verkauften Tickets aus (Summe der Preise, ohne Ermäßigung).', ['ticket', 'vorstellung'],
   '''SELECT v.datum, SUM(v.preis) AS einnahmen
 FROM ticket t JOIN vorstellung v ON t.vorstellung_id = v.vorstellung_id
@@ -548,7 +551,7 @@ JOIN ticket t ON t.kunde_id = k.kunde_id
 JOIN vorstellung v ON t.vorstellung_id = v.vorstellung_id
 WHERE t.ermaessigt = 1
 GROUP BY k.kunde_id
-HAVING SUM(v.preis) > 20;''')
+HAVING summe > 20;''')
 
 # ---------------------------------------------------------------- 10
 sec('LEFT JOIN')
@@ -731,7 +734,7 @@ JOIN ticket t ON t.kunde_id = k.kunde_id
 JOIN vorstellung v ON t.vorstellung_id = v.vorstellung_id
 JOIN film f ON v.film_id = f.film_id
 GROUP BY k.kunde_id
-HAVING COUNT(DISTINCT f.genre) >= 5;''')
+HAVING genres >= 5;''')
 a('Gib für jedes Genre das Durchschnittsalter der Zuschauer im Jahr 2026 aus (eine Nachkommastelle), das jüngste Publikum zuerst.', KTVF,
   '''SELECT f.genre, ROUND(AVG(2026 - k.geburtsjahr), 1) AS alter_schnitt
 FROM kunde k
