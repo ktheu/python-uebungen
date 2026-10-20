@@ -57,7 +57,8 @@ def sec(title, intro=None):
 
 def expl(md, code, anhaenge=None, error=None):
     """anhaenge: {name: PNG-Daten}, im Markdown als ![...](attachment:name) eingebunden (z. B. ER-Diagramme).
-    error: Fehlertyp, mit dem das Beispiel absichtlich endet (z. B. ValueError), sonst muss es fehlerfrei laufen."""
+    error: Fehlertyp, mit dem das Beispiel absichtlich endet (z. B. ValueError), sonst muss es fehlerfrei laufen.
+    code=None: nur eine Markdown-Zelle (z. B. ein Diagramm zum Beispiel davor)."""
     sections[-1]['items'].append({'type': 'expl', 'md': md, 'code': code, 'anhaenge': anhaenge or {}, 'error': error})
 
 
@@ -134,6 +135,8 @@ def _check():
         n = 0
         for it in s['items']:
             if it['type'] == 'expl':
+                if it['code'] is None:
+                    continue
                 out, err, bilder = ausf(it['code'])
                 if it.get('error'):
                     if not isinstance(err, it['error']):
@@ -228,7 +231,8 @@ def build(titel, intro, loesung, aufklappbar):
                     cells.append(md(it['md']))
                     if it['anhaenge']:
                         cells[-1]['attachments'] = png_anhang(it['anhaenge'])
-                    cells.append(code(it['code']))
+                    if it['code'] is not None:
+                        cells.append(code(it['code']))
                 continue
             cells.append(md(task_md(it)))
             if it['anhaenge'] or (it['kind'] == 'normal' and it['bilder']):

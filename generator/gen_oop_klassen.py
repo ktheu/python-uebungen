@@ -348,14 +348,10 @@ bello = Hund('Bello')
 luna = Hund('Luna')
 bello.bellen()
 luna.bellen()""")
-md, anh = uml('Konto', ['+ inhaber: str', '+ kontostand: float'],
-              ['+ Konto(inhaber: str)', '+ einzahlen(betrag: float): void', '+ ist_im_plus(): bool'])
 expl('''#### Methoden mit Parametern und Rückgabewert
 
 Methoden können weitere Parameter haben und mit `return` einen Wert zurückgeben, wie Funktionen.
-Methoden können auch **Attribute ändern**, z. B. `self.kontostand += betrag`.
-
-Das Klassendiagramm zur Klasse `Konto` aus dem Beispiel. Hinter `einzahlen` steht `void`, weil die Methode nichts zurückgibt.''' + md,
+Methoden können auch **Attribute ändern**, z. B. `self.kontostand += betrag`.''',
      """class Konto:
     def __init__(self, inhaber):
         self.inhaber = inhaber
@@ -371,7 +367,11 @@ k = Konto('Ali')
 print(k.ist_im_plus())
 k.einzahlen(50)
 k.einzahlen(25)
-print(k.kontostand, k.ist_im_plus())""", anhaenge=anh)
+print(k.kontostand, k.ist_im_plus())""")
+md, anh = uml('Konto', ['+ inhaber: str', '+ kontostand: float'],
+              ['+ Konto(inhaber: str)', '+ einzahlen(betrag: float): void', '+ ist_im_plus(): bool'])
+expl('''Das Klassendiagramm zur Klasse `Konto` aus dem Beispiel darüber. Hinter `einzahlen` steht `void`, weil die Methode nichts zurückgibt.''' + md,
+     None, anhaenge=anh)
 expl('''#### Methoden rufen Methoden auf
 
 Innerhalb der Klasse ruft man eine andere Methode desselben Objekts mit `self.methode()` auf.

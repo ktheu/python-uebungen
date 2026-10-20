@@ -54,6 +54,8 @@ def zellen(generator, ordner):
             b = 0
             for it in s['items']:
                 if it['type'] == 'expl':
+                    if it['code'] is None:
+                        continue
                     b += 1
                     out, err, bilder = nbgen.run_mit_bildern(it['code'])
                     items.append({'nr': f'{s_i}. Beispiel {b}', 'art': 'beispiel', 'code': it['code'], 'out': out,
