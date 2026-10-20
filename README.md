@@ -35,6 +35,11 @@
 | matplotlib: Diagrammtypen | [matplotlib_diagrammtypen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=matplotlib_diagrammtypen.ipynb) |
 | matplotlib: Layout, Bilder und Heatmaps | [matplotlib_layout.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=matplotlib_layout.ipynb) |
 | matplotlib: Anwendungen | [matplotlib_anwendungen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=matplotlib_anwendungen.ipynb) |
+| pandas 1: Series und DataFrame | [pandas_grundlagen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=pandas_grundlagen.ipynb) |
+| pandas 2: Auswählen und aufräumen | [pandas_auswaehlen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=pandas_auswaehlen.ipynb) |
+| pandas 3: Gruppieren und auswerten | [pandas_gruppieren.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=pandas_gruppieren.ipynb) |
+| pandas 4: Tabellen verbinden und Zeitreihen | [pandas_verbinden_zeit.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=pandas_verbinden_zeit.ipynb) |
+| pandas 5: Diagramme und Anwendungen | [pandas_diagramme_anwendungen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=pandas_diagramme_anwendungen.ipynb) |
 | shapely 1: Geometrien erstellen, messen und zeichnen | [shapely_grundlagen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=shapely_grundlagen.ipynb) |
 | shapely 2: Lagebeziehungen, Schnittpunkte und Abstände | [shapely_lagebeziehungen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=shapely_lagebeziehungen.ipynb) |
 | shapely 3: Mengen, Abstandsbereiche, Hüllen und Voronoi | [shapely_mengen_konstruktionen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=shapely_mengen_konstruktionen.ipynb) |

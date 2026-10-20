@@ -42,6 +42,7 @@ SPRACHEN = {
 }
 aktuelle_sprache = 'python'
 ausfuehrung = None  # Funktion code -> (ausgabe, fehler, bilder); None bedeutet run_mit_bildern
+ausgabe_markdown = False  # True: die Ausführungsfunktion liefert fertiges Markdown (pandas: Text in Codeblöcken, DataFrames als HTML)
 
 
 def setup(md, code):
@@ -181,8 +182,10 @@ def task_md(it):
         text += it['text'] + f'\n```{SPRACHEN[aktuelle_sprache]["codeblock"]}\n{it["given"]}\n```'
     else:
         text += it['text']
-        if it['kind'] == 'normal' and aktuelle_sprache != 'python':
+        if it['kind'] == 'normal' and (aktuelle_sprache != 'python' or ausgabe_markdown):
             text += '\n\n**Erwartete Ausgabe:**\n\n' + it['out'].rstrip()
+            for k in range(len(it.get('bilder', []))):
+                text += f'\n\n![Erwartete Ausgabe](attachment:{bild_name(it, k + 1)})'
         elif it['kind'] == 'normal':
             text += '\n\n**Erwartete Ausgabe:**'
             if it['out'].strip() or not it['bilder']:
@@ -263,7 +266,8 @@ INTRO = '''Jeder Abschnitt beginnt mit kurzen Erklärungen und Beispielen. Führ
 Danach folgen viele kleine Übungen. Wenn etwas vorgegeben ist, steht es schon in der Codezelle.'''
 
 
-def generate(name, titel, intro=INTRO, aufklappbar=True, loesungsnotebook=False, sprache='python', ausfuehren=None):
+def generate(name, titel, intro=INTRO, aufklappbar=True, loesungsnotebook=False, sprache='python', ausfuehren=None,
+             ausgabe_markdown=False):
     """Schreibt <name>.ipynb nach ../content/.
     aufklappbar: Lösungen aufklappbar unter jede Aufgabe schreiben.
     loesungsnotebook: zusätzlich ein getrenntes <name>_loesungen.ipynb schreiben (wird normalerweise nicht gebraucht).
@@ -272,6 +276,7 @@ def generate(name, titel, intro=INTRO, aufklappbar=True, loesungsnotebook=False,
     global aktuelle_sprache, ausfuehrung
     aktuelle_sprache = sprache
     ausfuehrung = ausfuehren
+    globals()['ausgabe_markdown'] = ausgabe_markdown  # ausgabe_markdown: Ausgabe von ausfuehren ist schon Markdown (pandasnb.py)
     standard = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(sys.argv[0]))), 'content')
     out = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else standard)
     if check() != 0:

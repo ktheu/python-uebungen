@@ -11,6 +11,11 @@ os.environ['MPLBACKEND'] = 'Agg'  # in Node gibt es kein Browserfenster; Diagram
 zellen = json.loads(zellen_json)
 os.chdir(tempfile.mkdtemp())
 
+renderer = None
+if zellen and zellen[0].get('renderer'):  # pandas-Notebooks: dieselbe Darstellung wie lokal (pandasnb.py)
+    renderer = {}
+    exec(zellen[0]['renderer'], renderer)
+
 ERWARTET = {'beispiel', 'free', 'predict'}  # dort steht keine erwartete Ausgabe im Notebook (z. B. Zufall ohne Seed)
 echt = []
 andere = []
@@ -23,11 +28,16 @@ for z in zellen:
         matplotlib.rcdefaults()
     buf = io.StringIO()
     fehler = None
-    with contextlib.redirect_stdout(buf):
-        try:
-            exec(z['code'], {})
-        except Exception as e:
-            fehler = type(e).__name__
+    if renderer is not None:
+        teile, f = renderer['zelle_ausfuehren'](z['code'])
+        buf.write(renderer['als_markdown'](teile))
+        fehler = type(f).__name__ if f else None
+    else:
+        with contextlib.redirect_stdout(buf):
+            try:
+                exec(z['code'], {})
+            except Exception as e:
+                fehler = type(e).__name__
     if plt is not None:
         plt.close('all')
     if fehler != z.get('fehler'):
@@ -38,7 +48,7 @@ for z in zellen:
         (andere if z['art'] in ERWARTET else echt).append(text)
 
 versionen = f'Python {sys.version.split()[0]}'
-for paket in ['numpy', 'matplotlib']:
+for paket in ['numpy', 'matplotlib', 'pandas']:
     if paket in sys.modules:
         versionen += f', {paket} {sys.modules[paket].__version__}'
 if 'numpy' in sys.modules:

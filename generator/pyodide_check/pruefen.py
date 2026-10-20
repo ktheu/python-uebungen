@@ -46,9 +46,11 @@ def zellen(generator, ordner):
     alt_dir = os.getcwd()
     tmp = tempfile.mkdtemp()
     os.chdir(tmp)  # wie in nbgen.check(): Setup und Zellen laufen in einem temporären Ordner
+    pandas = getattr(nbgen.ausfuehrung, 'pandas', False)  # pandas-Notebooks: Ausgabe wie JupyterLab (pandasnb.py)
+    ausf = nbgen.ausfuehrung if pandas else nbgen.run_mit_bildern
     try:
         if nbgen.setup_cell:
-            out, err, bilder = nbgen.run_mit_bildern(nbgen.setup_cell['code'])
+            out, err, bilder = ausf(nbgen.setup_cell['code'])
             items.append({'nr': 'Setup', 'art': 'setup', 'code': nbgen.setup_cell['code'], 'out': out, 'fehler': None})
         for s_i, s in enumerate(nbgen.sections, 1):
             b = 0
@@ -57,7 +59,7 @@ def zellen(generator, ordner):
                     if it['code'] is None:
                         continue
                     b += 1
-                    out, err, bilder = nbgen.run_mit_bildern(it['code'])
+                    out, err, bilder = ausf(it['code'])
                     items.append({'nr': f'{s_i}. Beispiel {b}', 'art': 'beispiel', 'code': it['code'], 'out': out,
                                   'fehler': it['error'].__name__ if it.get('error') else None})
                 else:
@@ -66,6 +68,9 @@ def zellen(generator, ordner):
     finally:
         os.chdir(alt_dir)
         shutil.rmtree(tmp)
+    if pandas and items:  # Pyodide soll dieselbe Darstellung benutzen
+        with open(os.path.join(os.path.dirname(os.path.abspath(generator)), 'pandasnb.py'), encoding='utf-8') as f:
+            items[0]['renderer'] = f.read()
     return items
 
 
