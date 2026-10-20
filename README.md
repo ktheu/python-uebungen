@@ -18,6 +18,7 @@
 | Zufallszahlen mit random | [random.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=random.ipynb) |
 | Reguläre Ausdrücke | [regulaereAusdruecke.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=regulaereAusdruecke.ipynb) |
 | Datum und Uhrzeit mit datetime | [datetime.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=datetime.ipynb) |
+| Das Modul collections | [collections.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=collections.ipynb) |
 | numpy: Grundlagen | [numpy_grundlagen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=numpy_grundlagen.ipynb) |
 | numpy: Filtern und Auswählen | [numpy_filtern.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=numpy_filtern.ipynb) |
 | numpy: Zweidimensionale Arrays | [numpy_2d.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=numpy_2d.ipynb) |
