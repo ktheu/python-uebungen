@@ -35,6 +35,10 @@
 | matplotlib: Diagrammtypen | [matplotlib_diagrammtypen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=matplotlib_diagrammtypen.ipynb) |
 | matplotlib: Layout, Bilder und Heatmaps | [matplotlib_layout.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=matplotlib_layout.ipynb) |
 | matplotlib: Anwendungen | [matplotlib_anwendungen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=matplotlib_anwendungen.ipynb) |
+| shapely 1: Geometrien erstellen, messen und zeichnen | [shapely_grundlagen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=shapely_grundlagen.ipynb) |
+| shapely 2: Lagebeziehungen, Schnittpunkte und Abstände | [shapely_lagebeziehungen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=shapely_lagebeziehungen.ipynb) |
+| shapely 3: Mengen, Abstandsbereiche, Hüllen und Voronoi | [shapely_mengen_konstruktionen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=shapely_mengen_konstruktionen.ipynb) |
+| shapely 4: Abbildungen und Anwendungen | [shapely_abbildungen_anwendungen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=shapely_abbildungen_anwendungen.ipynb) |
 | SQL-Abfragen mit SQLite | [sql_abfragen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=sql_abfragen.ipynb) |
 
 **Merkhilfen** (PDF zum Ausdrucken, nur die Aufrufe als Erinnerung):
