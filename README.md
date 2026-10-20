@@ -25,6 +25,7 @@
 | OOP 3: Beziehungen zwischen Klassen | [oop_beziehungen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=oop_beziehungen.ipynb) |
 | OOP 4: Vererbung | [oop_vererbung.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=oop_vererbung.ipynb) |
 | Typangaben (Type Hints) | [typangaben.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=typangaben.ipynb) |
+| OOP 5: Spezielle Methoden und Dataclasses | [oop_python.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=oop_python.ipynb) |
 | numpy: Grundlagen | [numpy_grundlagen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=numpy_grundlagen.ipynb) |
 | numpy: Filtern und Auswählen | [numpy_filtern.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=numpy_filtern.ipynb) |
 | numpy: Zweidimensionale Arrays | [numpy_2d.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=numpy_2d.ipynb) |

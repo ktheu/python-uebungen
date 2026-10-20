@@ -14,6 +14,7 @@ Dieses Notebook ist das vierte der OOP-Reihe:
 2. Datenkapselung
 3. Beziehungen zwischen Klassen (Assoziation)
 4. **Vererbung** (dieses Notebook)
+5. Spezielle Methoden und Dataclasses (nach dem Notebook über Typangaben)
 
 Jeder Abschnitt beginnt mit kurzen Erklärungen und Beispielen. Führe die Beispiele aus und probiere sie ruhig ein wenig aus.
 Manche Beispiele enden absichtlich mit einer Fehlermeldung. Danach folgen viele kleine Übungen.

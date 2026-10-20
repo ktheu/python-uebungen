@@ -15,6 +15,7 @@ Dieses Notebook ist das zweite der OOP-Reihe:
 2. **Datenkapselung** (dieses Notebook)
 3. Beziehungen zwischen Klassen (Assoziation)
 4. Vererbung
+5. Spezielle Methoden und Dataclasses (nach dem Notebook über Typangaben)
 
 Die Abschnitte über Klassenattribute, Klassenmethoden und den Lebenszyklus von Objekten sind für das **Leistungsfach** gedacht.
 

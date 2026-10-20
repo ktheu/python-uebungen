@@ -14,6 +14,7 @@ Dieses Notebook ist das dritte der OOP-Reihe:
 2. Datenkapselung
 3. **Beziehungen zwischen Klassen** (dieses Notebook)
 4. Vererbung
+5. Spezielle Methoden und Dataclasses (nach dem Notebook über Typangaben)
 
 Wie im vorigen Notebook sind die Attribute privat (`__name`) und werden über Zugriffsmethoden (`get_name()`) gelesen.
 

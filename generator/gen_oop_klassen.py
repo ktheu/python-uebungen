@@ -36,6 +36,7 @@ Dieses Notebook ist das erste einer Reihe:
 2. Datenkapselung: private Attribute, Zugriffsmethoden, Klassenattribute
 3. Beziehungen zwischen Klassen (Assoziation)
 4. Vererbung
+5. Spezielle Methoden und Dataclasses (nach dem Notebook über Typangaben)
 
 Klassen werden mit **UML-Klassendiagrammen** beschrieben. Du lernst sie hier zu lesen und in Python umzusetzen.
 
