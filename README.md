@@ -39,6 +39,10 @@
 | shapely 2: Lagebeziehungen, Schnittpunkte und Abstände | [shapely_lagebeziehungen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=shapely_lagebeziehungen.ipynb) |
 | shapely 3: Mengen, Abstandsbereiche, Hüllen und Voronoi | [shapely_mengen_konstruktionen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=shapely_mengen_konstruktionen.ipynb) |
 | shapely 4: Abbildungen und Anwendungen | [shapely_abbildungen_anwendungen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=shapely_abbildungen_anwendungen.ipynb) |
+| networkx 1: Graphen erstellen, untersuchen und zeichnen | [networkx_grundlagen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=networkx_grundlagen.ipynb) |
+| networkx 2: Wege, Breiten- und Tiefensuche, Abhängigkeiten | [networkx_suchen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=networkx_suchen.ipynb) |
+| networkx 3: Kürzeste Wege und minimale Spannbäume | [networkx_gewichtet.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=networkx_gewichtet.ipynb) |
+| networkx 4: Euler-Wege, Färbungen, Dominating Sets und Rundreisen | [networkx_probleme.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=networkx_probleme.ipynb) |
 | SQL-Abfragen mit SQLite | [sql_abfragen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=sql_abfragen.ipynb) |
 
 **Merkhilfen** (PDF zum Ausdrucken, nur die Aufrufe als Erinnerung):
