@@ -256,10 +256,9 @@ elif anzahl >= 10:
 else:
     rabatt = 0
 print(f'Rabatt: {rabatt} %')""")
-task('''Der folgende Code soll für 95 Punkte die Note 1 ausgeben, gibt aber die Note 4 aus.
-Schreibe ihn in die Codezelle und ändere die Reihenfolge der Bedingungen so, dass er richtig arbeitet. Teste auch mit 75 und 55.
-```python
-punkte = 95
+task('''Der Code in der Zelle soll für 95 Punkte die Note 1 ausgeben, gibt aber die Note 4 aus.
+Ändere die Reihenfolge der Bedingungen so, dass er richtig arbeitet. Teste auch mit 75 und 55.''',
+     zelle="""punkte = 95
 if punkte >= 50:
     note = 4
 elif punkte >= 70:
@@ -270,8 +269,7 @@ elif punkte >= 90:
     note = 1
 else:
     note = 5
-print(note)
-```''',
+print(note)""",
      solution="""punkte = 95
 if punkte >= 90:
     note = 1
@@ -431,15 +429,12 @@ else:
         print(b)
     else:
         print(c)""")
-task('''Schreibe den folgenden Code so um, dass er nur **ein** `if` mit `and` verwendet und dasselbe ausgibt.
-```python
-sonne = True
+task('''Schreibe den Code in der Zelle so um, dass er nur **ein** `if` mit `and` verwendet und dasselbe ausgibt.''',
+     zelle="""sonne = True
 temperatur = 26
 if sonne:
     if temperatur > 25:
-        print('Ab ins Freibad!')
-```''',
-     given="sonne = True\ntemperatur = 26",
+        print('Ab ins Freibad!')""",
      solution="""sonne = True
 temperatur = 26
 if sonne and temperatur > 25:

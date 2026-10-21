@@ -63,13 +63,16 @@ def expl(md, code, anhaenge=None, error=None):
     sections[-1]['items'].append({'type': 'expl', 'md': md, 'code': code, 'anhaenge': anhaenge or {}, 'error': error})
 
 
-def task(text, given='', solution='', kind='normal', error=None, anhaenge=None, erklaerung=None):
+def task(text, given='', solution='', kind='normal', error=None, anhaenge=None, erklaerung=None, zelle=None):
     """kind: 'normal' (mit erwarteter Ausgabe), 'free' (ohne erwartete Ausgabe), 'predict'.
     anhaenge: {name: PNG-Daten} für Bilder im Aufgabentext (![...](attachment:name)).
-    erklaerung: nur bei 'predict', siehe predict()."""
+    erklaerung: nur bei 'predict', siehe predict().
+    zelle: Code, der so in der Codezelle steht und verändert werden soll (z. B. fehlerhafter Code zum Verbessern).
+    Statt given; die Lösung muss dann nicht damit beginnen. zelle muss fehlerfrei laufen."""
     sections[-1]['items'].append({'type': 'task', 'text': text, 'given': given.strip('\n'),
                                   'solution': solution.strip('\n'), 'kind': kind, 'error': error,
-                                  'anhaenge': anhaenge or {}, 'erklaerung': erklaerung})
+                                  'anhaenge': anhaenge or {}, 'erklaerung': erklaerung,
+                                  'zelle': zelle.strip('\n') if zelle else None})
 
 
 def predict(code, error=None, anhaenge=None, text='', erklaerung=None):
@@ -158,6 +161,11 @@ def _check():
                 print('ERROR', it['nr'], err); problems += 1
             if it['given'] and not it['solution'].startswith(it['given']):
                 print('GIVEN MISMATCH', it['nr']); problems += 1
+            if it['zelle']:
+                if it['given']:
+                    print('ZELLE UND GIVEN', it['nr']); problems += 1
+                if ausf(it['zelle'])[1]:
+                    print('ZELLE ERROR', it['nr']); problems += 1
             it['out'] = out
             print(f'--- {it["nr"]} ({it["kind"]})\n{out}', end='')
             for b in it['bilder']:
@@ -266,6 +274,8 @@ def build(titel, intro, loesung, aufklappbar):
                     cells[-1]['attachments'].update(bilder_anhang(it))
             if loesung or it['kind'] == 'predict':
                 cells.append(code(it['solution']))
+            elif it['zelle']:
+                cells.append(code(it['zelle']))
             elif it['given']:
                 cells.append(code(it['given'] + '\n' + SPRACHEN[aktuelle_sprache]['platzhalter']))
             else:
