@@ -1,4 +1,9 @@
 # Erzeugt ../content/strings.ipynb (siehe nbgen.py).
+#
+# Nicht wie in grundlagen/aufgabentex (Klausuraufgaben) und grundlagen/inhalte: keine Index-/Slicing-Aufgaben
+# "weise mit Slicing den Teilstring ... zu", kein find() mit Startindex für das zweite Vorkommen, kein
+# "erster Buchstabe groß, Rest klein" mit Slicing, keine Vorhersagen zu 'Mississippi', 'Banane' oder 'Habicht'.
+# Listen kommen erst im nächsten Notebook: nur split()/join(), keine Listenmethoden, keine Suche nach dem längsten Wort.
 from nbgen import sec, expl, task, predict, generate
 
 # ---------------------------------------------------------------- 1
@@ -52,9 +57,6 @@ print(f'{name} ist {alter} Jahre alt.')
 print(f'In 10 Jahren ist {name} {alter + 10}.')
 print(f'{name} hat {len(name)} Buchstaben.')""")
 
-task('Speichere den Titel deines Lieblingsfilms in der Variablen `film` und gib ihn aus.',
-     solution="""film = 'Zurück in die Zukunft'
-print(film)""", kind='free')
 task(r'Gib mit **einem** `print()` und `\n` die drei Zeilen unten aus.',
      solution=r"""print('Eins\nZwei\nDrei')""")
 task('Gib den Satz unten aus. Achte auf die Anführungszeichen.',
@@ -67,10 +69,6 @@ task(r'Gib mit `\t` die kleine Tabelle unten aus. Verwende pro Zeile ein `print(
      solution=r"""print('Name\tAlter')
 print('Ali\t16')
 print('Bea\t17')""")
-task('Gib die Länge von `wort` aus.',
-     given="wort = 'Donaudampfschifffahrt'",
-     solution="""wort = 'Donaudampfschifffahrt'
-print(len(wort))""")
 task('Gib mit einem f-String und `len()` den Satz unten aus.',
      given="wort = 'Informatik'",
      solution="""wort = 'Informatik'
@@ -80,18 +78,14 @@ task("""Speichere mit drei Anführungszeichen `'''...'''` die drei Zeilen unten 
 Veilchen sind blau,
 Python ist toll.'''
 print(gedicht)""")
-task('Gib mit einem f-String aus, wie lang die Zeichenketten `a` und `b` zusammen sind.',
-     given="""a = 'Haus'
-b = 'Schlüssel'""",
-     solution="""a = 'Haus'
-b = 'Schlüssel'
-print(f'Zusammen: {len(a) + len(b)} Zeichen')""")
 predict(r"""a = 'Hallo'
 b = ''
 c = 'a b'
 print(len(a), len(b), len(c))
 print(len('Zeile\nZeile'))
-print(type(a))""")
+print(type(a))""", erklaerung='''- `'Hallo'` hat 5 Zeichen, die leere Zeichenkette `''` hat 0, `'a b'` hat 3: Das Leerzeichen zählt mit.
+- `\n` ist **ein** Zeichen (der Zeilenumbruch), also `5 + 1 + 5 = 11`.
+- Der Datentyp einer Zeichenkette ist `str`.''')
 
 # ---------------------------------------------------------------- 2
 sec('Verbinden, wiederholen und umwandeln')
@@ -124,15 +118,6 @@ print('Ich bin ' + str(alter) + ' Jahre alt.')
 print(int('12') + 1)
 print(float('2.5') * 2)""")
 
-task('Verbinde `vorname` und `nachname` mit einem Leerzeichen dazwischen zur Variablen `name`. Gib `name` aus.',
-     given="""vorname = 'Max'
-nachname = 'Mustermann'""",
-     solution="""vorname = 'Max'
-nachname = 'Mustermann'
-name = vorname + ' ' + nachname
-print(name)""")
-task("Gib mit `*` eine Linie aus 30 Minuszeichen aus.",
-     solution="""print('-' * 30)""")
 task("Gib mit `*` und `+` die Zeichenkette unten aus.",
      given="wort = 'Ha'",
      solution="""wort = 'Ha'
@@ -152,25 +137,23 @@ task('Wandle `preis` mit `float()` in eine Zahl um und gib den Preis für 4 Stü
      given="preis = '3.50'",
      solution="""preis = '3.50'
 print(float(preis) * 4)""")
-task('Gib mit einer `for`-Schleife und `*` die Treppe unten aus.',
-     solution="""for i in range(1, 6):
-    print('*' * i)""")
 task("Erzeuge mit einer `for`-Schleife und `+=` die Zeichenkette `'12345'`. Beginne mit einer leeren Zeichenkette. Gib das Ergebnis aus.",
      solution="""text = ''
 for i in range(1, 6):
     text += str(i)
 print(text)""")
-task('Gib mit einer `for`-Schleife, `*` und `+` das Dreieck unten aus. Jede Zeile beginnt mit Leerzeichen.',
-     solution="""for i in range(1, 5):
-    print(' ' * (4 - i) + '#' * (2 * i - 1))""")
 predict("""a = '3'
 b = 4
 print(a * b)
 print(int(a) * b)
 print(a + str(b))
-print(float(a) + b)""")
+print(float(a) + b)""", erklaerung='''- `a` ist die Zeichenkette `'3'`. `a * b` wiederholt sie 4-mal: `3333`.
+- `int(a)` ist die Zahl 3, also `3 * 4 = 12`.
+- `str(b)` ist `'4'`. `'3' + '4'` hängt die Zeichenketten aneinander: `34`.
+- `float(a)` ist `3.0`. Eine Kommazahl plus eine ganze Zahl ergibt eine Kommazahl: `7.0`.''')
 predict("""alter = 16
-print('Alter: ' + alter)""", error=TypeError)
+print('Alter: ' + alter)""", error=TypeError, erklaerung='''Eine Zeichenkette und eine Zahl kann man nicht mit `+` verbinden. Richtig wäre `'Alter: ' + str(alter)`
+oder ein f-String: `f'Alter: {alter}'`.''')
 
 # ---------------------------------------------------------------- 3
 sec('Auf Zeichen zugreifen (Index und Slicing)')
@@ -203,25 +186,6 @@ neu = 'M' + wort[1:]
 print(neu)""")
 
 WORT = "wort = 'Programmieren'"
-task('Gib das erste und das letzte Zeichen von `wort` aus, jeweils in einer eigenen Zeile.',
-     given=WORT, solution=WORT + """
-print(wort[0])
-print(wort[-1])""")
-task('Gib das dritte Zeichen von `wort` aus.',
-     given=WORT, solution=WORT + """
-print(wort[2])""")
-task('Gib die ersten 7 Zeichen von `wort` aus.',
-     given=WORT, solution=WORT + """
-print(wort[:7])""")
-task('Gib die letzten 3 Zeichen von `wort` aus.',
-     given=WORT, solution=WORT + """
-print(wort[-3:])""")
-task('Gib alle Zeichen von `wort` ab Index 3 aus.',
-     given=WORT, solution=WORT + """
-print(wort[3:])""")
-task("Gib mit Slicing `'gramm'` aus `wort` aus.",
-     given=WORT, solution=WORT + """
-print(wort[3:8])""")
 task('Speichere mit Slicing Tag, Monat und Jahr aus `datum` in drei Variablen. Gib sie aus wie unten.',
      given="datum = '17.10.2026'",
      solution="""datum = '17.10.2026'
@@ -231,10 +195,6 @@ jahr = datum[6:]
 print('Tag:', tag)
 print('Monat:', monat)
 print('Jahr:', jahr)""")
-task("Erzeuge aus `wort` mit Slicing und `+` die Zeichenkette `'Maus'`. Gib sie aus.",
-     given="wort = 'Haus'",
-     solution="""wort = 'Haus'
-print('M' + wort[1:])""")
 task('Gib `text` ohne das erste und das letzte Zeichen aus.',
      given="""text = '"Hallo"'""",
      solution="""text = '"Hallo"'
@@ -253,15 +213,22 @@ task('Vertausche die erste und die zweite Hälfte von `wort` und gib das Ergebni
      solution="""wort = 'Fußball'
 mitte = len(wort) // 2
 print(wort[mitte:] + wort[:mitte])""")
-predict("""s = 'Python'
-print(s[0], s[-1])
-print(s[1:4])
-print(s[:2] + s[-2:])
-print(s[10:])
-print(len(s[2:]))""")
+predict("""s = 'Kaffee'
+print(s[-2:] + s[:2])
+print(s[4:20])
+print(len(s[1:-1]))
+print(s[len(s) // 2:])
+print(s[3:3] + '!')""", erklaerung='''`'Kaffee'` hat die Indizes 0 bis 5: `K a f f e e`.
+
+- `s[-2:]` sind die letzten beiden Zeichen `ee`, `s[:2]` die ersten beiden `Ka`.
+- `s[4:20]`: Ein zu großes Ende ist beim Slicing kein Fehler. Es geht einfach bis zum Ende: `ee`.
+- `s[1:-1]` lässt das erste und letzte Zeichen weg: `affe`, das sind 4 Zeichen.
+- `len(s) // 2` ist 3. `s[3:]` ist `fee`.
+- `s[3:3]` ist leer, weil Start und Ende gleich sind. Übrig bleibt `!`.''')
 predict("""s = 'Haus'
 s[0] = 'M'
-print(s)""", error=TypeError)
+print(s)""", error=TypeError, erklaerung='''Zeichenketten sind **unveränderlich**. Ein einzelnes Zeichen kann man nicht ersetzen.
+Stattdessen baut man eine neue Zeichenkette: `s = 'M' + s[1:]`.''')
 
 # ---------------------------------------------------------------- 4
 sec('Schleifen über Zeichenketten und in')
@@ -284,69 +251,6 @@ print('python' in satz)
 print('x' not in satz)
 print('e' in 'aeiou')""")
 
-task('Gib jedes Zeichen von `wort` in einer eigenen Zeile aus.',
-     given="wort = 'Hallo'",
-     solution="""wort = 'Hallo'
-for c in wort:
-    print(c)""")
-task("Zähle mit einer Schleife, wie oft `'e'` in `satz` vorkommt. Gib die Anzahl aus.",
-     given="satz = 'Wenn hinter Fliegen Fliegen fliegen'",
-     solution="""satz = 'Wenn hinter Fliegen Fliegen fliegen'
-anzahl = 0
-for c in satz:
-    if c == 'e':
-        anzahl += 1
-print(anzahl)""")
-task("Zähle mit einer Schleife die Vokale (a, e, i, o, u) in `satz`. Verwende `in 'aeiou'`. Gib die Anzahl aus.",
-     given="satz = 'informatik macht spass'",
-     solution="""satz = 'informatik macht spass'
-anzahl = 0
-for c in satz:
-    if c in 'aeiou':
-        anzahl += 1
-print(anzahl)""")
-task('Erzeuge mit einer Schleife eine neue Zeichenkette, in der jedes Zeichen von `wort` doppelt vorkommt. Gib sie aus.',
-     given="wort = 'Hallo'",
-     solution="""wort = 'Hallo'
-neu = ''
-for c in wort:
-    neu += c + c
-print(neu)""")
-task('Erzeuge mit einer Schleife eine Zeichenkette, die `wort` rückwärts enthält. Gib sie aus.',
-     given="wort = 'Hallo'",
-     solution="""wort = 'Hallo'
-rueckwaerts = ''
-for c in wort:
-    rueckwaerts = c + rueckwaerts
-print(rueckwaerts)""")
-task('Gib jedes Zeichen von `wort` zusammen mit seinem Index aus wie unten.',
-     given="wort = 'Code'",
-     solution="""wort = 'Code'
-for i in range(len(wort)):
-    print(i, wort[i])""")
-task("Prüfe mit `in`, ob `'Python'` in `satz` vorkommt. Gib `gefunden` oder `nicht gefunden` aus.",
-     given="satz = 'Wir programmieren heute mit Python.'",
-     solution="""satz = 'Wir programmieren heute mit Python.'
-if 'Python' in satz:
-    print('gefunden')
-else:
-    print('nicht gefunden')""")
-task("""Eine E-Mail-Adresse muss ein `'@'` enthalten. Gib `gültig` oder `ungültig` aus.
-Teste dein Programm auch mit `email = 'max.schule.de'`.""",
-     given="email = 'max@schule.de'",
-     solution="""email = 'max@schule.de'
-if '@' in email:
-    print('gültig')
-else:
-    print('ungültig')""")
-task('Erzeuge mit einer Schleife eine neue Zeichenkette ohne die Leerzeichen aus `satz`. Gib sie aus.',
-     given="satz = 'Das ist ein Test'",
-     solution="""satz = 'Das ist ein Test'
-neu = ''
-for c in satz:
-    if c != ' ':
-        neu += c
-print(neu)""")
 task("Zähle mit einer Schleife und `in '0123456789'`, wie viele Ziffern in `text` vorkommen. Gib die Anzahl aus.",
      given="text = 'Raum 204, Haus 7, Tel. 0301234'",
      solution="""text = 'Raum 204, Haus 7, Tel. 0301234'
@@ -363,14 +267,16 @@ for i in range(len(text)):
     if i % 2 == 0:
         neu += text[i]
 print(neu)""")
-predict("""s = 'Banane'
-z = 0
+predict("""s = 'Kokosnuss'
+neu = ''
 for c in s:
-    if c == 'a':
-        z += 1
-print(z)
-print('nan' in s)
-print('Ban' not in s)""")
+    if c not in 'aeiou':
+        neu += c
+print(neu)
+print('nuss' in s, 'Nuss' in s)
+print('k' not in s)""", erklaerung='''- Die Schleife hängt nur Zeichen an, die **keine** Vokale sind. Die drei `o` und das `u` fallen weg: `Kksnss`.
+- `'nuss'` kommt in `'Kokosnuss'` vor, `'Nuss'` mit großem N nicht.
+- `'k'` kommt vor (an Index 2). `not in` ist deshalb `False`. Das große `K` am Anfang ist ein anderes Zeichen.''')
 
 # ---------------------------------------------------------------- 5
 sec('Groß- und Kleinschreibung')
@@ -380,8 +286,9 @@ expl('''#### `upper()` und `lower()`
 
 Alle String-Methoden geben eine **neue** Zeichenkette zurück. Die ursprüngliche Zeichenkette bleibt unverändert.
 Will man das Ergebnis behalten, muss man es speichern, z. B. `text = text.upper()`.''',
-     """text = 'Hallo Welt'
-print(text.upper())
+     """text = 'Guten Morgen'
+gross = text.upper()
+print(gross)
 print(text.lower())
 print(text)""")
 expl('''#### `capitalize()`, `title()` und `swapcase()`
@@ -394,26 +301,15 @@ print(text.capitalize())
 print(text.title())
 print(text.swapcase())""")
 
-task('Gib `name` in Großbuchstaben aus.',
-     given="name = 'Lena'",
-     solution="""name = 'Lena'
-print(name.upper())""")
-task('Gib `satz` in Kleinbuchstaben aus.',
-     given="satz = 'Heute ist MONTAG.'",
-     solution="""satz = 'Heute ist MONTAG.'
+task('Gib `satz` einmal in Großbuchstaben und einmal in Kleinbuchstaben aus.',
+     given="satz = 'Morgen ist FERIENbeginn.'",
+     solution="""satz = 'Morgen ist FERIENbeginn.'
+print(satz.upper())
 print(satz.lower())""")
-task('Gib `text` so aus, dass nur der erste Buchstabe groß ist.',
-     given="text = 'hallo welt'",
-     solution="""text = 'hallo welt'
-print(text.capitalize())""")
 task('Gib `titel` so aus, dass jedes Wort mit einem Großbuchstaben beginnt.',
      given="titel = 'der herr der ringe'",
      solution="""titel = 'der herr der ringe'
 print(titel.title())""")
-task('Tausche in `text` Groß- und Kleinbuchstaben und gib das Ergebnis aus.',
-     given="text = 'pYTHON'",
-     solution="""text = 'pYTHON'
-print(text.swapcase())""")
 task("""Gib `Zustimmung` aus, wenn `antwort` `ja` lautet, egal in welcher Schreibweise. Sonst gib `Ablehnung` aus.
 Teste dein Programm auch mit `'Ja'`, `'jA'` und `'nein'`.""",
      given="antwort = 'JA'",
@@ -422,14 +318,6 @@ if antwort.lower() == 'ja':
     print('Zustimmung')
 else:
     print('Ablehnung')""")
-task('Korrigiere die Schreibweise von `name` mit einer Methode und gib den Namen aus.',
-     given="name = 'mAX mUSTERMANN'",
-     solution="""name = 'mAX mUSTERMANN'
-print(name.title())""")
-task('Erzeuge aus `wort` eine Zeichenkette, bei der der erste Buchstabe klein und der Rest groß ist. Verwende Slicing. Gib sie aus.',
-     given="wort = 'python'",
-     solution="""wort = 'python'
-print(wort[0].lower() + wort[1:].upper())""")
 task('Erzeuge mit einer Schleife eine Zeichenkette, in der die Buchstaben von `wort` abwechselnd groß und klein sind, beginnend mit groß. Gib sie aus.',
      given="wort = 'informatik'",
      solution="""wort = 'informatik'
@@ -445,13 +333,14 @@ task('Speichere `text` in Großbuchstaben wieder in der Variablen `text`. Gib da
      solution="""text = 'achtung'
 text = text.upper()
 print(text)""")
-predict("""s = 'hallo Welt'
-t = s.upper()
-print(s)
-print(t)
+predict("""s = 'gUTEN tag'
 print(s.capitalize())
 print(s.title())
-print(s.swapcase())""")
+print(s.swapcase())
+print(s.lower().title() == s.title())""", erklaerung='''- `capitalize()`: nur der allererste Buchstabe groß, alle anderen klein.
+- `title()`: in jedem Wort der erste Buchstabe groß, die anderen klein.
+- `swapcase()`: Aus groß wird klein und umgekehrt.
+- `s.lower()` ist `'guten tag'`, daraus macht `title()` ebenfalls `'Guten Tag'`. Beide Seiten sind gleich.''')
 
 # ---------------------------------------------------------------- 6
 sec('Leerzeichen und Zeichen am Rand entfernen')
@@ -472,12 +361,6 @@ EIN = "eingabe = '   Hallo Welt   '"
 task('Entferne die Leerzeichen am Anfang und am Ende von `eingabe`. Gib das Ergebnis mit `|` davor und dahinter aus.',
      given=EIN, solution=EIN + """
 print('|' + eingabe.strip() + '|')""")
-task('Entferne nur die Leerzeichen am Anfang von `eingabe`. Gib das Ergebnis mit `|` davor und dahinter aus.',
-     given=EIN, solution=EIN + """
-print('|' + eingabe.lstrip() + '|')""")
-task('Entferne nur die Leerzeichen am Ende von `eingabe`. Gib das Ergebnis mit `|` davor und dahinter aus.',
-     given=EIN, solution=EIN + """
-print('|' + eingabe.rstrip() + '|')""")
 task('Entferne die Sternchen am Anfang und Ende von `text` und gib das Ergebnis aus.',
      given="text = '***Achtung***'",
      solution="""text = '***Achtung***'
@@ -497,14 +380,13 @@ task('Entferne die führenden Nullen von `nummer` und gib das Ergebnis aus.',
      given="nummer = '000420'",
      solution="""nummer = '000420'
 print(nummer.lstrip('0'))""")
-task('Vergleiche die Länge von `eingabe` vor und nach `strip()`. Gib aus, wie viele Zeichen entfernt wurden.',
-     given=EIN, solution=EIN + """
-print(len(eingabe) - len(eingabe.strip()))""")
 predict("""s = '  ab  cd  '
 print(len(s))
 print(len(s.strip()))
 print('|' + s.lstrip() + '|')
-print('|' + s.rstrip() + '|')""")
+print('|' + s.rstrip() + '|')""", erklaerung='''- `s` hat 10 Zeichen: 2 Leerzeichen, `ab`, 2 Leerzeichen, `cd`, 2 Leerzeichen.
+- `strip()` entfernt nur die Leerzeichen am Rand. Die in der Mitte bleiben: `'ab  cd'` hat 6 Zeichen.
+- `lstrip()` entfernt nur links, `rstrip()` nur rechts. Die Striche zeigen, wo der Text anfängt und aufhört.''')
 
 # ---------------------------------------------------------------- 7
 sec('Suchen und Zählen')
@@ -535,20 +417,9 @@ SATZ = "satz = 'Der Hund bellt und der Hund rennt.'"
 task("Gib mit `find()` aus, an welchem Index `'Hund'` in `satz` zum ersten Mal vorkommt.",
      given=SATZ, solution=SATZ + """
 print(satz.find('Hund'))""")
-task("Gib mit `find()` aus, an welchem Index `'Katze'` in `satz` vorkommt.",
-     given=SATZ, solution=SATZ + """
-print(satz.find('Katze'))""")
 task("Gib aus, wie oft `'Hund'` in `satz` vorkommt.",
      given=SATZ, solution=SATZ + """
 print(satz.count('Hund'))""")
-task("Gib aus, wie oft der Buchstabe `'e'` in `satz` vorkommt.",
-     given=SATZ, solution=SATZ + """
-print(satz.count('e'))""")
-task("Finde den Index des **zweiten** Vorkommens von `'Hund'` in `satz`. Verwende `find()` zweimal, beim zweiten Mal mit Startindex.",
-     given=SATZ, solution=SATZ + """
-erstes = satz.find('Hund')
-zweites = satz.find('Hund', erstes + 1)
-print(zweites)""")
 task("""Gib `PDF-Datei` aus, wenn `dateiname` mit `'.pdf'` endet, sonst `keine PDF-Datei`.
 Teste dein Programm auch mit `'bild.jpg'`.""",
      given="dateiname = 'bericht.pdf'",
@@ -557,27 +428,12 @@ if dateiname.endswith('.pdf'):
     print('PDF-Datei')
 else:
     print('keine PDF-Datei')""")
-task("Gib `deutsche Nummer` aus, wenn `telefon` mit `'+49'` beginnt, sonst `ausländische Nummer`.",
-     given="telefon = '+49 30 123456'",
-     solution="""telefon = '+49 30 123456'
-if telefon.startswith('+49'):
-    print('deutsche Nummer')
-else:
-    print('ausländische Nummer')""")
 task("Gib den Teil von `email` vor dem `'@'` und den Teil danach aus. Verwende `find()` und Slicing.",
      given="email = 'max.mustermann@schule.de'",
      solution="""email = 'max.mustermann@schule.de'
 at = email.find('@')
 print(email[:at])
 print(email[at + 1:])""")
-task("Zähle, wie viele Dateien in `dateien` mit `'.py'` enden. Gib die Anzahl aus.",
-     given="dateien = ['spiel.py', 'notizen.txt', 'test.py', 'bild.png', 'main.py']",
-     solution="""dateien = ['spiel.py', 'notizen.txt', 'test.py', 'bild.png', 'main.py']
-anzahl = 0
-for d in dateien:
-    if d.endswith('.py'):
-        anzahl += 1
-print(anzahl)""")
 task("Gib alles aus, was in `satz` nach dem ersten Komma steht, ohne das Leerzeichen am Anfang.",
      given="satz = 'Ja, ich komme morgen, vielleicht.'",
      solution="""satz = 'Ja, ich komme morgen, vielleicht.'
@@ -588,16 +444,19 @@ task("Gib den Dateinamen ohne Endung aus, also alles vor dem letzten Punkt. Tipp
      solution="""datei = 'aufsatz.txt'
 if datei.endswith('.txt'):
     print(datei[:-4])""")
-predict("""s = 'Mississippi'
-print(s.find('ss'))
-print(s.find('ss', 3))
-print(s.count('s'))
-print(s.count('ss'))
-print(s.find('x'))
-print(s.startswith('miss'))""")
+predict("""s = 'Rhabarber'
+print(s.count('r'))
+print(s.lower().count('r'))
+print(s.find('bar'))
+print(s.endswith('ber'), s.startswith('rh'))
+print(s.find('a') + s.find('Z'))""", erklaerung='''- `count('r')` zählt nur das kleine `r`: Es kommt 2-mal vor. Nach `lower()` zählt auch das `R` am Anfang mit: 3.
+- `bar` beginnt an Index 3 (`R h a b ...`).
+- `'Rhabarber'` endet mit `ber`, beginnt aber mit großem `Rh`, nicht mit `rh`.
+- Das erste `a` steht an Index 2. `'Z'` kommt nicht vor, `find()` liefert `-1`. Zusammen: `2 + (-1) = 1`.''')
 predict("""s = 'Hallo'
 print(s.index('l'))
-print(s.index('x'))""", error=ValueError)
+print(s.index('x'))""", error=ValueError, erklaerung='''`index('l')` findet das erste `l` an Index 2. `index('x')` findet nichts.
+Anders als `find()` (das `-1` liefert) gibt `index()` dann einen `ValueError`.''')
 
 # ---------------------------------------------------------------- 8
 sec('Ersetzen')
@@ -611,14 +470,6 @@ print(text.replace('Katzen', 'Hunde'))
 print(text.replace('Katzen', 'Hunde', 1))
 print('a-b-c'.replace('-', ''))""")
 
-task("Ersetze in `satz` das Wort `'Katze'` durch `'Maus'` und gib den Satz aus.",
-     given="satz = 'Die Katze schläft auf dem Sofa.'",
-     solution="""satz = 'Die Katze schläft auf dem Sofa.'
-print(satz.replace('Katze', 'Maus'))""")
-task("Ersetze in `dateiname` alle Leerzeichen durch Unterstriche `_` und gib das Ergebnis aus.",
-     given="dateiname = 'mein erstes Programm.py'",
-     solution="""dateiname = 'mein erstes Programm.py'
-print(dateiname.replace(' ', '_'))""")
 task("Entferne mit `replace()` alle Leerzeichen aus `nummer` und gib das Ergebnis aus.",
      given="nummer = 'DE89 3704 0044 0532 0130 00'",
      solution="""nummer = 'DE89 3704 0044 0532 0130 00'
@@ -645,10 +496,6 @@ verboten = 'doof'""",
      solution="""satz = 'Das ist doof und nochmal doof.'
 verboten = 'doof'
 print(satz.replace(verboten, '*' * len(verboten)))""")
-task("Wandle `datum` mit `replace()` in die Schreibweise `17.10.2026` um.",
-     given="datum = '17/10/2026'",
-     solution="""datum = '17/10/2026'
-print(datum.replace('/', '.'))""")
 task("In `text` stehen manchmal mehrere Leerzeichen hintereinander. Ersetze mit einer `while`-Schleife so lange zwei Leerzeichen durch eines, bis keine doppelten Leerzeichen mehr vorkommen. Gib den Text aus.",
      given="text = 'Das   ist    zu  viel   Platz.'",
      solution="""text = 'Das   ist    zu  viel   Platz.'
@@ -667,7 +514,10 @@ t = s.replace('an', 'AN')
 print(s)
 print(t)
 print(s.replace('a', '', 1))
-print(s.replace('x', 'y'))""")
+print(s.replace('x', 'y'))""", erklaerung='''- `replace()` ändert `s` nicht, sondern gibt eine neue Zeichenkette zurück. `s` ist danach immer noch `banane`.
+- In `t` sind beide Vorkommen von `an` ersetzt: `bANANe`.
+- `replace('a', '', 1)` löscht nur das **erste** `a`: `bnane`.
+- `x` kommt nicht vor, es wird nichts ersetzt.''')
 
 # ---------------------------------------------------------------- 9
 sec('Zerlegen und zusammensetzen')
@@ -701,17 +551,6 @@ task('Zerlege `obst` an den Kommas und gib jede Obstsorte in einer eigenen Zeile
      solution="""obst = 'Apfel,Birne,Kirsche,Banane'
 for o in obst.split(','):
     print(o)""")
-task('Zerlege `datum` an den Punkten. Gib Tag, Monat und Jahr aus wie unten.',
-     given="datum = '17.10.2026'",
-     solution="""datum = '17.10.2026'
-teile = datum.split('.')
-print('Tag:', teile[0])
-print('Monat:', teile[1])
-print('Jahr:', teile[2])""")
-task('Setze die Wörter aus `woerter` mit `join()` zu einem Satz mit Leerzeichen zusammen. Gib ihn aus.',
-     given="woerter = ['Heute', 'scheint', 'die', 'Sonne']",
-     solution="""woerter = ['Heute', 'scheint', 'die', 'Sonne']
-print(' '.join(woerter))""")
 task("Setze die Elemente von `tage` mit `' - '` als Trenner zusammen und gib das Ergebnis aus.",
      given="tage = ['Mo', 'Di', 'Mi', 'Do', 'Fr']",
      solution="""tage = ['Mo', 'Di', 'Mi', 'Do', 'Fr']
@@ -726,19 +565,6 @@ summe = 0
 for t in zahlen_text.split():
     summe += int(t)
 print(summe)""")
-task('Gib das längste Wort von `satz` aus.',
-     given=S9, solution=S9 + """
-laengstes = ''
-for w in satz.split():
-    if len(w) > len(laengstes):
-        laengstes = w
-print(laengstes)""")
-task('Kehre die Reihenfolge der Wörter in `satz` um. Verwende `split()`, `reverse()` und `join()`. Gib den neuen Satz aus.',
-     given="satz = 'eins zwei drei vier'",
-     solution="""satz = 'eins zwei drei vier'
-woerter = satz.split()
-woerter.reverse()
-print(' '.join(woerter))""")
 task('Bilde aus `name` die Initialen (die Anfangsbuchstaben aller Teile) und gib sie aus.',
      given="name = 'Max Peter Mustermann'",
      solution="""name = 'Max Peter Mustermann'
@@ -756,7 +582,9 @@ teile = s.split(',')
 print(teile)
 print(len(teile))
 print('+'.join(teile))
-print('x y  z'.split())""")
+print('x y  z'.split())""", erklaerung='''- Zwischen den beiden Kommas steht nichts. Deshalb entsteht dort eine **leere** Zeichenkette `''`. Die Liste hat 4 Teile.
+- `join()` setzt zwischen alle Teile ein `+`, also auch vor und nach dem leeren Teil: `a+b++c`.
+- `split()` ohne Trenner zerlegt an Leerzeichen. Mehrere Leerzeichen zählen wie eines, es entstehen keine leeren Teile.''')
 
 # ---------------------------------------------------------------- 10
 sec('Zeichenketten prüfen')
@@ -793,21 +621,6 @@ if eingabe.isdigit():
     print(int(eingabe) + 1)
 else:
     print('keine Zahl')""")
-task("Gib `gültiger Name` aus, wenn `name` nur aus Buchstaben besteht, sonst `ungültiger Name`. Teste auch mit `'Lena3'`.",
-     given="name = 'Lena'",
-     solution="""name = 'Lena'
-if name.isalpha():
-    print('gültiger Name')
-else:
-    print('ungültiger Name')""")
-task('Zähle mit einer Schleife und `isupper()` die Großbuchstaben in `text`. Gib die Anzahl aus.',
-     given="text = 'Heute Lernen Wir Python in der Schule'",
-     solution="""text = 'Heute Lernen Wir Python in der Schule'
-anzahl = 0
-for c in text:
-    if c.isupper():
-        anzahl += 1
-print(anzahl)""")
 task('Zähle in `text` die Buchstaben, die Ziffern und die Leerzeichen. Gib die drei Anzahlen aus wie unten.',
      given="text = 'Raum 204 in Haus 7'",
      solution="""text = 'Raum 204 in Haus 7'
@@ -846,18 +659,10 @@ if benutzer.isalnum():
     print('gültig')
 else:
     print('ungültig')""")
-task('Erzeuge eine Zeichenkette, die nur die Ziffern aus `text` enthält, und gib sie aus.',
-     given="text = 'Tel.: 030 / 12 34 56'",
-     solution="""text = 'Tel.: 030 / 12 34 56'
-ziffern = ''
-for c in text:
-    if c.isdigit():
-        ziffern += c
-print(ziffern)""")
-task('Gib nur die Wörter aus `woerter` aus, die komplett in Großbuchstaben geschrieben sind.',
-     given="woerter = ['USB', 'Maus', 'PC', 'Tastatur', 'RAM', 'cpu']",
-     solution="""woerter = ['USB', 'Maus', 'PC', 'Tastatur', 'RAM', 'cpu']
-for w in woerter:
+task('Gib nur die Wörter aus `text` aus, die komplett in Großbuchstaben geschrieben sind. Zerlege `text` dazu mit `split()`.',
+     given="text = 'USB Maus PC Tastatur RAM cpu'",
+     solution="""text = 'USB Maus PC Tastatur RAM cpu'
+for w in text.split():
     if w.isupper():
         print(w)""")
 task("Prüfe, ob `kennung` genau 6 Zeichen hat, mit zwei Buchstaben beginnt und mit vier Ziffern endet. Gib `ok` oder `falsch` aus. Teste auch mit `'A12345'`.",
@@ -873,7 +678,11 @@ print('abc1'.isalnum())
 print('12.5'.isdigit())
 print('   '.isspace())
 print(''.isdigit())
-print('Hallo'.islower())""")
+print('Hallo'.islower())""", erklaerung='''- `'abc'` besteht nur aus Buchstaben. In `'abc1'` ist die `1` kein Buchstabe, aber `isalnum()` erlaubt Ziffern.
+- In `'12.5'` ist der Punkt keine Ziffer.
+- `'   '` besteht nur aus Leerzeichen.
+- Bei der leeren Zeichenkette ist das Ergebnis immer `False`.
+- `'Hallo'` enthält ein großes `H`, also sind nicht alle Buchstaben klein.''')
 
 # ---------------------------------------------------------------- 11
 sec('Formatieren')
@@ -912,15 +721,6 @@ task('Gib den Preis mit zwei Nachkommastellen aus wie unten.',
      given='preis = 3.5',
      solution="""preis = 3.5
 print(f'Preis: {preis:.2f} Euro')""")
-task('Gib `pi` mit drei Nachkommastellen aus.',
-     given='pi = 3.14159265',
-     solution="""pi = 3.14159265
-print(f'{pi:.3f}')""")
-task('Berechne den Durchschnitt der Noten und gib ihn mit zwei Nachkommastellen aus wie unten.',
-     given='noten = [2, 3, 1, 2, 4, 2]',
-     solution="""noten = [2, 3, 1, 2, 4, 2]
-schnitt = sum(noten) / len(noten)
-print(f'Durchschnitt: {schnitt:.2f}')""")
 task('Gib `nummer` dreistellig mit führenden Nullen aus. Verwende `str()` und `zfill()`.',
      given='nummer = 7',
      solution="""nummer = 7
@@ -935,18 +735,6 @@ minute = 5""",
      solution="""stunde = 9
 minute = 5
 print(f'{stunde:02d}:{minute:02d}')""")
-task('Gib jede Zahl aus `zahlen` rechtsbündig in einer Breite von 5 Zeichen zwischen zwei `|` aus. Verwende `rjust()`.',
-     given='zahlen = [5, 123, 42, 7]',
-     solution="""zahlen = [5, 123, 42, 7]
-for z in zahlen:
-    print('|' + str(z).rjust(5) + '|')""")
-task('Gib die Tabelle unten aus. Die Produktnamen stehen linksbündig in 10 Zeichen Breite, die Preise rechtsbündig in 6 Zeichen mit zwei Nachkommastellen. Verwende einen f-String.',
-     given="""produkte = ['Milch', 'Brot', 'Käse']
-preise = [1.2, 2.5, 4.99]""",
-     solution="""produkte = ['Milch', 'Brot', 'Käse']
-preise = [1.2, 2.5, 4.99]
-for i in range(len(produkte)):
-    print(f'{produkte[i]:<10}{preise[i]:>6.2f}')""")
 task('Gib den Titel wie unten in einem Rahmen aus: Linien aus 20 Gleichheitszeichen, dazwischen der Titel zentriert in 20 Zeichen Breite.',
      given="titel = 'Menü'",
      solution="""titel = 'Menü'
@@ -961,7 +749,10 @@ print(f'{x:.2f}')
 print(f'|{"ab":>5}|')
 print(f'|{"ab":<5}|')
 print(f'|{"ab":^6}|')
-print('5'.zfill(3))""")
+print('5'.zfill(3))""", erklaerung='''- `2 / 3` ist 0.666..., mit zwei Nachkommastellen gerundet `0.67`.
+- `>5` schreibt `ab` rechtsbündig in 5 Zeichen (3 Leerzeichen davor), `<5` linksbündig (3 Leerzeichen dahinter).
+- `^6` zentriert `ab` in 6 Zeichen: je 2 Leerzeichen links und rechts.
+- `zfill(3)` füllt `'5'` vorne mit Nullen auf 3 Zeichen auf.''')
 
 # ---------------------------------------------------------------- 12
 sec('Gemischte Übungen')
@@ -989,19 +780,6 @@ task('Bereinige `name`: Leerzeichen am Rand entfernen und jedes Wort mit einem G
      given="name = '   max MUSTERMANN  '",
      solution="""name = '   max MUSTERMANN  '
 print('|' + name.strip().title() + '|')""")
-task('Erzeuge einen Benutzernamen aus dem ersten Buchstaben von `vorname` und dem ganzen `nachname`, alles in Kleinbuchstaben. Gib ihn aus.',
-     given="""vorname = 'Max'
-nachname = 'Mustermann'""",
-     solution="""vorname = 'Max'
-nachname = 'Mustermann'
-print((vorname[0] + nachname).lower())""")
-task('Bilde aus `begriff` die Abkürzung aus den Anfangsbuchstaben der Wörter, in Großbuchstaben. Gib sie aus.',
-     given="begriff = 'portable document format'",
-     solution="""begriff = 'portable document format'
-abk = ''
-for w in begriff.split():
-    abk += w[0].upper()
-print(abk)""")
 task("Ersetze mit einer Schleife jeden Vokal (a, e, i, o, u, auch groß) in `text` durch `'*'`. Gib das Ergebnis aus.",
      given="text = 'Ein Apfel am Tag'",
      solution="""text = 'Ein Apfel am Tag'
@@ -1030,30 +808,10 @@ task('Wandle `datum` von der Form Jahr-Monat-Tag in die Form Tag.Monat.Jahr um. 
      solution="""datum = '2026-10-17'
 teile = datum.split('-')
 print(f'{teile[2]}.{teile[1]}.{teile[0]}')""")
-task('Drehe jedes Wort in `satz` einzeln um. Die Reihenfolge der Wörter bleibt gleich. Gib den neuen Satz aus.',
-     given="satz = 'Hallo schöne Welt'",
-     solution="""satz = 'Hallo schöne Welt'
-neue_woerter = []
-for w in satz.split():
-    rueckwaerts = ''
-    for c in w:
-        rueckwaerts = c + rueckwaerts
-    neue_woerter.append(rueckwaerts)
-print(' '.join(neue_woerter))""")
 task('Verdecke alle Ziffern von `karte` außer den letzten vier mit Sternchen. Verwende `len()`, `*` und Slicing.',
      given="karte = '1234567812345678'",
      solution="""karte = '1234567812345678'
 print('*' * (len(karte) - 4) + karte[-4:])""")
-task("Zähle, wie oft das Wort `'die'` in `satz` vorkommt, egal ob groß oder klein geschrieben. Zerlege dazu den Satz in Wörter, damit z. B. `'Dieb'` nicht mitzählt.",
-     given="satz = 'Die Katze und die Maus jagen den Dieb, die Polizei auch'",
-     solution="""satz = 'Die Katze und die Maus jagen den Dieb, die Polizei auch'
-woerter = satz.lower().split()
-print(woerter.count('die'))""")
-task('Gib jedes Wort aus `satz` in Großbuchstaben mit seiner Länge aus wie unten.',
-     given="satz = 'Ich mag Pizza'",
-     solution="""satz = 'Ich mag Pizza'
-for w in satz.split():
-    print(f'{w.upper()}: {len(w)}')""")
 task("Prüfe, ob `wort` jeden Vokal (a, e, i, o, u) mindestens einmal enthält. Gib `alle Vokale` oder `nicht alle Vokale` aus. Teste auch mit `'Banane'`.",
      given="wort = 'Aufsichtsratsvorsitzender'",
      solution="""wort = 'Aufsichtsratsvorsitzender'
@@ -1076,6 +834,8 @@ predict("""s = '  Python ist Toll  '
 t = s.strip().lower().split()
 print(t)
 print('_'.join(t).upper())
-print(s.count(' '))""")
+print(s.count(' '))""", erklaerung='''- Die Methoden werden von links nach rechts ausgeführt: erst `strip()`, dann `lower()`, dann `split()`.
+- `join()` setzt die Wörter mit `_` zusammen, `upper()` macht alles groß.
+- `s` selbst ist unverändert. Darin stehen 2 + 1 + 1 + 2 = 6 Leerzeichen.''')
 
 generate('strings', 'Strings')
