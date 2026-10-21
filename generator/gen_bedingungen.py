@@ -61,9 +61,6 @@ t('Prüfe mit **einer** Vergleichskette, ob `temperatur` zwischen 18 und 24 Grad
 t('Gib aus, ob die Zahl `n` mit der Ziffer 0 endet. Verwende den Modulo-Operator `%`. Teste auch mit `n = 205`.',
   'n = 230',
   "print(n % 10 == 0)")
-t("Gib aus, ob `eingabe` genau mit dem Passwort `'geheim123'` übereinstimmt.",
-  "eingabe = 'Geheim123'",
-  "print(eingabe == 'geheim123')")
 t('Gib aus, ob `name1` im Alphabet vor `name2` steht.',
   "name1 = 'Lena'\nname2 = 'Ben'",
   "print(name1 < name2)")
@@ -104,20 +101,15 @@ if temperatur > 30:
     print('Trink genug Wasser.')
 print('Schönen Tag noch.')""")
 
-t("Gib `Es ist heiß!` aus, wenn `temperatur` größer als 30 ist. Teste auch mit `25`: Dann soll nichts ausgegeben werden.",
-  'temperatur = 33',
-  """if temperatur > 30:
-    print('Es ist heiß!')""")
+t("Gib `Akku fast leer!` aus, wenn `akku` (in Prozent) unter 15 liegt. Teste auch mit `40`: Dann soll nichts ausgegeben werden.",
+  'akku = 8',
+  """if akku < 15:
+    print('Akku fast leer!')""")
 t("Ist `kontostand` negativ, gib `Konto überzogen!` aus. Danach soll **immer** der Kontostand ausgegeben werden wie unten.",
   'kontostand = -50',
   """if kontostand < 0:
     print('Konto überzogen!')
 print('Kontostand:', kontostand)""")
-t('Ist `zahl` negativ, mache sie positiv, indem du ihr Vorzeichen umdrehst. Gib danach `zahl` aus.',
-  'zahl = -7',
-  """if zahl < 0:
-    zahl = -zahl
-print(zahl)""")
 t('Ist `a` größer als `b`, vertausche die Werte der beiden Variablen. Verwende eine Hilfsvariable. Gib danach `a` und `b` aus.',
   'a = 9\nb = 4',
   """if a > b:
@@ -160,6 +152,13 @@ if stunde < 12:
     print('Guten Morgen')
 else:
     print('Guten Tag')""")
+expl('''#### Ausgaben mit f-Strings
+
+Bei einem **f-String** steht ein `f` vor dem Anführungszeichen. In geschweiften Klammern `{...}` kann man Variablen
+oder Rechnungen einsetzen. Ihr Wert wird an dieser Stelle in den Text geschrieben.''',
+     """preis = 12
+anzahl = 3
+print(f'{anzahl} Karten kosten {anzahl * preis} Euro.')""")
 
 t("Ein Bus fährt zu jeder Viertelstunde (Minute 0, 15, 30, 45). Gib `Bus kommt` aus, wenn `minute` durch 15 teilbar ist, sonst `kein Bus`. Teste auch mit `20`.",
   'minute = 45',
@@ -167,12 +166,6 @@ t("Ein Bus fährt zu jeder Viertelstunde (Minute 0, 15, 30, 45). Gib `Bus kommt`
     print('Bus kommt')
 else:
     print('kein Bus')""")
-t("Ein Film ist ab 12 Jahren freigegeben. Gib `Film erlaubt` oder `Film nicht erlaubt` aus.",
-  'alter = 11',
-  """if alter >= 12:
-    print('Film erlaubt')
-else:
-    print('Film nicht erlaubt')""")
 t('Speichere die größere der beiden Zahlen in der Variablen `groesser` und gib sie aus. Verwende nicht `max()`.',
   'a = 23\nb = 31',
   """if a > b:
@@ -180,19 +173,13 @@ t('Speichere die größere der beiden Zahlen in der Variablen `groesser` und gib
 else:
     groesser = b
 print(groesser)""")
-t('Ab einem Bestellwert von 100 Euro ist der Versand kostenlos, sonst kostet er 5 Euro. Gib den Gesamtpreis aus wie unten. Teste auch mit `60`.',
+t('Ab einem Bestellwert von 100 Euro ist der Versand kostenlos, sonst kostet er 5 Euro. Gib den Gesamtpreis mit einem f-String aus wie unten. Teste auch mit `60`.',
   'bestellwert = 120',
   """if bestellwert >= 100:
     versand = 0
 else:
     versand = 5
-print('Gesamtpreis:', bestellwert + versand)""")
-t("Gib `Vormittag` aus, wenn `stunde` kleiner als 12 ist, sonst `Nachmittag`.",
-  'stunde = 14',
-  """if stunde < 12:
-    print('Vormittag')
-else:
-    print('Nachmittag')""")
+print(f'Gesamtpreis: {bestellwert + versand} Euro')""")
 t("Gib `Weiter geht's!` aus, wenn `antwort` gleich `'ja'` ist, sonst `Abbruch`. Teste auch mit `'nein'` und `'Ja'`.",
   "antwort = 'ja'",
   """if antwort == 'ja':
@@ -258,49 +245,6 @@ elif farbe == 'grün':
     print('Fahren')
 else:
     print('Ampel kaputt')""")
-t('''Gib die Windstärke aus: unter 1 km/h `Windstille`, unter 20 km/h `leichter Wind`, unter 50 km/h `frischer Wind`,
-unter 75 km/h `Sturm`, sonst `Orkan`. Teste auch mit 0, 19 und 120.''',
-  'geschwindigkeit = 45',
-  """if geschwindigkeit < 1:
-    print('Windstille')
-elif geschwindigkeit < 20:
-    print('leichter Wind')
-elif geschwindigkeit < 50:
-    print('frischer Wind')
-elif geschwindigkeit < 75:
-    print('Sturm')
-else:
-    print('Orkan')""")
-t('Gib die Altersgruppe aus: unter 6 `Kleinkind`, unter 13 `Kind`, unter 18 `Jugendliche(r)`, unter 65 `Erwachsene(r)`, sonst `Senior(in)`.',
-  'alter = 15',
-  """if alter < 6:
-    print('Kleinkind')
-elif alter < 13:
-    print('Kind')
-elif alter < 18:
-    print('Jugendliche(r)')
-elif alter < 65:
-    print('Erwachsene(r)')
-else:
-    print('Senior(in)')""")
-t("Gib zur Nummer `tag` den Namen des Wochentags aus (1 = Montag, ..., 7 = Sonntag). Bei einer anderen Zahl gib `ungültig` aus.",
-  'tag = 3',
-  """if tag == 1:
-    print('Montag')
-elif tag == 2:
-    print('Dienstag')
-elif tag == 3:
-    print('Mittwoch')
-elif tag == 4:
-    print('Donnerstag')
-elif tag == 5:
-    print('Freitag')
-elif tag == 6:
-    print('Samstag')
-elif tag == 7:
-    print('Sonntag')
-else:
-    print('ungültig')""")
 t('Ein Händler gibt Mengenrabatt: ab 50 Stück 20 %, ab 20 Stück 10 %, ab 10 Stück 5 %, sonst keinen. Gib den Rabatt aus wie unten. Teste auch mit 50, 9 und 10.',
   'anzahl = 25',
   """if anzahl >= 50:
@@ -311,17 +255,7 @@ elif anzahl >= 10:
     rabatt = 5
 else:
     rabatt = 0
-print('Rabatt:', rabatt, '%')""")
-t('Gib zur Monatsnummer die Jahreszeit aus: Dezember bis Februar `Winter`, März bis Mai `Frühling`, Juni bis August `Sommer`, September bis November `Herbst`.',
-  'monat = 4',
-  """if monat == 12 or monat <= 2:
-    print('Winter')
-elif monat <= 5:
-    print('Frühling')
-elif monat <= 8:
-    print('Sommer')
-else:
-    print('Herbst')""")
+print(f'Rabatt: {rabatt} %')""")
 task('''Der folgende Code soll für 95 Punkte die Note 1 ausgeben, gibt aber die Note 4 aus.
 Schreibe ihn in die Codezelle und ändere die Reihenfolge der Bedingungen so, dass er richtig arbeitet. Teste auch mit 75 und 55.
 ```python
@@ -413,18 +347,6 @@ t("Gib `Feiertag` aus, wenn `datum` gleich `'01.01.'`, `'01.05.'` oder `'03.10.'
     print('Feiertag')
 else:
     print('kein Feiertag')""")
-t("Gib mit `not` den Satz `Wir gehen raus.` aus, wenn es **nicht** regnet, sonst `Wir bleiben drin.`.",
-  'regen = False',
-  """if not regen:
-    print('Wir gehen raus.')
-else:
-    print('Wir bleiben drin.')""")
-t("Gib `Willkommen!` aus, wenn `name` gleich `'admin'` **und** `passwort` gleich `'1234'` ist, sonst `Zugriff verweigert`.",
-  "name = 'admin'\npasswort = '4321'",
-  """if name == 'admin' and passwort == '1234':
-    print('Willkommen!')
-else:
-    print('Zugriff verweigert')""")
 t('''Ein Jahr ist ein Schaltjahr, wenn es durch 4, aber nicht durch 100 teilbar ist, **oder** wenn es durch 400 teilbar ist.
 Speichere das Ergebnis in `schaltjahr` und gib es aus. Teste auch mit 2024, 2000 und 2026.''',
   'jahr = 1900',
@@ -482,15 +404,6 @@ if alter >= 18:
 else:
     print('Kein Eintritt')""")
 
-t("Am Eingang gilt: Wer mindestens 18 ist und einen Ausweis hat, darf rein (`Eintritt`). Wer mindestens 18 ist, aber keinen Ausweis hat, bekommt `Bitte Ausweis zeigen`. Alle anderen `Kein Eintritt`. Verwende verschachtelte Bedingungen.",
-  'alter = 20\nhat_ausweis = False',
-  """if alter >= 18:
-    if hat_ausweis:
-        print('Eintritt')
-    else:
-        print('Bitte Ausweis zeigen')
-else:
-    print('Kein Eintritt')""")
 t('''Gib aus, in welchem Quadranten der Punkt `(x, y)` liegt: `I` (rechts oben), `II` (links oben), `III` (links unten), `IV` (rechts unten).
 Liegt der Punkt auf einer Achse, gib `auf einer Achse` aus. Teste auch mit `(3, -2)` und `(0, 5)`.''',
   'x = -4\ny = 2',
@@ -540,7 +453,7 @@ else:
     preis = 3 + (stunden - 1) * 2
     if preis > 15:
         preis = 15
-print('Preis:', preis, 'Euro')""")
+print(f'Preis: {preis} Euro')""")
 t("Gib `Fieber` aus, wenn `temperatur` über 38 Grad liegt. Liegt sie sogar über 39.5 Grad, gib zusätzlich `Arzt anrufen!` aus. Liegt sie unter 36 Grad, gib `Untertemperatur` aus, sonst `normal`. Teste mit 39.8, 38.5, 35.5 und 37.",
   'temperatur = 39.8',
   """if temperatur > 38:
@@ -597,36 +510,27 @@ Für einfache Fälle gibt es eine kurze Schreibweise in **einer** Zeile:
 `wert1 if bedingung else wert2`
 
 Ist die Bedingung wahr, ist das Ergebnis `wert1`, sonst `wert2`.''',
-     """punkte = 47
-status = 'bestanden' if punkte >= 50 else 'nicht bestanden'
-print(status)""")
+     """temperatur = 12
+kleidung = 'Jacke' if temperatur < 15 else 'T-Shirt'
+print(kleidung)""")
 
-t("Gib `Hallo, ...!` mit dem Namen aus, wenn `name` nicht leer ist, sonst `Kein Name angegeben`. Verwende `if name:`. Teste auch mit `'Mia'`.",
-  "name = ''",
-  """if name:
-    print('Hallo,', name + '!')
+t("`kekse` Kekse werden gerecht auf `kinder` Kinder verteilt. Speichere in `rest`, wie viele Kekse übrig bleiben. Gib mit `if rest:` den Satz unten aus, sonst `Geht genau auf`. Teste auch mit `kekse = 24`.",
+  'kekse = 26\nkinder = 6',
+  """rest = kekse % kinder
+if rest:
+    print(f'Es bleiben {rest} Kekse übrig')
 else:
-    print('Kein Name angegeben')""")
-t("Prüfe mit `in`, ob `buchstabe` ein Vokal ist (a, e, i, o, u). Gib `Vokal` oder `Konsonant` aus.",
-  "buchstabe = 'e'",
-  """if buchstabe in 'aeiou':
-    print('Vokal')
-else:
-    print('Konsonant')""")
+    print('Geht genau auf')""")
 t("Eine E-Mail-Adresse muss ein `@` enthalten. Gib `gültig` oder `ungültig` aus. Teste auch mit `'max@schule.de'`.",
   "email = 'max.schule.de'",
   """if '@' in email:
     print('gültig')
 else:
     print('ungültig')""")
-t("Speichere mit einem bedingten Ausdruck in `status` den Text `bestanden`, wenn `punkte` mindestens 50 ist, sonst `nicht bestanden`. Gib `status` aus.",
-  'punkte = 47',
-  """status = 'bestanden' if punkte >= 50 else 'nicht bestanden'
-print(status)""")
-t("Gib die Anzahl mit dem passenden Wort aus: `1 Apfel`, aber `3 Äpfel`. Verwende einen bedingten Ausdruck. Teste auch mit `anzahl = 1`.",
+t("Gib die Anzahl mit dem passenden Wort aus: `1 Apfel`, aber `3 Äpfel`. Verwende einen bedingten Ausdruck und einen f-String. Teste auch mit `anzahl = 1`.",
   'anzahl = 3',
   """wort = 'Apfel' if anzahl == 1 else 'Äpfel'
-print(anzahl, wort)""")
+print(f'{anzahl} {wort}')""")
 t('Speichere mit einem bedingten Ausdruck die kleinere der beiden Zahlen in `kleiner` und gib sie aus.',
   'a = 17\nb = 12',
   """kleiner = a if a < b else b
@@ -657,15 +561,7 @@ elif student:
     preis = 7
 else:
     preis = 9
-print('Preis:', preis, 'Euro')""")
-t("Drei Würfel: Gib `Dreierpasch` aus, wenn alle gleich sind, `Zweierpasch`, wenn genau zwei gleich sind, sonst `nichts`. Teste auch mit 3, 3, 3 und 1, 4, 6.",
-  'w1 = 5\nw2 = 2\nw3 = 5',
-  """if w1 == w2 and w2 == w3:
-    print('Dreierpasch')
-elif w1 == w2 or w1 == w3 or w2 == w3:
-    print('Zweierpasch')
-else:
-    print('nichts')""")
+print(f'Preis: {preis} Euro')""")
 t('''Gib Tipps zum Wetter aus. Mehrere Tipps können gleichzeitig gelten: unter 5 Grad `Mütze nicht vergessen`,
 bei Regen `Schirm mitnehmen`, über 25 Grad `Sonnencreme benutzen`. Gilt keiner, gib `Viel Spaß draußen` aus.''',
   'temperatur = 3\nregen = True',
@@ -696,7 +592,7 @@ elif einkommen <= 60000:
     steuer = einkommen * 0.2
 else:
     steuer = einkommen * 0.4
-print('Steuer:', steuer)""")
+print(f'Steuer: {steuer}')""")
 t("Schere, Stein, Papier: Schere schlägt Papier, Stein schlägt Schere, Papier schlägt Stein. Gib `Unentschieden`, `Spieler 1 gewinnt` oder `Spieler 2 gewinnt` aus. Teste verschiedene Kombinationen.",
   "spieler1 = 'Stein'\nspieler2 = 'Schere'",
   """if spieler1 == spieler2:
@@ -713,23 +609,12 @@ elif a == b or a == c or b == c:
     print('gleichschenklig')
 else:
     print('unregelmäßig')""")
-t('''Porto: Ein Brief bis 20 g kostet 95 Cent, bis 50 g 1.10 Euro, bis 500 g 1.80 Euro. Schwerere Sendungen müssen als Paket verschickt werden.
-Gib das Porto oder `Paket nötig` aus. Teste auch mit 10, 50 und 600.''',
-  'gewicht = 35',
-  """if gewicht <= 20:
-    print('Porto: 0.95 Euro')
-elif gewicht <= 50:
-    print('Porto: 1.10 Euro')
-elif gewicht <= 500:
-    print('Porto: 1.80 Euro')
-else:
-    print('Paket nötig')""")
 t("Ein Rabattcode ist gültig, wenn er genau `'SOMMER'` oder `'WINTER'` lautet und der Einkaufswert mindestens 30 Euro beträgt. Gib den Endpreis mit 10 % Rabatt aus, sonst den normalen Preis. Teste auch mit anderen Werten.",
   "code = 'SOMMER'\nwert = 50",
   """if (code == 'SOMMER' or code == 'WINTER') and wert >= 30:
-    print('Endpreis:', wert * 0.9)
+    print(f'Endpreis: {wert * 0.9}')
 else:
-    print('Endpreis:', wert)""")
+    print(f'Endpreis: {wert}')""")
 predict("""x = 7
 y = 0 if x > 5 else 1
 if y:
