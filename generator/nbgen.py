@@ -188,21 +188,17 @@ def bild_name(it, k):
 
 
 def task_md(it):
-    text = f'#### Aufgabe {it["nr"]}\n\n'
-    if it['kind'] == 'predict':
-        text += it['text'] + f'\n```{SPRACHEN[aktuelle_sprache]["codeblock"]}\n{it["given"]}\n```'
-    else:
-        text += it['text']
-        if it['kind'] == 'normal' and (aktuelle_sprache != 'python' or ausgabe_markdown):
-            text += '\n\n**Erwartete Ausgabe:**\n\n' + it['out'].rstrip()
-            for k in range(len(it.get('bilder', []))):
-                text += f'\n\n![Erwartete Ausgabe](attachment:{bild_name(it, k + 1)})'
-        elif it['kind'] == 'normal':
-            text += '\n\n**Erwartete Ausgabe:**'
-            if it['out'].strip() or not it['bilder']:
-                text += f'\n```\n{it["out"].rstrip()}\n```'
-            for k in range(len(it['bilder'])):  # Diagramme stehen als Anhang (attachment) in der Markdown-Zelle
-                text += f'\n\n![Erwartete Ausgabe](attachment:{bild_name(it, k + 1)})'
+    text = f'#### Aufgabe {it["nr"]}\n\n' + it['text']  # bei 'predict' steht der Code nur in der Codezelle
+    if it['kind'] == 'normal' and (aktuelle_sprache != 'python' or ausgabe_markdown):
+        text += '\n\n**Erwartete Ausgabe:**\n\n' + it['out'].rstrip()
+        for k in range(len(it.get('bilder', []))):
+            text += f'\n\n![Erwartete Ausgabe](attachment:{bild_name(it, k + 1)})'
+    elif it['kind'] == 'normal':
+        text += '\n\n**Erwartete Ausgabe:**'
+        if it['out'].strip() or not it['bilder']:
+            text += f'\n```\n{it["out"].rstrip()}\n```'
+        for k in range(len(it['bilder'])):  # Diagramme stehen als Anhang (attachment) in der Markdown-Zelle
+            text += f'\n\n![Erwartete Ausgabe](attachment:{bild_name(it, k + 1)})'
     return text
 
 
