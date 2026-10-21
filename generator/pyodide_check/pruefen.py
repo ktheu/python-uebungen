@@ -63,7 +63,8 @@ def zellen(generator, ordner):
                     items.append({'nr': f'{s_i}. Beispiel {b}', 'art': 'beispiel', 'code': it['code'], 'out': out,
                                   'fehler': it['error'].__name__ if it.get('error') else None})
                 else:
-                    items.append({'nr': it['nr'], 'art': it['kind'], 'code': it['solution'], 'out': it['out'],
+                    art = 'normal' if it.get('erklaerung') else it['kind']  # Vorhersage mit Lösung: Ausgabe steht im Notebook
+                    items.append({'nr': it['nr'], 'art': art, 'code': it['solution'], 'out': it['out'],
                                   'fehler': it['error'].__name__ if it['error'] else None})
     finally:
         os.chdir(alt_dir)

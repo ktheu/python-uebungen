@@ -63,18 +63,21 @@ def expl(md, code, anhaenge=None, error=None):
     sections[-1]['items'].append({'type': 'expl', 'md': md, 'code': code, 'anhaenge': anhaenge or {}, 'error': error})
 
 
-def task(text, given='', solution='', kind='normal', error=None, anhaenge=None):
+def task(text, given='', solution='', kind='normal', error=None, anhaenge=None, erklaerung=None):
     """kind: 'normal' (mit erwarteter Ausgabe), 'free' (ohne erwartete Ausgabe), 'predict'.
-    anhaenge: {name: PNG-Daten} für Bilder im Aufgabentext (![...](attachment:name))."""
+    anhaenge: {name: PNG-Daten} für Bilder im Aufgabentext (![...](attachment:name)).
+    erklaerung: nur bei 'predict', siehe predict()."""
     sections[-1]['items'].append({'type': 'task', 'text': text, 'given': given.strip('\n'),
                                   'solution': solution.strip('\n'), 'kind': kind, 'error': error,
-                                  'anhaenge': anhaenge or {}})
+                                  'anhaenge': anhaenge or {}, 'erklaerung': erklaerung})
 
 
-def predict(code, error=None, anhaenge=None, text=''):
-    """text: steht vor der Frage (z. B. ein Diagramm der beteiligten Tabellen)."""
+def predict(code, error=None, anhaenge=None, text='', erklaerung=None):
+    """text: steht vor der Frage (z. B. ein Diagramm der beteiligten Tabellen).
+    erklaerung: Markdown. Dann steht unter der Zelle eine aufklappbare Lösung mit der Ausgabe
+    (bzw. dem Fehlertyp) und dieser Erklärung."""
     task(text + 'Was wird ausgegeben? Überlege zuerst, was ausgegeben wird. Führe dann die Zelle aus und vergleiche.',
-         given=code, solution=code, kind='predict', error=error, anhaenge=anhaenge)
+         given=code, solution=code, kind='predict', error=error, anhaenge=anhaenge, erklaerung=erklaerung)
 
 
 # ---------------------------------------------------------------- run solutions
@@ -204,8 +207,21 @@ def png_anhang(anhaenge):
     return {name: {'image/png': base64.b64encode(b).decode('ascii')} for name, b in anhaenge.items()}
 
 
+def vorhersage_md(it):
+    """Aufklappbare Lösung einer Vorhersage-Aufgabe: Ausgabe (bzw. Fehlertyp) und Erklärung."""
+    text = '<details>\n<summary>Lösung anzeigen (erst selbst überlegen!)</summary>\n\n'
+    if it['out'].strip():
+        if aktuelle_sprache != 'python' or ausgabe_markdown:
+            text += '**Ausgabe:**\n\n' + it['out'].rstrip() + '\n\n'
+        else:
+            text += f'**Ausgabe:**\n```\n{it["out"].rstrip()}\n```\n\n'
+    if it['error']:
+        text += f'**Fehler:** `{it["error"].__name__}`\n\n'
+    return text + it['erklaerung'].strip() + '\n\n</details>'
+
+
 def loesung_md(it):
-    """Aufklappbare Lösung unter der Codezelle (nicht bei Vorhersage-Aufgaben)."""
+    """Aufklappbare Lösung unter der Codezelle (Vorhersage-Aufgaben: vorhersage_md())."""
     titel = 'Beispiellösung anzeigen' if it['kind'] == 'free' else 'Lösung anzeigen'
     return (f'<details>\n<summary>{titel} (erst selbst probieren!)</summary>\n\n'
             f'```{SPRACHEN[aktuelle_sprache]["codeblock"]}\n{it["solution"]}\n```\n\n</details>')
@@ -213,6 +229,9 @@ def loesung_md(it):
 
 AUFKLAPP_HINWEIS = '''Unter den Aufgaben kannst du jeweils die Lösung aufklappen. Versuche es aber immer zuerst selbst!
 Bei den Aufgaben „Was wird ausgegeben?“ gibt es keine Lösung zum Aufklappen: Dort führst du einfach die Zelle aus und vergleichst.'''
+AUFKLAPP_HINWEIS_ERKLAERT = '''Unter den Aufgaben kannst du jeweils die Lösung aufklappen. Versuche es aber immer zuerst selbst!
+Bei den Aufgaben „Was wird ausgegeben?“ überlegst du zuerst, führst dann die Zelle aus und vergleichst.
+Die aufklappbare Lösung erklärt dort, wie die Ausgabe zustande kommt.'''
 
 
 def build(titel, intro, loesung, aufklappbar):
@@ -220,7 +239,10 @@ def build(titel, intro, loesung, aufklappbar):
     if loesung:
         cells.append(md(f'### {titel} - Lösungen'))
     elif aufklappbar:
-        cells.append(md(f'### {titel} - Übungen\n\n{intro}\n\n{AUFKLAPP_HINWEIS}'))
+        vorhersagen = [it for s in sections for it in s['items'] if it['type'] == 'task' and it['kind'] == 'predict']
+        alle_erklaert = vorhersagen and all(it['erklaerung'] for it in vorhersagen)
+        hinweis = AUFKLAPP_HINWEIS_ERKLAERT if alle_erklaert else AUFKLAPP_HINWEIS
+        cells.append(md(f'### {titel} - Übungen\n\n{intro}\n\n{hinweis}'))
     else:
         cells.append(md(f'### {titel} - Übungen\n\n{intro}'))
     if setup_cell:
@@ -250,6 +272,8 @@ def build(titel, intro, loesung, aufklappbar):
                 cells.append(code(SPRACHEN[aktuelle_sprache]['platzhalter']))
             if aufklappbar and not loesung and it['kind'] != 'predict':
                 cells.append(md(loesung_md(it)))
+            elif aufklappbar and not loesung and it['erklaerung']:
+                cells.append(md(vorhersage_md(it)))
     for i, c in enumerate(cells):
         c['id'] = f'zelle-{i:03d}'  # feste IDs, damit Neugenerieren keine unnötigen Git-Änderungen erzeugt
         lines = c['source'].split('\n')

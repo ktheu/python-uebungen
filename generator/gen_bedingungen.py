@@ -3,6 +3,8 @@
 # Bewusst andere Aufgabenformen als in bedingungen/aufgabentex (Klausuraufgaben):
 # kein input(), keine "Ausdruck, der genau dann wahr ist, wenn x ... und durch n teilbar"-Aufgaben,
 # keine Wahrheitstafeln, keine positiv/null/negativ- oder bestanden/nicht-bestanden-Aufgaben.
+# Auch nicht die Beispiele aus bedingungen/inhalte (Unterricht): kein volljaehrig = alter >= 18, kein gerade/ungerade
+# bzw. durch-3-teilbar, keine Altersgrenzen mit 65, kein Wochenende/Werktag, keine and/or/not-Tabellen mit a, b, c.
 from nbgen import sec, expl, task, predict, generate
 
 
@@ -49,16 +51,16 @@ t('Gib für `a` und `b` die Ergebnisse von `a > b`, `a <= b` und `a != b` aus, j
   """print(a > b)
 print(a <= b)
 print(a != b)""")
-t('Speichere in der Variablen `volljaehrig`, ob `alter` mindestens 18 ist. Gib `volljaehrig` aus. Teste auch mit `alter = 18`.',
-  'alter = 16',
-  """volljaehrig = alter >= 18
-print(volljaehrig)""")
+t('Im Flugzeug sind 23 kg Gepäck frei. Speichere in der Variablen `passt`, ob `gewicht` höchstens 23 ist. Gib `passt` aus. Teste auch mit `gewicht = 23`.',
+  'gewicht = 24.5',
+  """passt = gewicht <= 23
+print(passt)""")
 t('Prüfe mit **einer** Vergleichskette, ob `temperatur` zwischen 18 und 24 Grad liegt (einschließlich). Gib das Ergebnis aus. Teste auch mit `25`.',
   'temperatur = 21',
   "print(18 <= temperatur <= 24)")
-t('Gib aus, ob `n` gerade ist. Verwende den Modulo-Operator `%`.',
-  'n = 14',
-  "print(n % 2 == 0)")
+t('Gib aus, ob die Zahl `n` mit der Ziffer 0 endet. Verwende den Modulo-Operator `%`. Teste auch mit `n = 205`.',
+  'n = 230',
+  "print(n % 10 == 0)")
 t("Gib aus, ob `eingabe` genau mit dem Passwort `'geheim123'` übereinstimmt.",
   "eingabe = 'Geheim123'",
   "print(eingabe == 'geheim123')")
@@ -77,10 +79,15 @@ print(a == b)
 print('3' == 3)
 print(10 > 9 > 8)
 print('Zebra' < 'apfel')
-print(type(a > b))""")
+print(type(a > b))""", erklaerung='''- `a == b` ist `True`: `3` und `3.0` haben denselben Wert, auch wenn die eine Zahl ganzzahlig ist und die andere eine Kommazahl.
+- `'3' == 3` ist `False`: Eine Zeichenkette ist nie gleich einer Zahl.
+- `10 > 9 > 8` ist eine Vergleichskette: `10 > 9` und `9 > 8` stimmen beide.
+- `'Zebra' < 'apfel'` ist `True`: Alle Großbuchstaben kommen vor allen Kleinbuchstaben.
+- `a > b` ist ein Vergleich (hier mit dem Wert `False`). Jeder Vergleich hat den Datentyp `bool`.''')
 predict("""x = 5
 if x = 5:
-    print('fünf')""", error=SyntaxError)
+    print('fünf')""", error=SyntaxError, erklaerung='''In der Bedingung steht `=` (Zuweisung) statt `==` (Vergleich).
+Das ist ein Syntaxfehler: Python führt dann **gar nichts** aus, auch nicht die erste Zeile. Richtig wäre `if x == 5:`.''')
 
 # ---------------------------------------------------------------- 2
 sec('if')
@@ -135,10 +142,12 @@ if x > 5:
     x = x - 5
 if x > 5:
     x = x - 5
-print(x)""")
+print(x)""", erklaerung='''Die erste Bedingung `10 > 5` ist wahr, also wird `x` zu `5`.
+Die zweite Bedingung wird mit dem **neuen** Wert geprüft: `5 > 5` ist falsch. Deshalb bleibt `x` bei `5`.''')
 predict("""x = 3
 if x > 2:
-print('groß')""", error=IndentationError)
+print('groß')""", error=IndentationError, erklaerung='''Nach dem Doppelpunkt muss ein **eingerückter** Block folgen. Hier ist `print('groß')` nicht eingerückt.
+Python meldet einen Einrückungsfehler und führt nichts aus.''')
 
 # ---------------------------------------------------------------- 3
 sec('if und else')
@@ -214,7 +223,9 @@ if a % 2 == 0:
     print('a gerade')
 else:
     print('a ungerade')
-print('fertig')""")
+print('fertig')""", erklaerung='''- `4 > 7` ist falsch, also wird der `else`-Block ausgeführt: `groesser` wird `7`.
+- `4 % 2` ist `0`, also ist die zweite Bedingung wahr und es wird `a gerade` ausgegeben. Der `else`-Block wird übersprungen.
+- `print('fertig')` ist nicht eingerückt und wird immer ausgeführt.''')
 
 # ---------------------------------------------------------------- 4
 sec('elif')
@@ -361,7 +372,9 @@ else:
 if x > 20:
     print('D')
 elif x % 5 == 0:
-    print('E')""")
+    print('E')""", erklaerung='''- Erste `if`-Anweisung: `15 > 10` ist wahr, also wird `A` ausgegeben. `15 > 5` wäre auch wahr, wird aber
+  gar nicht mehr geprüft, weil nur der Block der **ersten** wahren Bedingung ausgeführt wird.
+- Die zweite `if`-Anweisung ist unabhängig von der ersten: `15 > 20` ist falsch, `15 % 5 == 0` ist wahr. Also wird `E` ausgegeben.''')
 
 # ---------------------------------------------------------------- 5
 sec('and, or und not')
@@ -374,10 +387,10 @@ Mit logischen Operatoren verbindet man Bedingungen:
 - `not a` kehrt den Wahrheitswert um.
 
 Rangfolge: Zuerst wird `not` ausgewertet, dann `and`, dann `or`. Im Zweifel setzt man **Klammern**.''',
-     """alter = 70
-schueler = False
-print(alter < 18 or alter >= 65)
-print(alter >= 18 and not schueler)
+     """stunde = 23
+feiertag = False
+print(stunde < 6 or stunde >= 22)
+print(stunde >= 8 and not feiertag)
 regen = False
 if not regen:
     print('Wir gehen raus.')""")
@@ -388,18 +401,18 @@ t("Für die Achterbahn muss man mindestens 1.40 m groß **und** mindestens 8 Jah
     print('darf fahren')
 else:
     print('darf nicht fahren')""")
-t("Im Freibad zahlen Personen unter 18 **oder** ab 65 Jahren den ermäßigten Preis. Gib `ermäßigt` oder `voller Preis` aus. Teste auch mit 30 und 12.",
-  'alter = 70',
-  """if alter < 18 or alter >= 65:
-    print('ermäßigt')
+t("Eine Wetterstation misst die Temperatur. Werte unter -40 **oder** über 50 Grad sind vermutlich Messfehler. Gib `Messfehler?` oder `ok` aus. Teste auch mit 20 und -45.",
+  'temperatur = 57',
+  """if temperatur < -40 or temperatur > 50:
+    print('Messfehler?')
 else:
-    print('voller Preis')""")
-t("Gib `Wochenende` aus, wenn `tag` gleich `'Sa'` oder `'So'` ist, sonst `Werktag`.",
-  "tag = 'So'",
-  """if tag == 'Sa' or tag == 'So':
-    print('Wochenende')
+    print('ok')""")
+t("Gib `Feiertag` aus, wenn `datum` gleich `'01.01.'`, `'01.05.'` oder `'03.10.'` ist, sonst `kein Feiertag`. Teste auch mit `'24.12.'`.",
+  "datum = '03.10.'",
+  """if datum == '01.01.' or datum == '01.05.' or datum == '03.10.':
+    print('Feiertag')
 else:
-    print('Werktag')""")
+    print('kein Feiertag')""")
 t("Gib mit `not` den Satz `Wir gehen raus.` aus, wenn es **nicht** regnet, sonst `Wir bleiben drin.`.",
   'regen = False',
   """if not regen:
@@ -435,16 +448,23 @@ elif w1 == w2:
     print('Pasch')
 else:
     print('nichts')""")
-predict("""a = True
-b = False
-print(a and b)
-print(a or b)
-print(not a or b)
-print(not (a or b))
-print(a and not b)""")
+predict("""sonne = False
+wind = True
+print(sonne or wind)
+print(sonne and wind)
+print(not sonne and wind)
+print(not (sonne and wind))
+print(sonne or not wind)""", erklaerung='''- `sonne or wind`: `wind` ist wahr, das reicht für `or`. Ergebnis `True`.
+- `sonne and wind`: `sonne` ist falsch, also ist `and` falsch. Ergebnis `False`.
+- `not sonne and wind`: Zuerst `not sonne`, das ist `True`. `True and True` ergibt `True`.
+- `not (sonne and wind)`: Die Klammer ergibt `False`, `not False` ergibt `True`.
+- `sonne or not wind`: `not wind` ist `False`. `False or False` ergibt `False`.''')
 predict("""x = 4
 print(x > 3 or x < 2 and x == 0)
-print((x > 3 or x < 2) and x == 0)""")
+print((x > 3 or x < 2) and x == 0)""", erklaerung='''Die einzelnen Vergleiche: `x > 3` ist `True`, `x < 2` ist `False`, `x == 0` ist `False`.
+
+- Ohne Klammern wird `and` vor `or` ausgewertet: `x < 2 and x == 0` ergibt `False`. Dann `True or False`, also `True`.
+- Mit Klammern wird zuerst die Klammer ausgewertet: `True or False` ergibt `True`. Dann `True and False`, also `False`.''')
 
 # ---------------------------------------------------------------- 6
 sec('Verschachtelte Bedingungen')
@@ -541,7 +561,10 @@ if a > 3:
     print('Z')
 else:
     print('W')
-print('fertig')""")
+print('fertig')""", erklaerung='''- `5 > 3` ist wahr, also wird der äußere Block ausgeführt.
+- Darin ist `0 > 3` falsch, also wird `Y` ausgegeben.
+- `print('Z')` gehört zum äußeren Block (einfach eingerückt), nicht zum inneren `else`. Es wird deshalb auch ausgegeben.
+- Das äußere `else` wird übersprungen, `print('fertig')` wird immer ausgeführt.''')
 
 # ---------------------------------------------------------------- 7
 sec('Kurze Bedingungen')
@@ -617,7 +640,9 @@ else:
 predict("""print(bool(0), bool(7), bool(''), bool('0'))
 x = 0
 print('ja' if x else 'nein')
-print('ha' in 'Hallo', 'Ha' in 'Hallo')""")
+print('ha' in 'Hallo', 'Ha' in 'Hallo')""", erklaerung='''- `0` und `''` sind falsch, `7` ist wahr. `'0'` ist eine **nicht leere** Zeichenkette (sie enthält das Zeichen 0) und deshalb wahr.
+- `x` ist `0`, gilt also als falsch. Der bedingte Ausdruck liefert deshalb `'nein'`.
+- `in` unterscheidet Groß- und Kleinschreibung: `'ha'` kommt in `'Hallo'` nicht vor, `'Ha'` schon.''')
 
 # ---------------------------------------------------------------- 8
 sec('Gemischte Übungen')
@@ -713,6 +738,9 @@ elif not y and x % 2:
     print('B')
 else:
     print('C')
-print(x > 5 and y == 0 or x < 0)""")
+print(x > 5 and y == 0 or x < 0)""", erklaerung='''- `7 > 5` ist wahr, also bekommt `y` den Wert `0`.
+- `if y:` ist falsch, weil `0` als falsch gilt.
+- `not y` ist `True`. `x % 2` ist `1`, und `1` gilt als wahr. Also ist die `elif`-Bedingung wahr, und es wird `B` ausgegeben.
+- Letzte Zeile: Zuerst `and`: `x > 5 and y == 0` ergibt `True`. Dann `True or False`, also `True`.''')
 
 generate('bedingungen', 'Bedingungen')
