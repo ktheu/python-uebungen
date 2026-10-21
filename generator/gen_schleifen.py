@@ -6,6 +6,7 @@
 # Auch nicht die Beispiele aus bedingungen/inhalte (Unterricht): kein Verdoppeln/Verdreifachen bis zu einer Grenze im Beispiel,
 # kein Guthaben mit 5 % bis zur Verdopplung, keine Summe 1 bis 100 oder Summe der (un)geraden Zahlen, kein Countdown,
 # kein continue bei i % 2 bzw. i % 3 == 0 mit anschließendem break.
+# Kein Collatz (einfuehrung/inhalte), keine lineare Suche nach Minimum/Maximum (kommt später im Unterricht).
 from nbgen import sec, expl, task, predict, generate
 
 
@@ -62,16 +63,6 @@ while hoehe >= 1:
     hoehe = hoehe * 0.6
     spruenge = spruenge + 1
 print(spruenge)""")
-predict("""n = 20
-schritte = 0
-while n != 1:
-    if n % 2 == 0:
-        n = n // 2
-    else:
-        n = 3 * n + 1
-    schritte = schritte + 1
-print(schritte)""", erklaerung='''Die Zahlen sind 20, 10, 5, 16, 8, 4, 2, 1. Jeder Pfeil ist ein Schritt:
-20 → 10 → 5 → 16 → 8 → 4 → 2 → 1, das sind 7 Schritte. Bei 1 ist die Bedingung `n != 1` falsch, die Schleife endet.''')
 predict("""x = 0
 summe = 0
 while summe < 20:
@@ -187,15 +178,6 @@ t('Berechne die Summe der Quadratzahlen `1*1 + 2*2 + ... + 10*10` und gib sie au
 for i in range(1, 11):
     summe += i * i
 print(summe)""")
-t('Finde für `n` von 0 bis 20 den kleinsten Wert von `n * n - 10 * n`. Gib das `n` und den Wert aus.',
-  body="""bestes_n = 0
-kleinster = 0
-for n in range(21):
-    wert = n * n - 10 * n
-    if wert < kleinster:
-        kleinster = wert
-        bestes_n = n
-print(bestes_n, kleinster)""")
 predict("""s = 0
 p = 1
 for i in range(1, 5):
@@ -428,164 +410,5 @@ predict("""for i in range(1, 4):
         print(i * j, end=' ')
     print()""", erklaerung='''Die innere Schleife bricht ab, sobald `j > i` ist. In Zeile `i` laufen also nur `j = 1, ..., i`.
 Ausgegeben wird jeweils `i * j`. Das `break` beendet nur die innere Schleife, `print()` am Ende der Zeile wird immer ausgeführt.''')
-
-# ---------------------------------------------------------------- 7
-sec('Rechnen mit Schleifen')
-expl('''#### Kleine Algorithmen
-
-Viele Rechenverfahren bestehen aus einer Schleife mit Bedingungen darin, z. B. das Suchen von Teilern,
-das Prüfen auf Primzahlen oder das schrittweise Annähern an ein Ergebnis.
-
-Praktisch dabei: Mit `a, b = b, a + b` bekommen **beide** Variablen gleichzeitig einen neuen Wert.
-Rechts wird zuerst alles mit den **alten** Werten ausgerechnet, erst danach wird zugewiesen.''',
-     """n = 12
-for t in range(1, n + 1):
-    if n % t == 0:
-        print(t, end=' ')
-print()
-a = 1
-b = 1
-a, b = b, a + b
-print(a, b)""")
-
-t('Zähle, wie viele Teiler 360 hat. Gib die Anzahl aus.',
-  body="""anzahl = 0
-for t in range(1, 361):
-    if 360 % t == 0:
-        anzahl += 1
-print(anzahl)""")
-t("Prüfe, ob `n` eine Primzahl ist, also genau zwei Teiler hat (1 und sich selbst). Gib `Primzahl` oder `keine Primzahl` aus. Teste auch mit 91.",
-  'n = 97',
-  """teiler = 0
-for t in range(1, n + 1):
-    if n % t == 0:
-        teiler += 1
-if teiler == 2:
-    print('Primzahl')
-else:
-    print('keine Primzahl')""")
-t('Gib alle Primzahlen bis 50 in einer Zeile aus. Verwende zwei verschachtelte Schleifen.',
-  body="""for n in range(2, 51):
-    prim = True
-    for t in range(2, n):
-        if n % t == 0:
-            prim = False
-            break
-    if prim:
-        print(n, end=' ')
-print()""")
-t('Collatz-Folge: Ist `n` gerade, halbiere es, sonst rechne `3 * n + 1`. Wiederhole das, bis `n` gleich 1 ist. Gib alle Zahlen der Folge in einer Zeile aus, beginnend mit `n`.',
-  'n = 6',
-  """print(n, end=' ')
-while n != 1:
-    if n % 2 == 0:
-        n = n // 2
-    else:
-        n = 3 * n + 1
-    print(n, end=' ')
-print()""")
-t('Berechne den größten gemeinsamen Teiler von `a` und `b` mit dem Subtraktionsverfahren: Solange `a` und `b` verschieden sind, ziehe die kleinere Zahl von der größeren ab. Am Ende ist `a` der ggT.',
-  'a = 48\nb = 18',
-  """while a != b:
-    if a > b:
-        a = a - b
-    else:
-        b = b - a
-print(a)""")
-t('Gib alle Fibonacci-Zahlen kleiner als 100 in einer Zeile aus. Die Folge beginnt mit 1, 1, und jede weitere Zahl ist die Summe der beiden vorigen. Verwende `a, b = b, a + b`.',
-  body="""a = 1
-b = 1
-while a < 100:
-    print(a, end=' ')
-    a, b = b, a + b
-print()""")
-t('Drehe die Ziffern von `n` um: aus 12345 wird 54321. Verwende `% 10` und `// 10` in einer Schleife.',
-  'n = 12345',
-  """umgedreht = 0
-while n > 0:
-    umgedreht = umgedreht * 10 + n % 10
-    n = n // 10
-print(umgedreht)""")
-t('Eine Zahl heißt vollkommen, wenn sie gleich der Summe ihrer Teiler (ohne sich selbst) ist, z. B. 6 = 1 + 2 + 3. Gib alle vollkommenen Zahlen bis 1000 in einer Zeile aus.',
-  body="""for n in range(2, 1001):
-    summe = 0
-    for t in range(1, n):
-        if n % t == 0:
-            summe += t
-    if summe == n:
-        print(n, end=' ')
-print()""")
-t('Heron-Verfahren für die Wurzel aus 2: Beginne mit `x = 2` und rechne sechsmal `x = (x + 2 / x) / 2`. Gib nach jedem Schritt `x` mit sechs Nachkommastellen aus (Formatangabe `{x:.6f}`).',
-  body="""x = 2
-for i in range(6):
-    x = (x + 2 / x) / 2
-    print(f'{x:.6f}')""")
-predict("""n = 10
-teiler = 0
-for t in range(1, n + 1):
-    if n % t == 0:
-        teiler += t
-print(teiler)
-x = 1
-for i in range(5):
-    x = x * 2 + 1
-print(x)""", erklaerung='''- Die Teiler von 10 sind 1, 2, 5, 10. Addiert werden die Teiler selbst, nicht ihre Anzahl: `1 + 2 + 5 + 10 = 18`.
-- `x` entwickelt sich so: 1 → 3 → 7 → 15 → 31 → 63 (fünf Schritte, jeweils `x * 2 + 1`).''')
-
-# ---------------------------------------------------------------- 8
-sec('Gemischte Übungen')
-t('FizzBuzz: Gib die Zahlen von 1 bis 15 aus. Statt Vielfachen von 3 gib `Fizz` aus, statt Vielfachen von 5 `Buzz` und statt Vielfachen von 15 `FizzBuzz`.',
-  body="""for i in range(1, 16):
-    if i % 15 == 0:
-        print('FizzBuzz')
-    elif i % 3 == 0:
-        print('Fizz')
-    elif i % 5 == 0:
-        print('Buzz')
-    else:
-        print(i)""")
-t('1000 Euro werden 5 Jahre lang mit 3 % pro Jahr verzinst. Gib für jedes Jahr den Kontostand mit zwei Nachkommastellen aus wie unten (Formatangabe `{kapital:.2f}`).',
-  body="""kapital = 1000
-for jahr in range(1, 6):
-    kapital = kapital * 1.03
-    print(f'Jahr {jahr}: {kapital:.2f} Euro')""")
-t('Gib alle dreistelligen Zahlen von 100 bis 200 in einer Zeile aus, die vorwärts und rückwärts gelesen gleich sind. Tipp: Bei einer dreistelligen Zahl muss die erste Ziffer `n // 100` gleich der letzten `n % 10` sein.',
-  body="""for n in range(100, 201):
-    if n // 100 == n % 10:
-        print(n, end=' ')
-print()""")
-t('Zähle, wie viele Zahlen von 1 bis 1000 die Ziffer 7 enthalten. Tipp: `str(n)` wandelt eine Zahl in eine Zeichenkette um, dann hilft `in`.',
-  body="""anzahl = 0
-for n in range(1, 1001):
-    if '7' in str(n):
-        anzahl += 1
-print(anzahl)""")
-t('Zerlege `n` in Primfaktoren. Teile `n` so lange durch den kleinsten möglichen Teiler, bis 1 übrig bleibt. Gib die Faktoren in einer Zeile aus.',
-  'n = 360',
-  """t = 2
-while n > 1:
-    if n % t == 0:
-        print(t, end=' ')
-        n = n // t
-    else:
-        t += 1
-print()""")
-t('Gib eine Tabelle der Zahlen von 1 bis 5 mit ihrem Quadrat und ihrer Kubikzahl aus. Jede Spalte ist 5 Zeichen breit.',
-  body="""for i in range(1, 6):
-    print(f'{i:5}{i * i:5}{i * i * i:5}')""")
-t('Gib eine Raute aus Sternen aus wie unten. Verwende zwei Schleifen: eine für die obere Hälfte und eine für die untere.',
-  body="""for i in range(1, 4):
-    print(' ' * (3 - i) + '*' * (2 * i - 1))
-for i in range(2, 0, -1):
-    print(' ' * (3 - i) + '*' * (2 * i - 1))""")
-predict("""zahl = 0
-for i in range(1, 4):
-    for j in range(i, 4):
-        zahl = zahl * 10 + j
-print(zahl)""", erklaerung='''`zahl * 10 + j` hängt die Ziffer `j` hinten an `zahl` an.
-
-- `i = 1`: `j` = 1, 2, 3 → `123`
-- `i = 2`: `j` = 2, 3 → `12323`
-- `i = 3`: `j` = 3 → `123233`''')
 
 generate('schleifen', 'Schleifen')
