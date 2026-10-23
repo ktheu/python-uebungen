@@ -12,6 +12,7 @@ Ablauf:
 
 Einmalig vorher in diesem Ordner: npm install
 """
+import base64
 import glob
 import json
 import os
@@ -45,6 +46,11 @@ def zellen(generator, ordner):
     items = []
     alt_dir = os.getcwd()
     tmp = tempfile.mkdtemp()
+    dateien = {}
+    for pfad in nbgen.beilagen:  # Dateien, die das Notebook öffnet (generate(..., dateien=...)), auch nach Pyodide mitgeben
+        shutil.copy(pfad, tmp)
+        with open(pfad, 'rb') as f:
+            dateien[os.path.basename(pfad)] = base64.b64encode(f.read()).decode('ascii')
     os.chdir(tmp)  # wie in nbgen.check(): Setup und Zellen laufen in einem temporären Ordner
     pandas = getattr(nbgen.ausfuehrung, 'pandas', False)  # pandas-Notebooks: Ausgabe wie JupyterLab (pandasnb.py)
     ausf = nbgen.ausfuehrung if pandas else nbgen.run_mit_bildern
@@ -69,6 +75,8 @@ def zellen(generator, ordner):
     finally:
         os.chdir(alt_dir)
         shutil.rmtree(tmp)
+    if dateien and items:
+        items[0]['dateien'] = dateien
     if pandas and items:  # Pyodide soll dieselbe Darstellung benutzen
         with open(os.path.join(os.path.dirname(os.path.abspath(generator)), 'pandasnb.py'), encoding='utf-8') as f:
             items[0]['renderer'] = f.read()

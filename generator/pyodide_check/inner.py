@@ -10,6 +10,11 @@ os.environ['MPLBACKEND'] = 'Agg'  # in Node gibt es kein Browserfenster; Diagram
 
 zellen = json.loads(zellen_json)
 os.chdir(tempfile.mkdtemp())
+if zellen and zellen[0].get('dateien'):  # Dateien, die das Notebook öffnet (z. B. Fotos), wie in JupyterLite neben das Notebook legen
+    import base64
+    for name, daten in zellen[0]['dateien'].items():
+        with open(name, 'wb') as f:
+            f.write(base64.b64decode(daten))
 
 renderer = None
 if zellen and zellen[0].get('renderer'):  # pandas-Notebooks: dieselbe Darstellung wie lokal (pandasnb.py)

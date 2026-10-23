@@ -35,6 +35,10 @@
 | matplotlib: Diagrammtypen | [matplotlib_diagrammtypen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=matplotlib_diagrammtypen.ipynb) |
 | matplotlib: Layout, Bilder und Heatmaps | [matplotlib_layout.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=matplotlib_layout.ipynb) |
 | matplotlib: Anwendungen | [matplotlib_anwendungen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=matplotlib_anwendungen.ipynb) |
+| Pillow 1: Bilder, Pixel und Farben | [pillow_grundlagen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=pillow_grundlagen.ipynb) |
+| Pillow 2: Zeichnen und Text | [pillow_zeichnen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=pillow_zeichnen.ipynb) |
+| Pillow 3: Fotos bearbeiten (Filter, Collagen, animierte GIFs) | [pillow_bearbeiten.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=pillow_bearbeiten.ipynb) |
+| Pillow 4: Bildverarbeitung selbst programmieren (Pixel, numpy, Steganographie) | [pillow_pixel.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=pillow_pixel.ipynb) |
 | pandas 1: Series und DataFrame | [pandas_grundlagen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=pandas_grundlagen.ipynb) |
 | pandas 2: Auswählen und aufräumen | [pandas_auswaehlen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=pandas_auswaehlen.ipynb) |
 | pandas 3: Gruppieren und auswerten | [pandas_gruppieren.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=pandas_gruppieren.ipynb) |

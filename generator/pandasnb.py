@@ -2,7 +2,8 @@
 
 - Text von print() erscheint als Textblock (```).
 - Ist die letzte Zeile ein Ausdruck, wird sein Wert angezeigt (wie "Out[ ]"); ebenso alles, was mit display() ausgegeben wird.
-  DataFrames werden als HTML-Tabelle angezeigt, alles andere (auch Series) als Text mit repr().
+  DataFrames werden als HTML-Tabelle angezeigt, Pillow-Bilder als Bild (Anhang, verkleinert, siehe pillow_anhang()),
+  alles andere (auch Series) als Text mit repr().
 - Die Reihenfolge von print() und display() bleibt erhalten.
 
 nbgen.generate(..., ausfuehren=pandasnb.ausfuehrung(), ausgabe_markdown=True) benutzt das für die erwarteten Ausgaben.
@@ -42,6 +43,8 @@ def _darstellen(wert, teile):
         return
     if type(wert).__name__ == 'DataFrame':
         teile.append(('html', html_tabelle(wert)))
+    elif type(wert).__module__.startswith('PIL.') and hasattr(wert, '_repr_png_'):
+        teile.append(('bild', wert))   # Pillow-Bild: JupyterLab zeigt es als Bild an (in als_markdown nicht enthalten)
     else:
         teile.append(('text', repr(wert) + '\n'))
 
@@ -72,6 +75,8 @@ def als_markdown(teile):
     bloecke = []
     text = ''
     for art, inhalt in teile:
+        if art == 'bild':
+            continue
         if art == 'text':
             text += inhalt
         else:
@@ -82,6 +87,25 @@ def als_markdown(teile):
     if text:
         bloecke.append('```\n' + text.rstrip('\n') + '\n```')
     return '\n\n'.join(bloecke) + ('\n' if bloecke else '')
+
+
+BILD_MAX = 320  # erwartete Pillow-Bilder höchstens so breit/hoch (Pixel), damit die Notebooks klein bleiben
+
+
+def pillow_anhang(bild):
+    """Pillow-Bild als Daten für den Anhang: verkleinert auf BILD_MAX; Fotos (viele Farben) als JPEG, sonst PNG."""
+    import io
+    foto = bild.mode in ('RGB', 'L') and bild.getcolors(256) is None  # am Original zählen: Verkleinern erzeugt Zwischenfarben
+    kopie = bild.copy()
+    kopie.thumbnail((BILD_MAX, BILD_MAX))
+    if kopie.mode not in ('RGB', 'RGBA', 'L', '1'):
+        kopie = kopie.convert('RGBA')
+    buf = io.BytesIO()
+    if foto:
+        kopie.save(buf, 'JPEG', quality=85)
+    else:
+        kopie.save(buf, 'PNG', optimize=True)
+    return buf.getvalue()
 
 
 def ausfuehrung():
@@ -97,7 +121,7 @@ def ausfuehrung():
             matplotlib.rcdefaults()
             plt.show = lambda *args, **kwargs: None
         teile, fehler = zelle_ausfuehren(code)
-        bilder = []
+        bilder = [pillow_anhang(inhalt) for art, inhalt in teile if art == 'bild']
         if plt is not None:
             for nr in plt.get_fignums():
                 buf = io.BytesIO()

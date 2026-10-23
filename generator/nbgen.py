@@ -121,9 +121,14 @@ def run_mit_bildern(code):
     return out, err, bilder
 
 
+beilagen = []  # absolute Pfade der Dateien, die das Notebook öffnet (generate(..., dateien=...)); liegen neben dem Notebook
+
+
 def check():
     alt = os.getcwd()
     tmp = tempfile.mkdtemp()
+    for pfad in beilagen:  # wie in JupyterLite: die Dateien liegen im Ordner des Notebooks
+        shutil.copy(pfad, tmp)
     os.chdir(tmp)
     try:
         return _check()
@@ -184,8 +189,13 @@ def code(src):
     return {'cell_type': 'code', 'execution_count': None, 'metadata': {}, 'outputs': [], 'source': src}
 
 
+def bild_art(daten):
+    """Dateiendung und MIME-Typ eines Bilds: JPEG (z. B. verkleinerte Fotos aus pandasnb.pillow_anhang), sonst PNG."""
+    return ('jpg', 'image/jpeg') if daten[:2] == b'\xff\xd8' else ('png', 'image/png')
+
+
 def bild_name(it, k):
-    return f'aufgabe-{it["nr"]}-{k}.png'
+    return f'aufgabe-{it["nr"]}-{k}.{bild_art(it["bilder"][k - 1])[0]}'
 
 
 def task_md(it):
@@ -204,7 +214,7 @@ def task_md(it):
 
 
 def bilder_anhang(it):
-    return {bild_name(it, k + 1): {'image/png': base64.b64encode(b).decode('ascii')}
+    return {bild_name(it, k + 1): {bild_art(b)[1]: base64.b64encode(b).decode('ascii')}
             for k, b in enumerate(it['bilder'])}
 
 
@@ -298,19 +308,22 @@ Danach folgen viele kleine Übungen. Wenn etwas vorgegeben ist, steht es schon i
 
 
 def generate(name, titel, intro=INTRO, aufklappbar=True, loesungsnotebook=False, sprache='python', ausfuehren=None,
-             ausgabe_markdown=False, ordner='content'):
+             ausgabe_markdown=False, ordner='content', dateien=None):
     """Schreibt <name>.ipynb nach ../<ordner>/ (Standard ../content/).
     aufklappbar: Lösungen aufklappbar unter jede Aufgabe schreiben.
     loesungsnotebook: zusätzlich ein getrenntes <name>_loesungen.ipynb schreiben (wird normalerweise nicht gebraucht).
     sprache: Schlüssel aus SPRACHEN ('python' oder 'sqlite').
     ausfuehren: Funktion code -> (ausgabe, fehler, bilder) zum Prüfen der Zellen (Standard: Python mit run_mit_bildern).
     ordner: 'content' kommt auf die JupyterLite-Seite; 'extern' ist für Notebooks mit Paketen, die es im Browser nicht gibt
-    (z. B. PyTorch, geöffnet in Google Colab)."""
+    (z. B. PyTorch, geöffnet in Google Colab).
+    dateien: Namen von Dateien in ../<ordner>/, die das Notebook öffnet (z. B. Fotos). Sie werden beim Prüfen in den temporären
+    Ordner kopiert (und vom Pyodide-Check nach Pyodide)."""
     global aktuelle_sprache, ausfuehrung
     aktuelle_sprache = sprache
     ausfuehrung = ausfuehren
     globals()['ausgabe_markdown'] = ausgabe_markdown  # ausgabe_markdown: Ausgabe von ausfuehren ist schon Markdown (pandasnb.py)
     standard = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(sys.argv[0]))), ordner)
+    beilagen[:] = [os.path.join(standard, name) for name in (dateien or [])]
     out = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else standard)
     if check() != 0:
         print('nichts geschrieben')
