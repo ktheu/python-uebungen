@@ -9,8 +9,8 @@
 # (verkleinert auf höchstens 320 Pixel, Fotos als JPEG). Der Pyodide-Check vergleicht nur den Text, nicht die Bilder.
 # Keine Dateigrößen ausgeben (hängen von zlib/libjpeg ab). Die Fotos liegen als PNG in content/ (dateien=FOTOS).
 import pandasnb
-from nbgen import sec, expl, predict, generate
-from pillowhilfe import t, reihe, ANZEIGEN, SCHLUSS, FOTOS, FOTOS_MD
+from nbgen import sec, expl, predict, generate, setup
+from pillowhilfe import t, reihe, ANZEIGEN, SCHLUSS, FOTOS, FOTOS_MD, ANZEIGE, ANZEIGE_MD
 
 INTRO = '''Ein digitales Bild ist ein Raster aus **Pixeln** (Bildpunkten), jedes mit einer Farbe. Mit dem Paket **Pillow** (Modulname `PIL`) erzeugst, bearbeitest und
 speicherst du Bilder in Python. In diesem Notebook lernst du, wie Pillow Bilder, Farben und Pixel darstellt, wie du einzelne Pixel liest und setzt,
@@ -27,6 +27,8 @@ Vorausgesetzt werden die Notebooks *Schleifen*, *Tupel* und *Funktionen*.
 ''' + SCHLUSS
 
 P = 'from PIL import Image'
+
+setup(ANZEIGE_MD, ANZEIGE)
 
 # ---------------------------------------------------------------- 1
 sec('Ein Bild erzeugen')

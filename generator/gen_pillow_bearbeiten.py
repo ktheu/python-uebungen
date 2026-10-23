@@ -8,8 +8,8 @@
 # Ausgaben wie in JupyterLab (pandasnb.py), Bilder als Anhang (Fotos verkleinert als JPEG). Die Fotos liegen in content/ (dateien=FOTOS).
 # Animierte GIFs: im Notebook mit IPython.display.Image(filename=...) anzeigen; als erwartete Ausgabe nicht möglich (kind='free').
 import pandasnb
-from nbgen import sec, expl, predict, generate
-from pillowhilfe import t, reihe, ANZEIGEN, SCHLUSS, FOTOS, FOTOS_MD
+from nbgen import sec, expl, predict, generate, setup
+from pillowhilfe import t, reihe, ANZEIGEN, SCHLUSS, FOTOS, FOTOS_MD, ANZEIGE, ANZEIGE_MD
 
 INTRO = '''In diesem Notebook bearbeitest du Fotos mit fertigen Werkzeugen von Pillow: ausschneiden, verkleinern, drehen, spiegeln, Farbkanäle trennen,
 Filter anwenden, Helligkeit und Kontrast ändern, Bilder übereinanderlegen und animierte GIFs erzeugen, also das, was ein Bildbearbeitungsprogramm kann,
@@ -27,6 +27,8 @@ Vorausgesetzt werden *Pillow: Grundlagen* und *Pillow: Zeichnen*.
 
 P = "from PIL import Image\n\nfoto = Image.open('pagode.png')"
 B = "from PIL import Image\n\nfoto = Image.open('bluete.png')"
+
+setup(ANZEIGE_MD, ANZEIGE)
 
 # ---------------------------------------------------------------- 1
 sec('Ausschneiden und Größe ändern')

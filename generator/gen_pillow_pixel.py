@@ -9,8 +9,8 @@
 # Pixelschleifen nur mit verkleinerten Fotos (213 x 142), sonst ist Python im Browser zu langsam.
 # numpy: dtype von Ganzzahl-Arrays nie ausgeben (int32 in Pyodide), Überlauf bei uint8 im Text erklärt.
 import pandasnb
-from nbgen import sec, expl, predict, generate
-from pillowhilfe import t, reihe, ANZEIGEN, SCHLUSS, FOTOS, FOTOS_MD
+from nbgen import sec, expl, predict, generate, setup
+from pillowhilfe import t, reihe, ANZEIGEN, SCHLUSS, FOTOS, FOTOS_MD, ANZEIGE, ANZEIGE_MD
 
 INTRO = '''Wie funktionieren die Werkzeuge eines Bildbearbeitungsprogramms? In diesem Notebook programmierst du sie selbst: Negativ, Graustufen, Schwarz-Weiß, Sepia,
 Verpixeln, Weichzeichnen und Kanten finden. Zuerst mit Schleifen über alle Pixel, dann viel schneller mit numpy, das ein Bild als Array behandelt.
@@ -30,6 +30,8 @@ KLEIN = "from PIL import Image\n\nfoto = Image.open('bluete.png').resize((213, 1
 KLEIN_P = "from PIL import Image\n\nfoto = Image.open('pagode.png').resize((213, 142))"
 NP = "import numpy as np\nfrom PIL import Image\n\nfoto = Image.open('bluete.png')\na = np.array(foto)"
 NP_P = "import numpy as np\nfrom PIL import Image\n\nfoto = Image.open('pagode.png')\na = np.array(foto)"
+
+setup(ANZEIGE_MD, ANZEIGE)
 
 # ---------------------------------------------------------------- 1
 sec('Effekte mit Pixelschleifen')
