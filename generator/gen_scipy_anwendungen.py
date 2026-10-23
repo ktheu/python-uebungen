@@ -10,12 +10,16 @@
 # - linprog(): Variablen mit dem Wert 0 erscheinen manchmal als -0. -> Aufgaben so wählen, dass alle Werte positiv sind.
 # - KDTree.query() liefert numpy-Zahlen (Indizes int64 lokal, int32 in Pyodide) -> nie als Tupel ausgeben.
 # - Konvexe Hüllen und Voronoi-Diagramme gibt es im shapely-Notebook (mengen_konstruktionen), hier nicht.
+# - Zahlen werden mit f-Strings ausgegeben (f'{x:.4f}'), Arrays mit np.round().
+import re
+
 from nbgen import sec, expl, task, predict, generate
 
 
 def t(text, given='', body='', kind='normal'):
     """Aufgabe, deren Lösung aus dem vorgegebenen Code plus body besteht."""
-    task(text, given=given, solution=(given + '\n' + body) if given else body, kind=kind)
+    loesung = (given + '\n' + body) if given else body
+    task(text, given=given, solution=re.sub(r'\n{3,}', '\n\n', loesung), kind=kind)  # höchstens eine Leerzeile
 
 
 NP_INT = 'import numpy as np\nfrom scipy import integrate'
@@ -61,10 +65,8 @@ Das Ergebnis hat die Attribute `t` (die Zeitpunkte) und `y` (ein 2D-Array: Zeile
      """import numpy as np
 from scipy import integrate
 
-
 def rate(t, y):
     return 0.3 * y
-
 
 loesung = integrate.solve_ivp(rate, (0, 5), [100], t_eval=[0, 1, 2, 3, 4, 5], rtol=1e-8, atol=1e-8)
 print(loesung.t)
@@ -78,10 +80,8 @@ In diesem Notebook wird deshalb immer mit diesen Angaben gerechnet.''',
      """import numpy as np
 from scipy import integrate
 
-
 def rate(t, y):
     return 0.3 * y
-
 
 grob = integrate.solve_ivp(rate, (0, 5), [100], t_eval=[5])
 genau = integrate.solve_ivp(rate, (0, 5), [100], t_eval=[5], rtol=1e-8, atol=1e-8)
@@ -95,10 +95,8 @@ Für ein Diagramm gibt man mit `t_eval=np.linspace(t0, t1, 200)` viele Zeitpunkt
 from scipy import integrate
 import matplotlib.pyplot as plt
 
-
 def rate(t, y):
     return 0.3 * y
-
 
 loesung = integrate.solve_ivp(rate, (0, 5), [100], t_eval=np.linspace(0, 5, 200), rtol=1e-8, atol=1e-8)
 plt.plot(loesung.t, loesung.y[0])
@@ -113,7 +111,6 @@ t(f'''Ein Kapital von 2000 € wächst stetig mit 4 % pro Jahr: `y' = 0.04 · y`
 def rate(t, y):
     return 0.04 * y
 
-
 loesung = integrate.solve_ivp(rate, (0, 20), [2000], t_eval=[0, 5, 10, 15, 20], {GENAU})
 print(np.round(loesung.y[0], 2))""")
 t('''Vergleiche das Ergebnis der vorigen Aufgabe mit der Formel `2000 · e^(0.04 t)`: Gib für dieselben Zeitpunkte die größte Abweichung aus
@@ -122,7 +119,6 @@ t('''Vergleiche das Ergebnis der vorigen Aufgabe mit der Formel `2000 · e^(0.04
 
 def rate(t, y):
     return 0.04 * y
-
 
 zeiten = np.array([0, 5, 10, 15, 20])
 loesung = integrate.solve_ivp(rate, (0, 20), [2000], t_eval=zeiten, {GENAU})
@@ -134,7 +130,6 @@ t(f'''Ein radioaktiver Stoff zerfällt: `y' = -0.0866 · y` (`t` in Tagen). Zu B
 def rate(t, y):
     return -0.0866 * y
 
-
 loesung = integrate.solve_ivp(rate, (0, 24), [80], t_eval=[8, 16, 24], {GENAU})
 print(np.round(loesung.y[0], 2))""")
 t(f'''In einen Teich fließt ein Schadstoff mit konstant 3 kg pro Tag, gleichzeitig wird jeden Tag 10 % des vorhandenen Schadstoffs abgebaut:
@@ -144,7 +139,6 @@ Welchem Wert nähert sie sich?''', NP_INT,
 
 def rate(t, y):
     return 3 - 0.1 * y
-
 
 loesung = integrate.solve_ivp(rate, (0, 100), [0], t_eval=[10, 20, 50, 100], {GENAU})
 print(np.round(loesung.y[0], 2))""")
@@ -156,14 +150,12 @@ Gib die Füllmenge nach 10 Minuten aus (zwei Nachkommastellen, `{GENAU}`) und ve
 def zufluss(t):
     return 5 + 2 * np.sin(t)
 
-
 def rate(t, y):
     return zufluss(t)
 
-
 loesung = integrate.solve_ivp(rate, (0, 10), [10], t_eval=[10], {GENAU})
-print(round(loesung.y[0, 0], 2))
-print(round(10 + integrate.quad(zufluss, 0, 10)[0], 2))""")
+print(f'{{loesung.y[0, 0]:.2f}}')
+print(f'{{10 + integrate.quad(zufluss, 0, 10)[0]:.2f}}')""")
 t(f'''Zeichne das Wachstum der Bakterien (`y' = 0.3 · y`, Start 100) mit `solve_ivp()` (200 Punkte von 0 bis 10, `{GENAU}`) als blaue Linie
 und die Werte nach der Formel `100 · e^(0.3 t)` für die ganzen Stunden 0 bis 10 als rote Punkte. Die Punkte sollen genau auf der Linie liegen.''',
   NP_INT + '\nimport matplotlib.pyplot as plt',
@@ -172,7 +164,6 @@ und die Werte nach der Formel `100 · e^(0.3 t)` für die ganzen Stunden 0 bis 1
 def rate(t, y):
     return 0.3 * y
 
-
 loesung = integrate.solve_ivp(rate, (0, 10), [100], t_eval=np.linspace(0, 10, 200), {GENAU})
 plt.plot(loesung.t, loesung.y[0], color='blue')
 stunden = np.arange(11)
@@ -180,10 +171,8 @@ plt.plot(stunden, 100 * np.exp(0.3 * stunden), 'ro')
 plt.show()""")
 predict(f"""from scipy import integrate
 
-
 def rate(t, y):
     return 2
-
 
 loesung = integrate.solve_ivp(rate, (0, 3), [5], t_eval=[0, 1, 2, 3], {GENAU})
 print(loesung.y.shape)
@@ -201,10 +190,8 @@ Die Parameter schreibt man hinter `t` und `y` in die Funktion und gibt ihre Wert
      """import numpy as np
 from scipy import integrate
 
-
 def logistisch(t, y, k, g):
     return k * y * (1 - y / g)
-
 
 loesung = integrate.solve_ivp(logistisch, (0, 30), [10], t_eval=[0, 5, 10, 15, 20, 30], args=(0.4, 1000), rtol=1e-8, atol=1e-8)
 print(np.round(loesung.y[0], 1))""")
@@ -214,23 +201,18 @@ Mit `dense_output=True` kann man die Lösung danach an **jeder** Stelle auswerte
 zur Zeit `t`. Damit findet man mit `brentq()` aus *scipy: Analysis*, wann ein bestimmter Wert erreicht wird.''',
      """from scipy import integrate, optimize
 
-
 def logistisch(t, y, k, g):
     return k * y * (1 - y / g)
 
-
 loesung = integrate.solve_ivp(logistisch, (0, 30), [10], args=(0.4, 1000), dense_output=True, rtol=1e-8, atol=1e-8)
-print(round(loesung.sol(12.5)[0], 2))
-
+print(f'{loesung.sol(12.5)[0]:.2f}')
 
 def h(t):
     return loesung.sol(t)[0] - 500
 
-
-print(round(optimize.brentq(h, 0, 30), 2))""")
+print(f'{optimize.brentq(h, 0, 30):.2f}')""")
 
 L = NP_INT + f'''
-
 
 def logistisch(t, y, k, g):
     return k * y * (1 - y / g)'''
@@ -246,7 +228,7 @@ loesung = integrate.solve_ivp(logistisch, (0, 20), [20], args=(0.8, 2000), dense
 for ziel in [1000, 1900]:
     def h(t):
         return loesung.sol(t)[0] - ziel
-    print(ziel, round(optimize.brentq(h, 0, 20), 2))""")
+    print(f'{{ziel}} {{optimize.brentq(h, 0, 20):.2f}}')""")
 t(f'''Zeichne das logistische Wachstum der Kaninchen für die Wachstumsraten `k` = 0.4, 0.8 und 1.2 (jeweils 200 Punkte von 0 bis 20) in ein Diagramm
 mit Legende (`k = 0.4` usw.) und der Kapazitätsgrenze als gestrichelter grauer Linie.''', L + '\nimport matplotlib.pyplot as plt',
   f"""
@@ -266,17 +248,14 @@ t(f'''**Abkühlung nach Newton:** Ein Kuchen kommt mit 180 °C aus dem Ofen in e
 def abkuehlung(t, temp, k, u):
     return -k * (temp - u)
 
-
 loesung = integrate.solve_ivp(abkuehlung, (0, 60), [180], args=(0.07, 20), dense_output=True, {GENAU})
 for minute in [10, 20, 30]:
-    print(minute, round(loesung.sol(minute)[0], 1))
-
+    print(f'{{minute}} {{loesung.sol(minute)[0]:.1f}}')
 
 def h(t):
     return loesung.sol(t)[0] - 40
 
-
-print(round(optimize.brentq(h, 0, 60), 2))""")
+print(f'{{optimize.brentq(h, 0, 60):.2f}}')""")
 t(f'''Ein Fischteich wird befischt: Pro Jahr werden `e` Tonnen Fisch entnommen. Das Modell ist `y' = 0.5 · y · (1 - y / 100) - e` (Start 60 Tonnen).
 Gib für `e` = 5, 10 und 12 den Bestand nach 20 Jahren aus (eine Nachkommastelle, `{GENAU}`).
 Je mehr entnommen wird, desto kleiner wird der Bestand, auf den sich der Teich einpendelt.''', NP_INT,
@@ -285,10 +264,9 @@ Je mehr entnommen wird, desto kleiner wird der Bestand, auf den sich der Teich e
 def fischerei(t, y, e):
     return 0.5 * y * (1 - y / 100) - e
 
-
 for e in [5, 10, 12]:
     loesung = integrate.solve_ivp(fischerei, (0, 20), [60], t_eval=[20], args=(e,), {GENAU})
-    print(e, round(loesung.y[0, 0], 1))""")
+    print(f'{{e}} {{loesung.y[0, 0]:.1f}}')""")
 t(f'''Ein Medikament wird über eine Infusion mit 2 mg pro Stunde zugeführt und mit der Rate `k = 0.25` pro Stunde abgebaut: `y' = 2 - k · y` (Start 0 mg).
 Gib die Menge nach 4, 8, 12 und 24 Stunden aus (zwei Nachkommastellen) und vergleiche den letzten Wert mit dem Grenzwert `2 / k`.''', NP_INT,
   f"""
@@ -296,17 +274,14 @@ Gib die Menge nach 4, 8, 12 und 24 Stunden aus (zwei Nachkommastellen) und vergl
 def infusion(t, y, zufuhr, k):
     return zufuhr - k * y
 
-
 loesung = integrate.solve_ivp(infusion, (0, 24), [0], t_eval=[4, 8, 12, 24], args=(2, 0.25), {GENAU})
 print(np.round(loesung.y[0], 2))
 print(2 / 0.25)""")
 predict(f"""import numpy as np
 from scipy import integrate
 
-
 def logistisch(t, y, k, g):
     return k * y * (1 - y / g)
-
 
 loesung = integrate.solve_ivp(logistisch, (0, 10), [500], t_eval=[0, 10], args=(0.5, 500), {GENAU})
 print(np.round(loesung.y[0], 2))""", erklaerung='''Der Bestand startet genau an der Kapazitätsgrenze 500. Dort ist `1 - y / g = 0`, die Änderungsrate also 0.
@@ -329,11 +304,9 @@ Füchse vermehren sich, wenn es viele Hasen gibt, und sterben sonst:
 from scipy import integrate
 import matplotlib.pyplot as plt
 
-
 def raeuber_beute(t, y, a, b, c, d):
     h, f = y
     return [a * h - b * h * f, c * h * f - d * f]
-
 
 loesung = integrate.solve_ivp(raeuber_beute, (0, 40), [40, 9], t_eval=np.linspace(0, 40, 400),
                               args=(0.6, 0.03, 0.01, 0.5), rtol=1e-8, atol=1e-8)
@@ -349,18 +322,15 @@ des Orts `s`. Man rechnet also mit den beiden Größen `[s, v]`: `s' = v` und `v
 Beispiel freier Fall aus 100 m Höhe ohne Luftwiderstand: `v' = -9.81`. Die Höhe nach 2 Sekunden ist nach der Formel `100 - 9.81/2 · 2² = 80.38 m`.''',
      """from scipy import integrate
 
-
 def fall(t, y):
     s, v = y
     return [v, -9.81]
-
 
 loesung = integrate.solve_ivp(fall, (0, 4), [100, 0], t_eval=[0, 1, 2, 3, 4], rtol=1e-8, atol=1e-8)
 print(loesung.y[0].round(3))
 print(loesung.y[1].round(2))""")
 
 RB = NP_INT + f'''
-
 
 def raeuber_beute(t, y, a, b, c, d):
     h, f = y
@@ -377,7 +347,7 @@ t(f'''Bestimme im Räuber-Beute-Modell (Zeitraum 0 bis 40, 4001 Zeitpunkte) die 
 loesung = integrate.solve_ivp(raeuber_beute, (0, 40), [40, 9], t_eval=np.linspace(0, 40, 4001), args=(0.6, 0.03, 0.01, 0.5), {GENAU})
 for name, werte in [('Hasen', loesung.y[0]), ('Füchse', loesung.y[1])]:
     i = werte.argmax()
-    print(name, round(loesung.t[i], 1), round(werte[i], 1))""")
+    print(f'{{name}} {{loesung.t[i]:.1f}} {{werte[i]:.1f}}')""")
 t(f'''Zeichne für das Räuber-Beute-Modell (0 bis 40, 400 Punkte) die Füchse über den Hasen (x-Achse: Hasen, y-Achse: Füchse). Es entsteht eine geschlossene
 Kurve, weil sich der Verlauf immer wiederholt. Beschrifte die Achsen und markiere den Startpunkt (40 | 9) als roten Punkt.''',
   RB + '\nimport matplotlib.pyplot as plt',
@@ -389,7 +359,6 @@ plt.xlabel('Hasen')
 plt.ylabel('Füchse')
 plt.show()""")
 SIR = NP_INT + f'''
-
 
 def sir(t, y, beta, gamma):
     s, i, r = y
@@ -408,7 +377,7 @@ zeit = np.linspace(0, 160, 1601)
 for beta in [0.3, 0.15]:
     loesung = integrate.solve_ivp(sir, (0, 160), [0.99, 0.01, 0], t_eval=zeit, args=(beta, 0.1), {GENAU})
     i = loesung.y[1].argmax()
-    print(beta, round(loesung.t[i], 1), round(loesung.y[1, i], 4), round(loesung.y[0, -1], 4))""")
+    print(f'{{beta}} {{loesung.t[i]:.1f}} {{loesung.y[1, i]:.4f}} {{loesung.y[0, -1]:.4f}}')""")
 t(f'''Zeichne die drei Anteile des SIR-Modells mit `β = 0.3` (0 bis 160 Tage, 400 Punkte) in ein Diagramm: `s` blau, `i` rot, `r` grün, mit Legende
 (`nicht erkrankt`, `krank`, `genesen`) und der x-Achsen-Beschriftung `Tage`.''', SIR + '\nimport matplotlib.pyplot as plt',
   f"""
@@ -428,10 +397,9 @@ def fall(t, y):
     s, v = y
     return [v, -9.81 + 0.25 / 80 * v ** 2]
 
-
 loesung = integrate.solve_ivp(fall, (0, 30), [4000, 0], t_eval=[5, 10, 20, 30], {GENAU})
 print(np.round(-loesung.y[1] * 3.6, 1))
-print(round(np.sqrt(9.81 * 80 / 0.25) * 3.6, 1))""")
+print(f'{{np.sqrt(9.81 * 80 / 0.25) * 3.6:.1f}}')""")
 t(f'''Ein Ball wird aus 2 m Höhe mit 15 m/s senkrecht nach oben geworfen (Höhe `s`, Geschwindigkeit `v`, `v' = -9.81`). Wann landet er auf dem Boden?
 Benutze `dense_output=True` und `brentq()` für die Höhe 0 im Intervall von 1 bis 5 und gib auch die Aufprallgeschwindigkeit aus (zwei Nachkommastellen).''',
   'import numpy as np\nfrom scipy import integrate, optimize',
@@ -441,17 +409,14 @@ def wurf(t, y):
     s, v = y
     return [v, -9.81]
 
-
 loesung = integrate.solve_ivp(wurf, (0, 5), [2, 15], dense_output=True, {GENAU})
-
 
 def hoehe(t):
     return loesung.sol(t)[0]
 
-
 landung = optimize.brentq(hoehe, 1, 5)
-print(round(landung, 2))
-print(round(loesung.sol(landung)[1], 2))""")
+print(f'{{landung:.2f}}')
+print(f'{{loesung.sol(landung)[1]:.2f}}')""")
 t(f'''**Federpendel:** Eine Masse an einer Feder schwingt. Für die Auslenkung `x` und die Geschwindigkeit `v` gilt `x' = v` und `v' = -4 · x - 0.2 · v`
 (die Feder zieht zurück, die Reibung bremst). Start: `x = 1`, `v = 0`. Zeichne die Auslenkung für 0 bis 30 Sekunden (600 Punkte, `{GENAU}`) und
 gib die Zeitpunkte der ersten drei Maxima nach dem Start aus (mit `signal.find_peaks()` aus *scipy: Messdaten*, zwei Nachkommastellen).''',
@@ -462,7 +427,6 @@ def feder(t, y):
     x, v = y
     return [v, -4 * x - 0.2 * v]
 
-
 loesung = integrate.solve_ivp(feder, (0, 30), [1, 0], t_eval=np.linspace(0, 30, 600), {GENAU})
 spitzen = signal.find_peaks(loesung.y[0])[0]
 print(np.round(loesung.t[spitzen[:3]], 2))
@@ -470,11 +434,9 @@ plt.plot(loesung.t, loesung.y[0])
 plt.show()""")
 predict(f"""from scipy import integrate
 
-
 def bewegung(t, y):
     s, v = y
     return [v, 0]
-
 
 loesung = integrate.solve_ivp(bewegung, (0, 4), [10, 3], t_eval=[0, 2, 4], {GENAU})
 print(loesung.y.round(2))""", erklaerung='''Die Beschleunigung ist 0, die Geschwindigkeit bleibt also 3 (zweite Zeile). Der Ort startet bei 10 und nimmt pro Sekunde um 3 zu:
@@ -517,7 +479,7 @@ expl('''#### Gleichungen, Mindestwerte und ganze Zahlen
 # Minimale Kosten: Futtermischung aus zwei Sorten (Preise 3 € und 2 € pro kg)
 # mindestens 12 Einheiten Eiweiß (Sorte 1: 4, Sorte 2: 1 pro kg), mindestens 9 Einheiten Fett (1 und 3 pro kg)
 ergebnis = optimize.linprog([3, 2], A_ub=[[-4, -1], [-1, -3]], b_ub=[-12, -9])
-print(ergebnis.x.round(4), round(ergebnis.fun, 4))
+print(f'{ergebnis.x.round(4)} {ergebnis.fun:.4f}')
 ganz = optimize.linprog([3, 2], A_ub=[[-4, -1], [-1, -3]], b_ub=[-12, -9], integrality=[1, 1])
 print(ganz.x, ganz.fun)""")
 
@@ -528,7 +490,7 @@ A = np.array([[0.5, 0.3], [10, 40]])
 b = np.array([60, 3000])
 e = optimize.linprog(-gewinn, A_ub=A, b_ub=b)
 print(e.x.round(4))
-print(round(-e.fun, 2))""")
+print(f'{-e.fun:.2f}')""")
 t('''Für das Tische-und-Stühle-Beispiel kommt eine dritte Bedingung hinzu: Es dürfen höchstens 30 Stühle hergestellt werden (`bounds`).
 Gib die beste Lösung und den Gewinn aus.''', NP_OPT,
   """gewinn = np.array([30, 40])
@@ -536,7 +498,7 @@ A = np.array([[2, 3], [4, 2]])
 b = np.array([120, 160])
 e = optimize.linprog(-gewinn, A_ub=A, b_ub=b, bounds=[(0, None), (0, 30)])
 print(e.x.round(4))
-print(round(-e.fun, 2))""")
+print(f'{-e.fun:.2f}')""")
 t('''Ein Landwirt hat 100 ha Land für Weizen und Raps. Weizen bringt 600 €/ha Gewinn und braucht 4 Arbeitsstunden/ha, Raps 900 €/ha und 8 Stunden/ha.
 Es stehen 560 Stunden zur Verfügung, und mindestens 30 ha sollen Weizen sein. Bestimme die Aufteilung und den Gewinn.''', NP_OPT,
   """gewinn = np.array([600, 900])
@@ -544,14 +506,14 @@ A = np.array([[1, 1], [4, 8]])
 b = np.array([100, 560])
 e = optimize.linprog(-gewinn, A_ub=A, b_ub=b, bounds=[(30, None), (0, None)])
 print(e.x.round(4))
-print(round(-e.fun, 2))""")
+print(f'{-e.fun:.2f}')""")
 t('''Ein Saft soll aus Apfelsaft (0.80 €/l, 10 g Zucker/l, 40 mg Vitamin C/l) und Orangensaft (1.20 €/l, 9 g Zucker/l, 500 mg Vitamin C/l) gemischt werden.
 1000 Liter sollen entstehen (`A_eq`), mit mindestens 150 000 mg Vitamin C. Wie viele Liter von jeder Sorte sind am billigsten? Gib die Liter und die Kosten aus.''',
   NP_OPT,
   """kosten = np.array([0.8, 1.2])
 e = optimize.linprog(kosten, A_ub=[[-40, -500]], b_ub=[-150000], A_eq=[[1, 1]], b_eq=[1000])
 print(e.x.round(4))
-print(round(e.fun, 2))""")
+print(f'{e.fun:.2f}')""")
 t('''Ein Möbelhaus liefert aus zwei Lagern (Bestand 40 und 50 Sofas) an drei Filialen (Bedarf 30, 35 und 25). Die Transportkosten pro Sofa stehen in der Tabelle.
 Die 6 Variablen sind die Mengen von Lager i nach Filiale j (zeilenweise). Bestimme die günstigste Verteilung als 2×3-Tabelle (`reshape(2, 3)`) und die Kosten.''',
   NP_OPT + '''
@@ -568,13 +530,13 @@ A_eq = [[1, 0, 0, 1, 0, 0],      # Filiale 1 bekommt genau 30
 b_eq = [30, 35, 25]
 e = optimize.linprog(kosten.flatten(), A_ub=A_ub, b_ub=b_ub, A_eq=A_eq, b_eq=b_eq)
 print(e.x.reshape(2, 3).round(4))
-print(round(e.fun, 2))""")
+print(f'{e.fun:.2f}')""")
 t('''Für einen Ausflug mit 275 Personen stehen große Busse (50 Plätze, 400 €) und kleine Busse (30 Plätze, 270 €) zur Verfügung, aber nur 4 große.
 Wie viele Busse jeder Sorte sind am günstigsten? Löse einmal ohne und einmal mit `integrality=[1, 1]` und gib jeweils `x` und die Kosten aus.''', NP_OPT,
   """kosten = [400, 270]
 for ganz in [None, [1, 1]]:
     e = optimize.linprog(kosten, A_ub=[[-50, -30]], b_ub=[-275], bounds=[(0, 4), (0, None)], integrality=ganz)
-    print(e.x.round(4), round(e.fun, 2))""")
+    print(f'{e.x.round(4)} {e.fun:.2f}')""")
 t('''Zeichne für das Tische-und-Stühle-Beispiel die Grenzgeraden der beiden Bedingungen (Tischlerei: `y = (120 - 2x) / 3`, Lackiererei: `y = (160 - 4x) / 2`)
 für x von 0 bis 45 (die x-Achse sind Tische, die y-Achse Stühle) mit Legende, zeige y nur von 0 bis 50 (`plt.ylim(0, 50)`) und markiere die beste Lösung
 als roten Punkt.''', NP_OPT + '\nimport matplotlib.pyplot as plt',
@@ -589,9 +551,9 @@ plt.show()""")
 predict("""from scipy import optimize
 
 e = optimize.linprog([-1, -1], A_ub=[[1, 1]], b_ub=[10], bounds=[(0, 4), (0, 4)])
-print(round(-e.fun, 4))
+print(f'{-e.fun:.4f}')
 print(e.x.round(4))""", erklaerung='''Gesucht ist das größte `x + y` mit `x + y ≤ 10`, aber beide Variablen sind höchstens 4. Die Bedingung `x + y ≤ 10` spielt deshalb keine Rolle:
-Das Beste ist `x = y = 4` mit `x + y = 8.0`. Ausgabe: `8.0` und `[4. 4.]`.''')
+Das Beste ist `x = y = 4` mit `x + y = 8`. Ausgabe: `8.0000` und `[4. 4.]`.''')
 
 # ---------------------------------------------------------------- 5
 sec('Abstände und nächste Nachbarn')
@@ -626,7 +588,7 @@ from scipy import spatial
 haltestellen = np.array([[1, 1], [4, 2], [2, 5], [6, 6]])
 baum = spatial.KDTree(haltestellen)
 abstand, index = baum.query([3, 3])
-print(index, round(abstand, 4))
+print(f'{index} {abstand:.4f}')
 abstaende, indizes = baum.query([3, 3], k=2)
 print(indizes, abstaende.round(4))
 print(baum.query_ball_point([3, 3], 2.5))""")
@@ -641,12 +603,12 @@ t('''Welche beiden Orte liegen am weitesten auseinander? Gib ihre Namen und den 
 Benutze `argmax()` und `np.unravel_index(i, matrix.shape)`, das aus dem Index im flachen Array Zeile und Spalte macht.''', ORTE,
   """d = spatial.distance.cdist(orte, orte)
 i, j = np.unravel_index(d.argmax(), d.shape)
-print(namen[i], namen[j], round(d[i, j], 2))""")
+print(f'{namen[i]} {namen[j]} {d[i, j]:.2f}')""")
 t('''Ein Lager soll an einem der fünf Orte gebaut werden, sodass die **Summe** der Abstände zu allen Orten am kleinsten ist. Gib für jeden Ort die Summe
 (zwei Nachkommastellen) und dann den besten Ort aus.''', ORTE,
   """summen = spatial.distance.cdist(orte, orte).sum(axis=1)
 for name, s in zip(namen, summen):
-    print(name, round(s, 2))
+    print(f'{name} {s:.2f}')
 print(namen[summen.argmin()])""")
 t('''In Manhattan fährt ein Taxi nur waagerecht und senkrecht. Gib die Abstandsmatrix der fünf Orte mit dem Manhattan-Abstand aus und das Paar von Orten,
 bei dem der Unterschied zwischen Manhattan-Abstand und Luftlinie am größten ist (Namen und Unterschied, zwei Nachkommastellen).''', ORTE,
@@ -654,13 +616,13 @@ bei dem der Unterschied zwischen Manhattan-Abstand und Luftlinie am größten is
 print(m)
 u = m - spatial.distance.cdist(orte, orte)
 i, j = np.unravel_index(u.argmax(), u.shape)
-print(namen[i], namen[j], round(u[i, j], 2))""")
+print(f'{namen[i]} {namen[j]} {u[i, j]:.2f}')""")
 t('''Für jeden Ort ist der **nächste andere** Ort gesucht. Frage dafür mit `k=2` die zwei nächsten Punkte ab (der nächste ist der Ort selbst mit Abstand 0)
 und gib für jeden Ort den Namen des Nachbarn und den Abstand (zwei Nachkommastellen) aus.''', ORTE,
   """baum = spatial.KDTree(orte)
 for i in range(len(orte)):
     abstaende, indizes = baum.query(orte[i], k=2)
-    print(namen[i], namen[indizes[1]], round(abstaende[1], 2))""")
+    print(f'{namen[i]} {namen[indizes[1]]} {abstaende[1]:.2f}')""")
 t('''In einem Park stehen Notrufsäulen. Gib für jeden Wanderer die Nummer (Index) der nächsten Säule und den Abstand in m aus (eine Nachkommastelle).''',
   NP_SP + '''
 
@@ -669,7 +631,7 @@ wanderer = np.array([[300, 200], [600, 450], [100, 400], [690, 50]])''',
   """baum = spatial.KDTree(saeulen)
 for w in wanderer:
     abstand, index = baum.query(w)
-    print(index, round(abstand, 1))""")
+    print(f'{index} {abstand:.1f}')""")
 t('''Erzeuge mit `rng = np.random.default_rng(12)` 500 zufällige Punkte im Quadrat von 0 bis 100 (`rng.uniform(0, 100, size=(500, 2))`). Wie viele davon liegen
 höchstens 10 vom Mittelpunkt (50 | 50) entfernt? Zähle mit `query_ball_point()` und vergleiche mit dem erwarteten Wert `500 · π · 10² / 100²` (zwei Nachkommastellen).''',
   NP_SP,
@@ -677,7 +639,7 @@ höchstens 10 vom Mittelpunkt (50 | 50) entfernt? Zähle mit `query_ball_point()
 punkte = rng.uniform(0, 100, size=(500, 2))
 baum = spatial.KDTree(punkte)
 print(len(baum.query_ball_point([50, 50], 10)))
-print(round(500 * np.pi * 10 ** 2 / 100 ** 2, 2))""")
+print(f'{500 * np.pi * 10 ** 2 / 100 ** 2:.2f}')""")
 t('''Zeichne die Notrufsäulen als rote Quadrate (`'rs'`) und die Wanderer als blaue Punkte. Verbinde jeden Wanderer mit einer grauen Linie mit seiner nächsten Säule.
 Sorge mit `plt.axis('equal')` für gleiche Einheiten auf beiden Achsen.''',
   NP_SP + '''
@@ -700,7 +662,7 @@ from scipy import spatial
 punkte = np.array([[0, 0], [10, 0], [0, 10]])
 baum = spatial.KDTree(punkte)
 abstand, index = baum.query([1, 8])
-print(index, round(abstand, 4))
+print(f'{index} {abstand:.4f}')
 print(spatial.distance.cityblock([0, 0], [-2, 5]))""", erklaerung='''- Der Punkt (1 | 8) liegt am nächsten an (0 | 10), das ist Index `2`. Der Abstand ist `√(1² + 2²) = √5 ≈ 2.2361`.
 - Der Manhattan-Abstand ist `|0 - (-2)| + |0 - 5| = 2 + 5 = 7`.''')
 
@@ -725,8 +687,8 @@ Das Modul `scipy.constants` enthält Naturkonstanten und Umrechnungsfaktoren in 
 
 print(constants.g, constants.c)
 print(constants.hour, constants.day)
-print(round(constants.mile, 3), constants.inch)
-print(round(100 * constants.kmh, 4))
+print(f'{constants.mile:.3f} {constants.inch}')
+print(f'{100 * constants.kmh:.4f}')
 print(constants.convert_temperature(100, 'Celsius', 'Fahrenheit'))
 print(constants.convert_temperature(0, 'Celsius', 'Kelvin'))""")
 
@@ -734,14 +696,14 @@ t('''Wie lange braucht das Licht von der Sonne zur Erde (150 Millionen km)? Gib 
 `constants.c`, `constants.kilo`, `constants.mega` und `constants.minute`.''', 'from scipy import constants',
   """strecke = 150 * constants.mega * constants.kilo
 zeit = strecke / constants.c
-print(round(zeit, 2))
-print(round(zeit / constants.minute, 2))""")
+print(f'{zeit:.2f}')
+print(f'{zeit / constants.minute:.2f}')""")
 t('''Ein Lichtjahr ist die Strecke, die das Licht in einem Jahr zurücklegt. Gib sie in km aus (`:.4e`). Der nächste Stern ist 4.24 Lichtjahre entfernt.
 Wie viele Jahre bräuchte eine Raumsonde mit 60 000 km/h (eine Nachkommastelle)?''', 'from scipy import constants',
   """lichtjahr = constants.c * constants.year
 print(f'{lichtjahr / constants.kilo:.4e}')
 geschwindigkeit = 60000 * constants.kmh
-print(round(4.24 * lichtjahr / geschwindigkeit / constants.year, 1))""")
+print(f'{4.24 * lichtjahr / geschwindigkeit / constants.year:.1f}')""")
 t('''Rechne die Temperaturen -40, 0, 37 und 100 °C in Fahrenheit und Kelvin um (zwei Nachkommastellen). `convert_temperature()` nimmt auch ein Array.''',
   'import numpy as np\nfrom scipy import constants',
   """celsius = np.array([-40, 0, 37, 100])
@@ -751,13 +713,13 @@ t('''Ein Stein fällt ohne Luftwiderstand von einem 80 m hohen Turm. Berechne mi
 Aufprallgeschwindigkeit `g · t` in m/s und in km/h (eine Nachkommastelle).''', 'import numpy as np\nfrom scipy import constants',
   """zeit = np.sqrt(2 * 80 / constants.g)
 v = constants.g * zeit
-print(round(zeit, 2))
-print(round(v, 1), round(v / constants.kmh, 1))""")
+print(f'{zeit:.2f}')
+print(f'{v:.1f} {v / constants.kmh:.1f}')""")
 t('''Ein Fernseher hat eine Bildschirmdiagonale von 55 Zoll im Format 16 : 9. Gib die Diagonale, die Breite und die Höhe in cm aus (eine Nachkommastelle).
 Die Breite ist `d · 16 / √(16² + 9²)`.''', 'import numpy as np\nfrom scipy import constants',
   """d = 55 * constants.inch * 100
-print(round(d, 1))
-print(round(d * 16 / np.sqrt(16 ** 2 + 9 ** 2), 1), round(d * 9 / np.sqrt(16 ** 2 + 9 ** 2), 1))""")
+print(f'{d:.1f}')
+print(f'{d * 16 / np.sqrt(16 ** 2 + 9 ** 2):.1f} {d * 9 / np.sqrt(16 ** 2 + 9 ** 2):.1f}')""")
 predict("""from scipy import constants
 
 print(constants.kilo * constants.milli)
@@ -779,18 +741,15 @@ def wurf(t, z):
     v = np.sqrt(vx ** 2 + vy ** 2)
     return [vx, vy, -0.02 * v * vx, -9.81 - 0.02 * v * vy]
 
-
 v0 = 20 / np.sqrt(2)
 loesung = integrate.solve_ivp(wurf, (0, 5), [0, 0, v0, v0], dense_output=True, {GENAU})
-
 
 def hoehe(t):
     return loesung.sol(t)[1]
 
-
 landung = optimize.brentq(hoehe, 1, 5)
-print(round(landung, 2), round(loesung.sol(landung)[0], 2))
-print(round(20 ** 2 / 9.81, 2))""")
+print(f'{{landung:.2f}} {{loesung.sol(landung)[0]:.2f}}')
+print(f'{{20 ** 2 / 9.81:.2f}}')""")
 t(f'''Zeichne die Flugbahn des Balls aus der vorigen Aufgabe (`y` über `x`, 200 Punkte von 0 bis zur Landezeit) und zum Vergleich die Bahn ohne Luftwiderstand
 (`vx' = 0`, `vy' = -9.81`, gestrichelt). Zeige nur Höhen ab 0 (`plt.ylim(bottom=0)`) und benutze `plt.axis('equal')` nicht.''',
   'import numpy as np\nfrom scipy import integrate, optimize\nimport matplotlib.pyplot as plt',
@@ -800,7 +759,6 @@ def wurf(t, z, k):
     x, y, vx, vy = z
     v = np.sqrt(vx ** 2 + vy ** 2)
     return [vx, vy, -k * v * vx, -9.81 - k * v * vy]
-
 
 v0 = 20 / np.sqrt(2)
 for k, stil in [(0.02, '-'), (0, '--')]:
@@ -823,7 +781,7 @@ kunden = np.array([[1, 4], [3, 1], [7, 1], [9, 5], [4, 7], [6, 9]])''',
   """baum = spatial.KDTree(depots)
 abstaende, zuordnung = baum.query(kunden)
 for d in range(len(depots)):
-    print(d, np.where(zuordnung == d)[0], round(abstaende[zuordnung == d].sum(), 1))""")
+    print(f'{d} {np.where(zuordnung == d)[0]} {abstaende[zuordnung == d].sum():.1f}')""")
 t(f'''**Wie lange reicht ein Vorrat?** Ein Wasserspeicher enthält 5000 Liter. Pro Stunde werden `400 + 150 · sin(π t / 12)` Liter entnommen, und es fließen
 konstant 300 Liter zu. Bestimme mit `solve_ivp()`, `dense_output=True` und `brentq()` (zwischen 1 und 100), wann der Speicher leer ist (zwei Nachkommastellen).''',
   'import numpy as np\nfrom scipy import integrate, optimize',
@@ -832,31 +790,26 @@ konstant 300 Liter zu. Bestimme mit `solve_ivp()`, `dense_output=True` und `bren
 def rate(t, y):
     return 300 - (400 + 150 * np.sin(np.pi * t / 12))
 
-
 loesung = integrate.solve_ivp(rate, (0, 100), [5000], dense_output=True, {GENAU})
-
 
 def menge(t):
     return loesung.sol(t)[0]
 
-
-print(round(optimize.brentq(menge, 1, 100), 2))""")
+print(f'{{optimize.brentq(menge, 1, 100):.2f}}')""")
 t('''Eine Schule plant ein Sommerfest und verkauft Waffeln (Gewinn 0.80 €) und Crêpes (Gewinn 1.20 €). Teig: 0.1 kg pro Waffel und 0.08 kg pro Crêpe,
 40 kg sind da. Zeit: 2 Minuten pro Waffel, 4 Minuten pro Crêpe, 1200 Minuten stehen zur Verfügung. Es sollen mindestens 100 Waffeln sein.
 Bestimme die beste Aufteilung (ganzzahlig) und den Gewinn.''', NP_OPT,
   """e = optimize.linprog([-0.8, -1.2], A_ub=[[0.1, 0.08], [2, 4]], b_ub=[40, 1200], bounds=[(100, None), (0, None)], integrality=[1, 1])
 print(e.x)
-print(round(-e.fun, 2))""")
+print(f'{-e.fun:.2f}')""")
 t('''Denk dir selbst ein Modell mit einer Änderungsrate aus (z. B. das Abkühlen deines Tees, das Füllen einer Badewanne mit offenem Abfluss, die Ausbreitung
 eines Gerüchts) und berechne und zeichne den Verlauf mit `solve_ivp()`.''', '',
   f"""import numpy as np
 from scipy import integrate
 import matplotlib.pyplot as plt
 
-
 def geruecht(t, y, k, n):
     return k * y * (n - y) / n
-
 
 loesung = integrate.solve_ivp(geruecht, (0, 14), [2], t_eval=np.linspace(0, 14, 200), args=(0.9, 1200), {GENAU})
 plt.plot(loesung.t, loesung.y[0])

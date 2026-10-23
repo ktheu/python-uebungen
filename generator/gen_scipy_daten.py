@@ -6,16 +6,20 @@
 #     py -3.13 generator/pyodide_check/pruefen.py generator/gen_scipy_daten.py
 #
 # Fallstricke:
-# - CubicSpline(...)(x) und .integrate() liefern 0-dimensionale Arrays -> float() vor round().
+# - CubicSpline(...)(x) und .integrate() liefern 0-dimensionale Arrays -> float() vor dem Formatieren.
+# - Zahlen werden mit f-Strings ausgegeben (f'{x:.2f}'), Arrays mit np.round().
 # - curve_fit()-Ergebnisse unterscheiden sich in den letzten Stellen -> runden, Messwerte nie exakt auf dem Modell
 #   (sonst OptimizeWarning: Covariance could not be estimated).
 # - Laufzeiten von Sortierverfahren mit curve_fit gibt es im Unterricht (InfoKursN/sort/sort_zeitmessung.ipynb), hier nicht.
+import re
+
 from nbgen import sec, expl, task, predict, generate
 
 
 def t(text, given='', body='', kind='normal'):
     """Aufgabe, deren Lösung aus dem vorgegebenen Code plus body besteht."""
-    task(text, given=given, solution=(given + '\n' + body) if given else body, kind=kind)
+    loesung = (given + '\n' + body) if given else body
+    task(text, given=given, solution=re.sub(r'\n{3,}', '\n\n', loesung), kind=kind)  # höchstens eine Leerzeile
 
 
 INTRO = '''Messwerte aus Experimenten, Wetterstationen oder Sensoren sind nur an einzelnen Stellen bekannt und streuen etwas.
@@ -96,7 +100,7 @@ import matplotlib.pyplot as plt
 
 spline = interpolate.CubicSpline(stunde, temperatur)
 linear = interpolate.make_interp_spline(stunde, temperatur, k=1)
-print(round(float(spline(10)), 2))
+print(f'{float(spline(10)):.2f}')
 x = np.linspace(0, 24, 200)
 plt.plot(stunde, temperatur, 'ko', label='Messwerte')
 plt.plot(x, linear(x), label='linear')
@@ -116,25 +120,23 @@ die eine Zahl zurückgibt, z. B. `-float(spline(x))`.''',
 from scipy import optimize
 
 spline = interpolate.CubicSpline(stunde, temperatur)
-print(round(float(spline(10, 1)), 2))
-print(round(float(spline.integrate(0, 24)) / 24, 2))
-
+print(f'{float(spline(10, 1)):.2f}')
+print(f'{float(spline.integrate(0, 24)) / 24:.2f}')
 
 def minus_temperatur(x):
     return -float(spline(x))
 
-
 e = optimize.minimize_scalar(minus_temperatur, bounds=(12, 18))
-print(round(e.x, 2), round(-e.fun, 2))''')
+print(f'{e.x:.2f} {-e.fun:.2f}')''')
 
 t('Gib mit linearer Interpolation die Temperaturen um 1 Uhr, 10 Uhr und 22:30 Uhr (22.5) aus, jeweils auf eine Nachkommastelle.', TEMP,
   '''linear = interpolate.make_interp_spline(stunde, temperatur, k=1)
 for x in [1, 10, 22.5]:
-    print(x, round(float(linear(x)), 1))''')
+    print(f'{x} {float(linear(x)):.1f}')''')
 t('Gib dieselben drei Temperaturen mit `CubicSpline` aus (zwei Nachkommastellen).', TEMP,
   '''spline = interpolate.CubicSpline(stunde, temperatur)
 for x in [1, 10, 22.5]:
-    print(x, round(float(spline(x)), 2))''')
+    print(f'{x} {float(spline(x)):.2f}')''')
 t('''Prüfe, dass der Spline genau durch die Messpunkte geht: Gib die Werte des Splines an allen Messstellen aus (auf 6 Stellen gerundet)
 und danach, ob sie mit `np.allclose()` mit den Messwerten übereinstimmen.''', TEMP,
   '''spline = interpolate.CubicSpline(stunde, temperatur)
@@ -143,53 +145,49 @@ print(np.allclose(spline(stunde), temperatur))''')
 t('Erzeuge mit dem Spline eine Tabelle der Temperaturen für jede volle Stunde von 0 bis 24 (25 Werte, eine Nachkommastelle).', TEMP,
   '''spline = interpolate.CubicSpline(stunde, temperatur)
 print(np.round(spline(np.arange(25)), 1))''')
-t('''Ein Wanderweg wird alle 2 km vermessen. Gib mit `CubicSpline` die Höhe bei km 5 und bei km 11 aus (ganze Meter mit `round()`)
+t('''Ein Wanderweg wird alle 2 km vermessen. Gib mit `CubicSpline` die Höhe bei km 5 und bei km 11 aus (ganze Meter, `:.0f`)
 und mit linearer Interpolation zum Vergleich.''', WEG,
   '''spline = interpolate.CubicSpline(km, hoehe)
 linear = interpolate.make_interp_spline(km, hoehe, k=1)
 for x in [5, 11]:
-    print(x, round(float(spline(x))), round(float(linear(x))))''')
+    print(f'{x} {float(spline(x)):.0f} {float(linear(x)):.0f}')''')
 t('''Gib die Steigung des Wanderwegs (nach dem Spline) bei km 1, 5 und 11 in Metern pro km aus und in Prozent
 (Meter pro 1000 m mal 100), jeweils auf eine Nachkommastelle.''', WEG,
   '''spline = interpolate.CubicSpline(km, hoehe)
 for x in [1, 5, 11]:
     m = float(spline(x, 1))
-    print(x, round(m, 1), round(m / 1000 * 100, 1))''')
+    print(f'{x} {m:.1f} {m / 1000 * 100:.1f}')''')
 t('''Wo ist der Wanderweg (nach dem Spline) am steilsten? Berechne die Steigung an 1201 Stellen von 0 bis 12 und gib die Stelle mit dem größten Betrag
 der Steigung und die Steigung dort aus (eine Nachkommastelle).''', WEG,
   '''spline = interpolate.CubicSpline(km, hoehe)
 x = np.linspace(0, 12, 1201)
 steigung = spline(x, 1)
 i = np.abs(steigung).argmax()
-print(round(x[i], 1), round(steigung[i], 1))''')
+print(f'{x[i]:.1f} {steigung[i]:.1f}')''')
 t('''Berechne die mittlere Tagestemperatur auf zwei Wegen: als Mittelwert der Messwerte (ohne den doppelten Wert um 24 Uhr, also `temperatur[:-1]`)
 und als Integral des Splines von 0 bis 24 geteilt durch 24. Gib beides auf zwei Nachkommastellen aus.''', TEMP,
   '''spline = interpolate.CubicSpline(stunde, temperatur)
-print(round(temperatur[:-1].mean(), 2))
-print(round(float(spline.integrate(0, 24)) / 24, 2))''')
+print(f'{temperatur[:-1].mean():.2f}')
+print(f'{float(spline.integrate(0, 24)) / 24:.2f}')''')
 t('''Bestimme die tiefste Temperatur in der Nacht nach dem Spline (zwischen 0 und 9 Uhr): Uhrzeit und Temperatur, je zwei Nachkommastellen.''',
   TEMP + '\nfrom scipy import optimize',
   '''spline = interpolate.CubicSpline(stunde, temperatur)
 
-
 def temp(x):
     return float(spline(x))
 
-
 e = optimize.minimize_scalar(temp, bounds=(0, 9))
-print(round(e.x, 2), round(e.fun, 2))''')
+print(f'{e.x:.2f} {e.fun:.2f}')''')
 t('''Ab wann war es nach dem Spline am Vormittag wärmer als 15 °C? Bestimme die Nullstelle von `spline(x) - 15` mit `brentq()`
 zwischen 9 und 12 und gib die Uhrzeit in Stunden (zwei Nachkommastellen) und im Format `hh:mm` aus.''',
   TEMP + '\nfrom scipy import optimize',
   '''spline = interpolate.CubicSpline(stunde, temperatur)
 
-
 def h(x):
     return float(spline(x)) - 15
 
-
 x0 = optimize.brentq(h, 9, 12)
-print(round(x0, 2))
+print(f'{x0:.2f}')
 minuten = round(x0 * 60)
 print(f'{minuten // 60:02d}:{minuten % 60:02d}')''')
 t('''Zeichne das Höhenprofil des Wanderwegs: die Messpunkte als schwarze Punkte, den Spline als grüne Linie (300 Punkte von 0 bis 12),
@@ -206,7 +204,7 @@ benachbarter Werte und addiere nur die positiven. Gib das Ergebnis in ganzen Met
   '''spline = interpolate.CubicSpline(km, hoehe)
 h = spline(np.linspace(0, 12, 1201))
 d = np.diff(h)
-print(round(d[d > 0].sum()))''')
+print(f'{d[d > 0].sum():.0f}')''')
 predict('''import numpy as np
 from scipy import interpolate
 
@@ -223,9 +221,9 @@ from scipy import interpolate
 x = np.array([0, 1, 2, 3])
 y = 2 * x + 1
 spline = interpolate.CubicSpline(x, y)
-print(round(float(spline(1.5)), 4))
-print(round(float(spline(1.5, 1)), 4))''', erklaerung='''Die Messpunkte liegen alle auf der Geraden `y = 2x + 1`. Die glatteste Kurve durch sie ist diese Gerade selbst.
-Deshalb ist der Wert bei 1.5 genau `2 · 1.5 + 1 = 4.0` und die Steigung überall `2.0`.''')
+print(f'{float(spline(1.5)):.4f}')
+print(f'{float(spline(1.5, 1)):.4f}')''', erklaerung='''Die Messpunkte liegen alle auf der Geraden `y = 2x + 1`. Die glatteste Kurve durch sie ist diese Gerade selbst.
+Deshalb ist der Wert bei 1.5 genau `2 · 1.5 + 1 = 4` und die Steigung überall 2. Ausgabe: `4.0000` und `2.0000`.''')
 
 # ---------------------------------------------------------------- 2
 sec('Ausgleichskurven mit curve_fit')
@@ -243,16 +241,14 @@ eine **Ausgleichskurve**. `np.polyfit()` kann das nur für Polynome, `optimize.c
 „Am besten“ heißt wie bei der Regression: Die Summe der quadrierten Abweichungen ist am kleinsten.''',
      BAKT + '''
 
-
 def modell(t, a, k):
     return a * np.exp(k * t)
 
-
 parameter, kovarianz = optimize.curve_fit(modell, stunde, anzahl)
 a, k = parameter
-print(round(a, 2), round(k, 4))
-print(round(modell(8, a, k)))
-print(round(modell(8, *parameter)))''')
+print(f'{a:.2f} {k:.4f}')
+print(f'{modell(8, a, k):.0f}')
+print(f'{modell(8, *parameter):.0f}')''')
 expl('''#### Startwerte mit `p0=`
 
 `curve_fit()` probiert ausgehend von **Startwerten** für die Parameter immer bessere Werte aus. Ohne Angabe beginnt es mit 1 für alle.
@@ -263,14 +259,12 @@ Beispiel: Abkühlung eines Tees. Die Temperatur nähert sich der Raumtemperatur 
 `T(t) = u + (T0 - u) · e^(-k·t)`.''',
      TEE + '''
 
-
 def abkuehlung(t, u, t0, k):
     return u + (t0 - u) * np.exp(-k * t)
 
-
 parameter, kovarianz = optimize.curve_fit(abkuehlung, minute, temperatur, p0=[20, 85, 0.1])
 u, t0, k = parameter
-print(round(u, 2), round(t0, 2), round(k, 4))''')
+print(f'{u:.2f} {t0:.2f} {k:.4f}')''')
 expl('''#### Wie gut passt das Modell?
 
 Die **Residuen** sind die Abweichungen der Messwerte vom Modell. Aus ihnen berechnet man das **Bestimmtheitsmaß**
@@ -280,16 +274,14 @@ Die **Residuen** sind die Abweichungen der Messwerte vom Modell. Aus ihnen berec
 Es liegt höchstens bei 1 (alle Punkte auf der Kurve). Mit `R²` kann man verschiedene Modelle für dieselben Messwerte vergleichen.''',
      BAKT + '''
 
-
 def modell(t, a, k):
     return a * np.exp(k * t)
-
 
 parameter, kovarianz = optimize.curve_fit(modell, stunde, anzahl)
 residuen = anzahl - modell(stunde, *parameter)
 print(np.round(residuen, 1))
 r2 = 1 - (residuen ** 2).sum() / ((anzahl - anzahl.mean()) ** 2).sum()
-print(round(r2, 4))''')
+print(f'{r2:.4f}')''')
 
 t('''Passe eine Gerade `y = m·x + b` mit `curve_fit()` an die Federmessung an (`stats` wird hier nicht gebraucht).
 Gib `m` und `b` auf 4 Nachkommastellen aus und vergleiche mit `np.polyfit(masse, laenge, 1)`.''',
@@ -298,7 +290,6 @@ Gib `m` und `b` auf 4 Nachkommastellen aus und vergleiche mit `np.polyfit(masse,
 
 def gerade(x, m, b):
     return m * x + b
-
 
 parameter, kovarianz = optimize.curve_fit(gerade, masse, laenge)
 print(np.round(parameter, 4))
@@ -310,11 +301,10 @@ Verdopplungszeit `ln(2) / k` in Stunden (zwei Nachkommastellen).''', BAKT,
 def modell(t, a, k):
     return a * np.exp(k * t)
 
-
 parameter, kovarianz = optimize.curve_fit(modell, stunde, anzahl)
 a, k = parameter
-print(round(a, 2), round(k, 4))
-print(round(np.log(2) / k, 2))''')
+print(f'{a:.2f} {k:.4f}')
+print(f'{np.log(2) / k:.2f}')''')
 t('''Wann werden es nach dem Modell der vorigen Aufgabe 10000 Bakterien sein? Löse `N(t) = 10000` mit `brentq()` im Intervall von 0 bis 20
 (zwei Nachkommastellen).''', BAKT,
   '''
@@ -322,15 +312,12 @@ t('''Wann werden es nach dem Modell der vorigen Aufgabe 10000 Bakterien sein? L�
 def modell(t, a, k):
     return a * np.exp(k * t)
 
-
 parameter, kovarianz = optimize.curve_fit(modell, stunde, anzahl)
-
 
 def h(t):
     return modell(t, *parameter) - 10000
 
-
-print(round(optimize.brentq(h, 0, 20), 2))''')
+print(f'{optimize.brentq(h, 0, 20):.2f}')''')
 t('''Passe für die Bakterien das Modell `N(t) = a · b^t` an (`b` ist der Wachstumsfaktor pro Stunde). Gib `a` und `b` auf 4 Nachkommastellen aus und
 das prozentuale Wachstum pro Stunde (`(b - 1) · 100`, eine Nachkommastelle).''', BAKT,
   '''
@@ -338,11 +325,10 @@ das prozentuale Wachstum pro Stunde (`(b - 1) · 100`, eine Nachkommastelle).'''
 def modell(t, a, b):
     return a * b ** t
 
-
 parameter, kovarianz = optimize.curve_fit(modell, stunde, anzahl)
 a, b = parameter
-print(round(a, 4), round(b, 4))
-print(round((b - 1) * 100, 1))''')
+print(f'{a:.4f} {b:.4f}')
+print(f'{(b - 1) * 100:.1f}')''')
 t('''Bestimme für den Tee mit dem Abkühlungsmodell aus dem Beispiel, wann er auf 40 °C abgekühlt ist (`brentq()` zwischen 0 und 50) und
 welche Temperatur er nach 60 Minuten hat. Runde auf zwei Nachkommastellen.''', TEE,
   '''
@@ -350,16 +336,13 @@ welche Temperatur er nach 60 Minuten hat. Runde auf zwei Nachkommastellen.''', T
 def abkuehlung(t, u, t0, k):
     return u + (t0 - u) * np.exp(-k * t)
 
-
 parameter, kovarianz = optimize.curve_fit(abkuehlung, minute, temperatur, p0=[20, 85, 0.1])
-
 
 def h(t):
     return abkuehlung(t, *parameter) - 40
 
-
-print(round(optimize.brentq(h, 0, 50), 2))
-print(round(abkuehlung(60, *parameter), 2))''')
+print(f'{optimize.brentq(h, 0, 50):.2f}')
+print(f'{abkuehlung(60, *parameter):.2f}')''')
 t('''Zeichne die Messwerte des Tees als rote Punkte und die angepasste Abkühlungskurve als blaue Linie (200 Punkte von 0 bis 60).
 Zeichne die Raumtemperatur `u` des Modells als gestrichelte graue Linie ein (`plt.axhline(u, color='gray', linestyle='--')`).''',
   TEE + '\nimport matplotlib.pyplot as plt',
@@ -367,7 +350,6 @@ Zeichne die Raumtemperatur `u` des Modells als gestrichelte graue Linie ein (`pl
 
 def abkuehlung(t, u, t0, k):
     return u + (t0 - u) * np.exp(-k * t)
-
 
 parameter, kovarianz = optimize.curve_fit(abkuehlung, minute, temperatur, p0=[20, 85, 0.1])
 x = np.linspace(0, 60, 200)
@@ -387,11 +369,10 @@ u = np.array([0.0, 3.1, 5.2, 6.8, 7.8, 9.1, 9.6, 9.9])    # in V''',
 def laden(t, u0, tau):
     return u0 * (1 - np.exp(-t / tau))
 
-
 parameter, kovarianz = optimize.curve_fit(laden, t, u, p0=[10, 1])
 u0, tau = parameter
-print(round(u0, 2), round(tau, 2))
-print(round(tau * np.log(100), 2))''')
+print(f'{u0:.2f} {tau:.2f}')
+print(f'{tau * np.log(100):.2f}')''')
 t('''Die Anzahl der Nutzer einer neuen App wächst erst schnell und dann immer langsamer bis zu einer Grenze `G` (**logistisches Wachstum**):
 `N(t) = G / (1 + a · e^(-k·t))`. Bestimme `G`, `a` und `k` mit den Startwerten `p0=[5000, 50, 1]` (`G` ganzzahlig, `a` mit zwei, `k` mit 4 Nachkommastellen)
 und den Zeitpunkt, an dem die Hälfte von `G` erreicht ist (`ln(a) / k`, zwei Nachkommastellen).''',
@@ -405,11 +386,10 @@ nutzer = np.array([95, 210, 430, 830, 1450, 2250, 3020, 3600, 3950, 4150, 4250])
 def logistisch(t, g, a, k):
     return g / (1 + a * np.exp(-k * t))
 
-
 parameter, kovarianz = optimize.curve_fit(logistisch, woche, nutzer, p0=[5000, 50, 1])
 g, a, k = parameter
-print(round(g), round(a, 2), round(k, 4))
-print(round(np.log(a) / k, 2))''')
+print(f'{g:.0f} {a:.2f} {k:.4f}')
+print(f'{np.log(a) / k:.2f}')''')
 t('''Vergleiche für die Bakterien eine Regressionsparabel (`np.polyfit(..., 2)`) mit dem exponentiellen Modell: Gib für beide `R²` (6 Nachkommastellen)
 und die Vorhersage für 10 Stunden (ganzzahlig) aus.''', BAKT,
   '''
@@ -417,15 +397,13 @@ und die Vorhersage für 10 Stunden (ganzzahlig) aus.''', BAKT,
 def modell(t, a, k):
     return a * np.exp(k * t)
 
-
 def r2(y, y_modell):
     return 1 - ((y - y_modell) ** 2).sum() / ((y - y.mean()) ** 2).sum()
 
-
 parabel = np.polyfit(stunde, anzahl, 2)
 parameter, kovarianz = optimize.curve_fit(modell, stunde, anzahl)
-print(round(r2(anzahl, np.polyval(parabel, stunde)), 6), round(np.polyval(parabel, 10)))
-print(round(r2(anzahl, modell(stunde, *parameter)), 6), round(modell(10, *parameter)))''')
+print(f'{r2(anzahl, np.polyval(parabel, stunde)):.6f} {np.polyval(parabel, 10):.0f}')
+print(f'{r2(anzahl, modell(stunde, *parameter)):.6f} {modell(10, *parameter):.0f}')''')
 t('''Gezeiten: Der Wasserstand in einem Hafen (in m) schwankt etwa wie eine Sinuskurve `h(t) = m + a · sin(2π (t - c) / p)`.
 Bestimme `m`, `a`, `c` und die Periode `p` mit den Startwerten `p0=[3, 1.5, 3, 12]` (zwei Nachkommastellen).''',
   '''import numpy as np
@@ -438,16 +416,13 @@ pegel = np.array([1.9, 2.3, 3.6, 4.5, 4.3, 3.0, 1.8, 1.5, 2.6, 4.0, 4.6, 3.9, 2.
 def gezeiten(t, m, a, c, p):
     return m + a * np.sin(2 * np.pi * (t - c) / p)
 
-
 parameter, kovarianz = optimize.curve_fit(gezeiten, stunde, pegel, p0=[3, 1.5, 3, 12])
 print(np.round(parameter, 2))''')
 predict('''import numpy as np
 from scipy import optimize
 
-
 def modell(x, a, b):
     return a * x + b
-
 
 x = np.array([0, 1, 2, 3])
 y = np.array([1.1, 2.9, 4.9, 7.1])
@@ -473,8 +448,8 @@ Es liefert dasselbe wie `np.polyfit(x, y, 1)` und `np.corrcoef()` zusammen.''',
      FEDER + '''
 
 r = stats.linregress(masse, laenge)
-print(round(r.slope, 4), round(r.intercept, 4))
-print(round(r.rvalue, 4), round(r.rvalue ** 2, 4))
+print(f'{r.slope:.4f} {r.intercept:.4f}')
+print(f'{r.rvalue:.4f} {r.rvalue ** 2:.4f}')
 print(np.round(np.polyfit(masse, laenge, 1), 4))''')
 expl('''#### `stats.pearsonr()`
 
@@ -484,17 +459,17 @@ die im Notebook *scipy: Stochastik* behandelt werden.''',
      FEDER + '''
 
 ergebnis = stats.pearsonr(masse, laenge)
-print(round(ergebnis.statistic, 4))
-print(round(np.corrcoef(masse, laenge)[0, 1], 4))''')
+print(f'{ergebnis.statistic:.4f}')
+print(f'{np.corrcoef(masse, laenge)[0, 1]:.4f}')''')
 
 t('Bestimme für die Federmessung Steigung, Achsenabschnitt und `R²` mit `linregress()` (4 Nachkommastellen).', FEDER,
   '''r = stats.linregress(masse, laenge)
-print(round(r.slope, 4), round(r.intercept, 4), round(r.rvalue ** 2, 4))''')
+print(f'{r.slope:.4f} {r.intercept:.4f} {r.rvalue ** 2:.4f}')''')
 t('''Nach dem Gesetz von Hooke ist die Verlängerung proportional zur Masse. Gib die Länge der Feder ohne Gewicht (Achsenabschnitt) aus und die Masse,
 bei der die Feder nach der Regressionsgeraden 30 cm lang ist (beides auf eine Nachkommastelle).''', FEDER,
   '''r = stats.linregress(masse, laenge)
-print(round(r.intercept, 1))
-print(round((30 - r.intercept) / r.slope, 1))''')
+print(f'{r.intercept:.1f}')
+print(f'{(30 - r.intercept) / r.slope:.1f}')''')
 t('''Untersuche, ob Körpergröße und Schuhgröße zusammenhängen: Gib den Korrelationskoeffizienten mit `pearsonr()` (4 Nachkommastellen) und die
 Regressionsgerade aus. Welche Schuhgröße sagt sie für 180 cm voraus (eine Nachkommastelle)?''',
   '''import numpy as np
@@ -502,10 +477,10 @@ from scipy import stats
 
 groesse = np.array([158, 162, 165, 168, 170, 172, 175, 178, 181, 185, 188, 192])
 schuh = np.array([37, 38, 39, 38, 40, 41, 41, 42, 43, 43, 45, 46])''',
-  '''print(round(stats.pearsonr(groesse, schuh).statistic, 4))
+  '''print(f'{stats.pearsonr(groesse, schuh).statistic:.4f}')
 r = stats.linregress(groesse, schuh)
-print(round(r.slope, 4), round(r.intercept, 4))
-print(round(r.slope * 180 + r.intercept, 1))''')
+print(f'{r.slope:.4f} {r.intercept:.4f}')
+print(f'{r.slope * 180 + r.intercept:.1f}')''')
 t('''Zeichne die Federmessung als blaue Punkte und die Regressionsgerade aus `linregress()` als rote Linie von 0 bis 350 g.
 Schreibe die Geradengleichung mit zwei Nachkommastellen als Titel (z. B. `y = 0.05x + 9.80`).''', FEDER + '\nimport matplotlib.pyplot as plt',
   '''r = stats.linregress(masse, laenge)
@@ -518,23 +493,21 @@ t('''Für die Bakterien aus Abschnitt 2 kann man auch eine Gerade durch die Punk
 Bestimme sie mit `linregress()` und gib `k = slope` und `a = e^intercept` auf 4 bzw. zwei Nachkommastellen aus. Vergleiche mit `curve_fit()`.''',
   BAKT.replace('from scipy import optimize', 'from scipy import optimize, stats'),
   '''r = stats.linregress(stunde, np.log(anzahl))
-print(round(r.slope, 4), round(np.exp(r.intercept), 2))
-
+print(f'{r.slope:.4f} {np.exp(r.intercept):.2f}')
 
 def modell(t, a, k):
     return a * np.exp(k * t)
 
-
 parameter, kovarianz = optimize.curve_fit(modell, stunde, anzahl)
-print(round(parameter[1], 4), round(parameter[0], 2))''')
+print(f'{parameter[1]:.4f} {parameter[0]:.2f}')''')
 predict('''import numpy as np
 from scipy import stats
 
 x = np.array([1, 2, 3, 4, 5])
 y = 10 - 2 * x
 r = stats.linregress(x, y)
-print(round(r.slope, 2), round(r.intercept, 2), round(r.rvalue, 2))''', erklaerung='''Die Punkte liegen genau auf der fallenden Geraden `y = -2x + 10`. Steigung `-2.0`, Achsenabschnitt `10.0`.
-Der Korrelationskoeffizient ist bei einem exakten fallenden Zusammenhang `-1.0`.''')
+print(f'{r.slope:.2f} {r.intercept:.2f} {r.rvalue:.2f}')''', erklaerung='''Die Punkte liegen genau auf der fallenden Geraden `y = -2x + 10`. Steigung `-2`, Achsenabschnitt `10`.
+Der Korrelationskoeffizient ist bei einem exakten fallenden Zusammenhang `-1`. Ausgabe: `-2.00 10.00 -1.00`.''')
 
 # ---------------------------------------------------------------- 4
 sec('Messreihen aufsummieren und ableiten')
@@ -690,7 +663,7 @@ die Zeitpunkte (zwei Nachkommastellen) und den Puls in Schlägen pro Minute (mit
 print(len(spitzen))
 print(np.round(zeit[spitzen], 2))
 abstand = np.diff(zeit[spitzen]).mean()
-print(round(60 / abstand, 1))''')
+print(f'{60 / abstand:.1f}')''')
 t('''Ohne `height` findet `find_peaks()` im Pulssignal viel mehr Spitzen, weil die Messfehler kleine Zacken erzeugen. Gib die Anzahl ohne Parameter aus
 und dann die Anzahl mit `distance=20` und mit `prominence=0.5`.''', PULS,
   '''print(len(signal.find_peaks(messung)[0]))
@@ -709,9 +682,9 @@ für jeden Gipfel und jedes Tal den km (zwei Nachkommastellen) und die Höhe (ga
 x = np.linspace(0, 12, 1201)
 h = spline(x)
 for i in signal.find_peaks(h)[0]:
-    print('Gipfel', round(x[i], 2), round(h[i]))
+    print(f'Gipfel {x[i]:.2f} {h[i]:.0f}')
 for i in signal.find_peaks(-h)[0]:
-    print('Tal', round(x[i], 2), round(h[i]))''')
+    print(f'Tal {x[i]:.2f} {h[i]:.0f}')''')
 predict('''import numpy as np
 from scipy import signal
 
@@ -733,11 +706,11 @@ from scipy import interpolate
 km = np.array([0, 3, 6, 9, 12, 15])
 hoehe = np.array([600, 780, 1010, 1240, 1310, 1150])''',
   '''spline = interpolate.CubicSpline(km, hoehe)
-print(round(float(spline(7.5))))
+print(f'{float(spline(7.5)):.0f}')
 x = np.linspace(0, 15, 1501)
-print(round(spline(x, 1).max() / 1000 * 100, 1))
+print(f'{spline(x, 1).max() / 1000 * 100:.1f}')
 h = spline(x)
-print(round(x[h.argmax()], 1), round(h.max()))''')
+print(f'{x[h.argmax()]:.1f} {h.max():.0f}')''')
 t('''Die Einwohnerzahl einer Stadt (in Tausend) wurde alle 10 Jahre gezählt. Passe ein lineares und ein exponentielles Modell an
 (`a · e^(k·(t - 1980))`, Startwerte `p0=[50, 0.01]`) und gib für beide `R²` (4 Nachkommastellen) und die Vorhersage für 2040 (eine Nachkommastelle) aus.''',
   '''import numpy as np
@@ -750,13 +723,12 @@ einwohner = np.array([52.0, 57.5, 64.8, 71.2, 79.9])''',
 def expo(t, a, k):
     return a * np.exp(k * (t - 1980))
 
-
 r = stats.linregress(jahr, einwohner)
-print(round(r.rvalue ** 2, 4), round(r.slope * 2040 + r.intercept, 1))
+print(f'{r.rvalue ** 2:.4f} {r.slope * 2040 + r.intercept:.1f}')
 parameter, kovarianz = optimize.curve_fit(expo, jahr, einwohner, p0=[50, 0.01])
 residuen = einwohner - expo(jahr, *parameter)
 r2 = 1 - (residuen ** 2).sum() / ((einwohner - einwohner.mean()) ** 2).sum()
-print(round(r2, 4), round(expo(2040, *parameter), 1))''')
+print(f'{r2:.4f} {expo(2040, *parameter):.1f}')''')
 t('''Ein Elektroauto zeichnet seine Leistung (in kW) jede Minute auf, negative Werte bedeuten Rückgewinnung beim Bremsen.
 Die verbrauchte Energie ist die Fläche unter der Leistung (kW · min, geteilt durch 60 ergibt kWh). Gib die Energie bis zu jeder Minute
 in kWh aus (drei Nachkommastellen) und die Minuten, in denen eine Spitze der Leistung über 30 kW liegt.''',
@@ -776,8 +748,8 @@ from scipy import interpolate
 zeit = np.arange(0, 21, 2)
 v = np.array([0.0, 4.5, 8.5, 11.5, 14.0, 15.5, 16.5, 17.0, 17.0, 16.5, 16.0])''',
   '''spline = interpolate.CubicSpline(zeit, v)
-print(round(float(spline.integrate(0, 20)), 1))
-print(round(np.trapezoid(v, zeit), 1))''')
+print(f'{float(spline.integrate(0, 20)):.1f}')
+print(f'{np.trapezoid(v, zeit):.1f}')''')
 t('''Suche dir eine eigene Messreihe (z. B. Temperaturen deiner Stadt, Wasserstände eines Flusses) und werte sie aus: interpoliere sie,
 passe ein passendes Modell mit `curve_fit()` an, finde die Spitzen und zeichne alles in ein Diagramm.''', '',
   '''import numpy as np
@@ -787,10 +759,8 @@ import matplotlib.pyplot as plt
 monat = np.arange(1, 13)
 temperatur = np.array([1.5, 2.5, 6.0, 10.0, 14.5, 17.5, 19.5, 19.0, 15.0, 10.5, 5.5, 2.5])
 
-
 def modell(t, m, a, c):
     return m + a * np.sin(2 * np.pi * (t - c) / 12)
-
 
 parameter, kovarianz = optimize.curve_fit(modell, monat, temperatur, p0=[10, 9, 4])
 print(np.round(parameter, 2))
