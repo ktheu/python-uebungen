@@ -58,6 +58,18 @@
 | scikit-learn 4: Unüberwachtes Lernen (Clustering, PCA, Ziffernerkennung) | [sklearn_unueberwacht.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=sklearn_unueberwacht.ipynb) |
 | SQL-Abfragen mit SQLite | [sql_abfragen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=sql_abfragen.ipynb) |
 
+### PyTorch (in Google Colab)
+
+PyTorch gibt es im Browser-Python der Übungsseite nicht. Diese Notebooks öffnest du deshalb in **Google Colab** (Google-Konto nötig, PyTorch ist dort schon installiert).
+Colab öffnet eine Kopie; wer seine Lösungen behalten will, wählt *Datei → Kopie in Drive speichern*.
+
+| Thema | Notebook öffnen |
+|---|---|
+| PyTorch 1: Tensoren | [pytorch_tensoren.ipynb](https://colab.research.google.com/github/ktheu/python-uebungen/blob/main/extern/pytorch_tensoren.ipynb) |
+| PyTorch 2: Lernen (Gradienten, Gradientenabstieg, Trainingsschleife) | [pytorch_lernen.ipynb](https://colab.research.google.com/github/ktheu/python-uebungen/blob/main/extern/pytorch_lernen.ipynb) |
+| PyTorch 3: Netze (nn.Module, Mini-Batches, Überanpassung) | [pytorch_netze.ipynb](https://colab.research.google.com/github/ktheu/python-uebungen/blob/main/extern/pytorch_netze.ipynb) |
+| PyTorch 4: Bilder (MNIST, Faltungsnetze, Grafikkarte) | [pytorch_bilder.ipynb](https://colab.research.google.com/github/ktheu/python-uebungen/blob/main/extern/pytorch_bilder.ipynb) |
+
 **Merkhilfen** (PDF zum Ausdrucken, nur die Aufrufe als Erinnerung):
 [matplotlib](https://github.com/ktheu/python-uebungen/blob/main/merkhilfen/matplotlib.pdf) ·
 [SQL](https://github.com/ktheu/python-uebungen/blob/main/merkhilfen/sql.pdf)

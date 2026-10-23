@@ -7,7 +7,8 @@ Aufgaben stammen aus diesen Läufen. Geschrieben wird nur, wenn alles fehlerfrei
 Zeichnet eine Musterlösung matplotlib-Diagramme, werden sie als PNG an die Aufgabenzelle angehängt
 und als erwartete Ausgabe angezeigt (siehe run_mit_bildern()).
 
-Das Notebook landet in ../content/ (neben dem Ordner generator/) oder im als Argument angegebenen Ordner.
+Das Notebook landet in ../content/ (neben dem Ordner generator/), mit generate(..., ordner='extern') in ../extern/,
+oder im als Argument angegebenen Ordner.
 """
 import base64
 import contextlib
@@ -297,17 +298,19 @@ Danach folgen viele kleine Übungen. Wenn etwas vorgegeben ist, steht es schon i
 
 
 def generate(name, titel, intro=INTRO, aufklappbar=True, loesungsnotebook=False, sprache='python', ausfuehren=None,
-             ausgabe_markdown=False):
-    """Schreibt <name>.ipynb nach ../content/.
+             ausgabe_markdown=False, ordner='content'):
+    """Schreibt <name>.ipynb nach ../<ordner>/ (Standard ../content/).
     aufklappbar: Lösungen aufklappbar unter jede Aufgabe schreiben.
     loesungsnotebook: zusätzlich ein getrenntes <name>_loesungen.ipynb schreiben (wird normalerweise nicht gebraucht).
     sprache: Schlüssel aus SPRACHEN ('python' oder 'sqlite').
-    ausfuehren: Funktion code -> (ausgabe, fehler, bilder) zum Prüfen der Zellen (Standard: Python mit run_mit_bildern)."""
+    ausfuehren: Funktion code -> (ausgabe, fehler, bilder) zum Prüfen der Zellen (Standard: Python mit run_mit_bildern).
+    ordner: 'content' kommt auf die JupyterLite-Seite; 'extern' ist für Notebooks mit Paketen, die es im Browser nicht gibt
+    (z. B. PyTorch, geöffnet in Google Colab)."""
     global aktuelle_sprache, ausfuehrung
     aktuelle_sprache = sprache
     ausfuehrung = ausfuehren
     globals()['ausgabe_markdown'] = ausgabe_markdown  # ausgabe_markdown: Ausgabe von ausfuehren ist schon Markdown (pandasnb.py)
-    standard = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(sys.argv[0]))), 'content')
+    standard = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(sys.argv[0]))), ordner)
     out = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else standard)
     if check() != 0:
         print('nichts geschrieben')
