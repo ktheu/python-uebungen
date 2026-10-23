@@ -52,6 +52,10 @@
 | scipy 2: Messdaten auswerten (Interpolation, Ausgleichskurven, Spitzen) | [scipy_daten.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=scipy_daten.ipynb) |
 | scipy 3: Stochastik (Verteilungen, Binomialtest, t-Test, Chi-Quadrat-Test) | [scipy_stochastik.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=scipy_stochastik.ipynb) |
 | scipy 4: Änderungsraten und Modelle, lineare Optimierung, Abstände | [scipy_anwendungen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=scipy_anwendungen.ipynb) |
+| scikit-learn 1: Grundlagen (Merkmale und Zielwerte, k-NN, Trainings- und Testdaten, Skalieren) | [sklearn_grundlagen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=sklearn_grundlagen.ipynb) |
+| scikit-learn 2: Klassifikation (Bäume, logistische Regression, neuronale Netze, Kreuzvalidierung) | [sklearn_klassifikation.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=sklearn_klassifikation.ipynb) |
+| scikit-learn 3: Regression (Zahlen vorhersagen, Polynome, Überanpassung) | [sklearn_regression.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=sklearn_regression.ipynb) |
+| scikit-learn 4: Unüberwachtes Lernen (Clustering, PCA, Ziffernerkennung) | [sklearn_unueberwacht.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=sklearn_unueberwacht.ipynb) |
 | SQL-Abfragen mit SQLite | [sql_abfragen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=sql_abfragen.ipynb) |
 
 **Merkhilfen** (PDF zum Ausdrucken, nur die Aufrufe als Erinnerung):
