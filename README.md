@@ -48,6 +48,10 @@
 | networkx 2: Wege, Breiten- und Tiefensuche, Abhängigkeiten | [networkx_suchen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=networkx_suchen.ipynb) |
 | networkx 3: Kürzeste Wege und minimale Spannbäume | [networkx_gewichtet.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=networkx_gewichtet.ipynb) |
 | networkx 4: Euler-Wege, Färbungen, Dominating Sets und Rundreisen | [networkx_probleme.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=networkx_probleme.ipynb) |
+| scipy 1: Nullstellen, Gleichungen, Extremstellen und Integrale | [scipy_analysis.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=scipy_analysis.ipynb) |
+| scipy 2: Messdaten auswerten (Interpolation, Ausgleichskurven, Spitzen) | [scipy_daten.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=scipy_daten.ipynb) |
+| scipy 3: Stochastik (Verteilungen, Binomialtest, t-Test, Chi-Quadrat-Test) | [scipy_stochastik.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=scipy_stochastik.ipynb) |
+| scipy 4: Änderungsraten und Modelle, lineare Optimierung, Abstände | [scipy_anwendungen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=scipy_anwendungen.ipynb) |
 | SQL-Abfragen mit SQLite | [sql_abfragen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=sql_abfragen.ipynb) |
 
 **Merkhilfen** (PDF zum Ausdrucken, nur die Aufrufe als Erinnerung):
