@@ -5,12 +5,12 @@
 #     python generator/gen_pillow_grundlagen.py
 #     py -3.13 generator/pyodide_check/pruefen.py generator/gen_pillow_grundlagen.py
 #
-# Ausgaben wie in JupyterLab (pandasnb.py): Ein Bild in der letzten Zeile oder in display() wird als erwartetes Bild angehängt
+# Ausgaben wie in JupyterLab (pandasnb.py): Ein Bild in der letzten Zeile wird als erwartetes Bild angehängt
 # (verkleinert auf höchstens 320 Pixel, Fotos als JPEG). Der Pyodide-Check vergleicht nur den Text, nicht die Bilder.
 # Keine Dateigrößen ausgeben (hängen von zlib/libjpeg ab). Die Fotos liegen als PNG in content/ (dateien=FOTOS).
 import pandasnb
-from nbgen import sec, expl, predict, generate, setup
-from pillowhilfe import t, reihe, ANZEIGEN, SCHLUSS, FOTOS, FOTOS_MD, ANZEIGE, ANZEIGE_MD
+from nbgen import sec, expl, predict, generate
+from pillowhilfe import t, reihe, ANZEIGEN, SCHLUSS, FOTOS, FOTOS_MD, NEBEN, N
 
 INTRO = '''Ein digitales Bild ist ein Raster aus **Pixeln** (Bildpunkten), jedes mit einer Farbe. Mit dem Paket **Pillow** (Modulname `PIL`) erzeugst, bearbeitest und
 speicherst du Bilder in Python. In diesem Notebook lernst du, wie Pillow Bilder, Farben und Pixel darstellt, wie du einzelne Pixel liest und setzt,
@@ -27,8 +27,6 @@ Vorausgesetzt werden die Notebooks *Schleifen*, *Tupel* und *Funktionen*.
 ''' + SCHLUSS
 
 P = 'from PIL import Image'
-
-setup(ANZEIGE_MD, ANZEIGE)
 
 # ---------------------------------------------------------------- 1
 sec('Ein Bild erzeugen')
@@ -54,14 +52,22 @@ Eine Farbe kann man auf drei Arten angeben:
 | Name | `'red'`, `'gold'`, `'navy'` | englische Farbnamen (wie in HTML) |
 | Hex-Code | `'#ff8800'` | je zwei Hexadezimalziffern für Rot, Grün, Blau |
 
-`(0, 0, 0)` ist Schwarz, `(255, 255, 255)` Weiß, gleiche Anteile ergeben Grau. `ImageColor.getrgb(farbe)` rechnet Namen und Hex-Codes in ein Tupel um.
-Mehrere Bilder in einer Zelle zeigt `display(bild)` an.''',
+`(0, 0, 0)` ist Schwarz, `(255, 255, 255)` Weiß, gleiche Anteile ergeben Grau. `ImageColor.getrgb(farbe)` rechnet Namen und Hex-Codes in ein Tupel um.''',
      """from PIL import Image, ImageColor
 
 print(ImageColor.getrgb('gold'), ImageColor.getrgb('#ff8800'))
-display(Image.new('RGB', (150, 40), 'navy'))
-display(Image.new('RGB', (150, 40), '#ff8800'))
-Image.new('RGB', (150, 40), (128, 128, 128))""")
+Image.new('RGB', (150, 40), '#ff8800')""")
+expl('''#### Mehrere Bilder in einer Zelle: `nebeneinander()`
+
+Eine Zelle zeigt nur das Bild in ihrer **letzten Zeile** an. (In JupyterLab gibt es dafür auch `display(bild)`, aber im Browser-Python von JupyterLite
+bleiben Pillow-Bilder damit leer.) Will man mehrere Bilder vergleichen, setzt man sie zu **einem** Bild zusammen. Das macht die Funktion `nebeneinander(bilder)`:
+Sie bekommt eine Liste von Bildern, erzeugt ein Bild, das breit genug für alle ist, und fügt die Bilder mit `paste()` nebeneinander ein (`paste()` lernst du in
+*Pillow: Bearbeiten* genauer kennen). Du musst sie nicht selbst schreiben: In den Aufgaben, die sie brauchen, steht sie schon in der Zelle.''',
+     """from PIL import Image
+
+""" + NEBEN + """
+
+nebeneinander([Image.new('RGB', (150, 40), 'navy'), Image.new('RGB', (150, 40), '#ff8800'), Image.new('RGB', (150, 40), (128, 128, 128))])""")
 
 t('Erzeuge ein grünes Bild (`(0, 200, 0)`) mit 300 × 150 Pixeln, gib seine Größe aus und zeige es an.', P,
   """bild = Image.new('RGB', (300, 150), (0, 200, 0))
@@ -72,13 +78,18 @@ t('''Erzeuge ein quadratisches Bild mit 120 Pixeln Seitenlänge in der Farbe `'p
 t('''Gib die Farbanteile von `'orange'`, `'skyblue'` und `'#336699'` als Tupel aus.''', 'from PIL import ImageColor',
   """for farbe in ['orange', 'skyblue', '#336699']:
     print(farbe, ImageColor.getrgb(farbe))""")
-t('''Zeige fünf Bilder mit 200 × 30 Pixeln untereinander an: Grau mit den Helligkeiten 0, 64, 128, 192 und 255 (alle drei Anteile gleich).''', P,
-  """for wert in [0, 64, 128, 192, 255]:
-    display(Image.new('RGB', (200, 30), (wert, wert, wert)))""")
+t('''Zeige fünf Quadrate mit 60 × 60 Pixeln nebeneinander an: Grau mit den Helligkeiten 0, 64, 128, 192 und 255 (alle drei Anteile gleich).
+Sammle die Bilder in einer Liste und zeige `nebeneinander(bilder)` an.''', P + N,
+  """bilder = []
+for wert in [0, 64, 128, 192, 255]:
+    bilder.append(Image.new('RGB', (60, 60), (wert, wert, wert)))
+nebeneinander(bilder)""")
 t('''Mische Farben: Zeige die Farben `(255, 255, 0)`, `(0, 255, 255)` und `(255, 0, 255)` als Bilder mit 100 × 50 Pixeln an. Rot und Grün ergeben Gelb,
-Grün und Blau ergeben Türkis (Cyan), Rot und Blau ergeben Magenta.''', P,
-  """for farbe in [(255, 255, 0), (0, 255, 255), (255, 0, 255)]:
-    display(Image.new('RGB', (100, 50), farbe))""")
+Grün und Blau ergeben Türkis (Cyan), Rot und Blau ergeben Magenta.''', P + N,
+  """bilder = []
+for farbe in [(255, 255, 0), (0, 255, 255), (255, 0, 255)]:
+    bilder.append(Image.new('RGB', (100, 50), farbe))
+nebeneinander(bilder)""")
 predict("""from PIL import Image
 
 bild = Image.new('RGB', (640, 480), 'white')
@@ -250,7 +261,7 @@ for x in range(200):
 bild""")
 t('''Schreibe eine Funktion `streifen(breite, hoehe, farben)`, die ein Bild mit senkrechten, gleich breiten Streifen in den Farben der Liste `farben` zurückgibt.
 Erzeuge damit die Flagge von Frankreich (`'#002395'`, `'white'`, `'#ed2939'`, 300 × 200) und die von Italien (`'#009246'`, `'white'`, `'#ce2b37'`).
-`putpixel()` braucht ein Tupel, deshalb rechnest du die Farben mit `ImageColor.getrgb()` um.''', 'from PIL import Image, ImageColor',
+`putpixel()` braucht ein Tupel, deshalb rechnest du die Farben mit `ImageColor.getrgb()` um.''', 'from PIL import Image, ImageColor' + N,
   """
 
 def streifen(breite, hoehe, farben):
@@ -262,8 +273,7 @@ def streifen(breite, hoehe, farben):
     return bild
 
 
-display(streifen(300, 200, ['#002395', 'white', '#ed2939']))
-display(streifen(300, 200, ['#009246', 'white', '#ce2b37']))""")
+nebeneinander([streifen(300, 200, ['#002395', 'white', '#ed2939']), streifen(300, 200, ['#009246', 'white', '#ce2b37'])])""")
 predict("""from PIL import Image
 
 bild = Image.new('RGB', (4, 1))
@@ -305,13 +315,13 @@ for x in range(256):
     for y in range(50):
         bild.putpixel((x, y), x)
 bild""")
-t('''Öffne `bluete.png`, wandle es in Graustufen um und zeige beide Bilder an. Gib die Modi und die Farbe bzw. Helligkeit des Pixels `(320, 213)` aus.''', P,
+t('''Öffne `bluete.png`, wandle es in Graustufen um und zeige beide Bilder (auf 320 × 213 verkleinert) nebeneinander an. Gib die Modi und die Farbe bzw. Helligkeit
+des Pixels `(320, 213)` aus.''', P + N,
   """foto = Image.open('bluete.png')
 grau = foto.convert('L')
 print(foto.mode, grau.mode)
 print(foto.getpixel((320, 213)), grau.getpixel((320, 213)))
-display(foto)
-display(grau)""")
+nebeneinander([foto.resize((320, 213)), grau.resize((320, 213))])""")
 t('''Wandle das Graustufen-Verlaufsbild in den Modus `'1'` (nur Schwarz und Weiß) um. Pillow verteilt dabei schwarze und weiße Punkte so, dass es von Weitem grau aussieht
 (**Rastern**, *dithering*). Zeige das Ergebnis 2-fach vergrößert an.''', P,
   """bild = Image.new('L', (128, 40))

@@ -8,8 +8,8 @@
 # Ausgaben wie in JupyterLab (pandasnb.py), Bilder als Anhang (Fotos verkleinert als JPEG). Die Fotos liegen in content/ (dateien=FOTOS).
 # Animierte GIFs: im Notebook mit IPython.display.Image(filename=...) anzeigen; als erwartete Ausgabe nicht möglich (kind='free').
 import pandasnb
-from nbgen import sec, expl, predict, generate, setup
-from pillowhilfe import t, reihe, ANZEIGEN, SCHLUSS, FOTOS, FOTOS_MD, ANZEIGE, ANZEIGE_MD
+from nbgen import sec, expl, predict, generate
+from pillowhilfe import t, reihe, ANZEIGEN, SCHLUSS, FOTOS, FOTOS_MD, NEBEN, N
 
 INTRO = '''In diesem Notebook bearbeitest du Fotos mit fertigen Werkzeugen von Pillow: ausschneiden, verkleinern, drehen, spiegeln, Farbkanäle trennen,
 Filter anwenden, Helligkeit und Kontrast ändern, Bilder übereinanderlegen und animierte GIFs erzeugen, also das, was ein Bildbearbeitungsprogramm kann,
@@ -28,8 +28,6 @@ Vorausgesetzt werden *Pillow: Grundlagen* und *Pillow: Zeichnen*.
 P = "from PIL import Image\n\nfoto = Image.open('pagode.png')"
 B = "from PIL import Image\n\nfoto = Image.open('bluete.png')"
 
-setup(ANZEIGE_MD, ANZEIGE)
-
 # ---------------------------------------------------------------- 1
 sec('Ausschneiden und Größe ändern')
 expl('''#### `crop()` und `resize()`
@@ -41,12 +39,12 @@ expl('''#### `crop()` und `resize()`
 Beide geben ein **neues** Bild zurück; `foto` bleibt unverändert.''',
      P + """
 
+""" + NEBEN + """
+
 ausschnitt = foto.crop((200, 50, 400, 250))
-print(ausschnitt.size)
-display(ausschnitt)
 klein = foto.resize((160, 107))
-print(klein.size)
-klein""")
+print(ausschnitt.size, klein.size)
+nebeneinander([ausschnitt, klein])""")
 expl('''#### Seitenverhältnis erhalten: `thumbnail()`
 
 `foto.thumbnail((200, 200))` verkleinert das Bild so, dass es in ein 200 × 200-Feld passt, **ohne** es zu verzerren. Achtung: `thumbnail()` verändert das Bild
@@ -72,19 +70,17 @@ t('''Verkleinere die Pagode auf ein Viertel der Breite und Höhe (mit `resize()`
   """klein = foto.resize((foto.width // 4, foto.height // 4))
 print(klein.size)
 klein""")
-t('''Verzerre die Blüte absichtlich auf 300 × 100 Pixel und daneben auf 100 × 300 Pixel (zwei `display()`).''', B,
-  """display(foto.resize((300, 100)))
-display(foto.resize((100, 300)))""")
+t('''Verzerre die Blüte absichtlich auf 300 × 100 Pixel und daneben auf 100 × 300 Pixel und zeige beide nebeneinander an.''', B + N,
+  """nebeneinander([foto.resize((300, 100)), foto.resize((100, 300))])""")
 t('''Erzeuge Vorschaubilder der Pagode, die in 100 × 100, 150 × 150 und 300 × 300 passen (jeweils von einer Kopie), und gib ihre Größen aus.''', P,
   """for groesse in [100, 150, 300]:
     vorschau = foto.copy()
     vorschau.thumbnail((groesse, groesse))
     print(vorschau.size)""")
 t('''Vergrößere einen 40 × 40-Ausschnitt der Pagode bei (300 | 150) auf 320 × 320, einmal mit `resample=Image.NEAREST` (Pixel werden zu Quadraten) und einmal mit dem
-Standard (geglättet).''', P,
+Standard (geglättet). Zeige beide nebeneinander an.''', P + N,
   """ausschnitt = foto.crop((300, 150, 340, 190))
-display(ausschnitt.resize((320, 320), resample=Image.NEAREST))
-display(ausschnitt.resize((320, 320)))""")
+nebeneinander([ausschnitt.resize((320, 320), resample=Image.NEAREST), ausschnitt.resize((320, 320))])""")
 predict("""from PIL import Image
 
 bild = Image.new('RGB', (800, 400))
@@ -106,20 +102,19 @@ expl('''#### `rotate()`, `transpose()` und `ImageOps`
      P + """
 from PIL import ImageOps
 
+""" + NEBEN + """
+
 klein = foto.resize((213, 142))
-display(klein.rotate(30))
-display(klein.rotate(30, expand=True, fillcolor='white'))
-display(ImageOps.mirror(klein))
-ImageOps.expand(klein, border=10, fill='black')""")
+nebeneinander([klein.rotate(30), klein.rotate(30, expand=True, fillcolor='white'), ImageOps.mirror(klein),
+               ImageOps.expand(klein, border=10, fill='black')])""")
 
 K = P + "\nfrom PIL import ImageOps\n\nklein = foto.resize((213, 142))"
 t('Drehe die verkleinerte Pagode um genau 90° mit `transpose()` und gib die Größe vorher und nachher aus.', K,
   """gedreht = klein.transpose(Image.Transpose.ROTATE_90)
 print(klein.size, gedreht.size)
 gedreht""")
-t('Zeige die verkleinerte Pagode auf den Kopf gestellt (oben/unten gespiegelt) und als Negativ an.', K,
-  """display(ImageOps.flip(klein))
-display(ImageOps.invert(klein))""")
+t('Zeige die verkleinerte Pagode auf den Kopf gestellt (oben/unten gespiegelt) und als Negativ nebeneinander an.', K + N,
+  """nebeneinander([ImageOps.flip(klein), ImageOps.invert(klein)])""")
 t('''Drehe die verkleinerte Pagode um 45° mit `expand=True` und weißen Ecken und gib die neue Größe aus. Sie ist größer als das Original.''', K,
   """gedreht = klein.rotate(45, expand=True, fillcolor='white')
 print(gedreht.size)
@@ -129,16 +124,20 @@ t('''Gib dem verkleinerten Foto einen doppelten Rahmen: erst 5 Pixel weiß, dann
 print(klein.size, gerahmt.size)
 gerahmt""")
 t('''`ImageOps.fit(foto, (150, 150))` schneidet ein Bild so zu, dass es genau 150 × 150 groß ist (die Mitte bleibt erhalten). Erzeuge damit quadratische Vorschaubilder beider Fotos.''',
-  "from PIL import Image, ImageOps",
-  """for name in ['pagode.png', 'bluete.png']:
+  "from PIL import Image, ImageOps" + N,
+  """bilder = []
+for name in ['pagode.png', 'bluete.png']:
     vorschau = ImageOps.fit(Image.open(name), (150, 150))
     print(name, vorschau.size)
-    display(vorschau)""")
-t('''Zeige die verkleinerte Pagode in Schritten von 60° gedreht an (0°, 60°, ..., 300°), jedes Bild mit `expand=True` und weißen Ecken, als Vorschaubild in 120 × 120.''', K,
-  """for winkel in range(0, 360, 60):
+    bilder.append(vorschau)
+nebeneinander(bilder)""")
+t('''Zeige die verkleinerte Pagode in Schritten von 60° gedreht an (0°, 60°, ..., 300°), jedes Bild mit `expand=True` und weißen Ecken, als Vorschaubild in 120 × 120, alle nebeneinander.''', K + N,
+  """bilder = []
+for winkel in range(0, 360, 60):
     bild = klein.rotate(winkel, expand=True, fillcolor='white')
     bild.thumbnail((120, 120))
-    display(bild)""")
+    bilder.append(bild)
+nebeneinander(bilder)""")
 predict("""from PIL import Image
 
 bild = Image.new('RGB', (300, 100))
@@ -156,12 +155,11 @@ Ein RGB-Bild besteht aus drei **Kanälen**. `r, g, b = foto.split()` trennt sie 
 `Image.merge('RGB', (r, g, b))` setzt Kanäle wieder zusammen, auch in anderer Reihenfolge. `foto.getchannel('R')` liefert einen einzelnen Kanal.''',
      B + """
 
+""" + NEBEN + """
+
 klein = foto.resize((213, 142))
 r, g, b = klein.split()
-display(r)
-display(g)
-display(b)
-Image.merge('RGB', (b, g, r))""")
+nebeneinander([r, g, b, Image.merge('RGB', (b, g, r))])""")
 
 KB = B + "\n\nklein = foto.resize((213, 142))"
 t('Trenne die verkleinerte Blüte in ihre Kanäle und gib den Modus und die Größe des Rot-Kanals aus. Zeige den Grün-Kanal an.', KB,
@@ -208,26 +206,27 @@ in Netzen für Bilderkennung). Einige Filter:
      P + """
 from PIL import ImageFilter
 
+""" + NEBEN + """
+
 ausschnitt = foto.crop((200, 50, 440, 210))
-display(ausschnitt.filter(ImageFilter.GaussianBlur(4)))
-display(ausschnitt.filter(ImageFilter.FIND_EDGES))
-ausschnitt.filter(ImageFilter.CONTOUR)""")
+nebeneinander([ausschnitt.filter(ImageFilter.GaussianBlur(4)), ausschnitt.filter(ImageFilter.FIND_EDGES),
+               ausschnitt.filter(ImageFilter.CONTOUR)])""")
 
 F = P + "\nfrom PIL import ImageFilter\n\nausschnitt = foto.crop((200, 50, 440, 210))"
-t('Zeige den Ausschnitt mit `GaussianBlur` und den Radien 1, 3 und 8 an.', F,
-  """for radius in [1, 3, 8]:
-    display(ausschnitt.filter(ImageFilter.GaussianBlur(radius)))""")
-t('Zeige den Ausschnitt mit den Filtern `SHARPEN` und `EMBOSS` an.', F,
-  """display(ausschnitt.filter(ImageFilter.SHARPEN))
-display(ausschnitt.filter(ImageFilter.EMBOSS))""")
+t('Zeige den Ausschnitt mit `GaussianBlur` und den Radien 1, 3 und 8 nebeneinander an.', F + N,
+  """bilder = []
+for radius in [1, 3, 8]:
+    bilder.append(ausschnitt.filter(ImageFilter.GaussianBlur(radius)))
+nebeneinander(bilder)""")
+t('Zeige den Ausschnitt mit den Filtern `SHARPEN` und `EMBOSS` nebeneinander an.', F + N,
+  """nebeneinander([ausschnitt.filter(ImageFilter.SHARPEN), ausschnitt.filter(ImageFilter.EMBOSS)])""")
 t('''Kanten in Graustufen: Wandle den Ausschnitt in Graustufen um, wende `FIND_EDGES` an und mache das Ergebnis mit `ImageOps.invert()` zu dunklen Kanten auf Weiß.''',
   F + '\nfrom PIL import ImageOps',
   """kanten = ausschnitt.convert('L').filter(ImageFilter.FIND_EDGES)
 ImageOps.invert(kanten)""")
-t('''Störpixel entfernen: In der Zelle wird der Ausschnitt mit 2000 zufälligen weißen Pixeln „beschädigt“. Zeige ihn an und dann repariert mit `MedianFilter(3)`.''',
-  F + '\nimport random\n\nrandom.seed(4)\nkaputt = ausschnitt.copy()\nfor i in range(2000):\n    kaputt.putpixel((random.randint(0, 239), random.randint(0, 159)), (255, 255, 255))',
-  """display(kaputt)
-kaputt.filter(ImageFilter.MedianFilter(3))""")
+t('''Störpixel entfernen: In der Zelle wird der Ausschnitt mit 2000 zufälligen weißen Pixeln „beschädigt“. Zeige ihn und daneben die mit `MedianFilter(3)` reparierte Fassung an.''',
+  F + '\nimport random\n\nrandom.seed(4)\nkaputt = ausschnitt.copy()\nfor i in range(2000):\n    kaputt.putpixel((random.randint(0, 239), random.randint(0, 159)), (255, 255, 255))' + N,
+  """nebeneinander([kaputt, kaputt.filter(ImageFilter.MedianFilter(3))])""")
 t('''Ein **Fokus-Effekt**: Zeichne die ganze Pagode stark weich (`GaussianBlur(6)`) und füge dann den scharfen Ausschnitt (200 | 50) bis (440 | 210) wieder an derselben Stelle ein
 (`unscharf.paste(ausschnitt, (200, 50))`, siehe Abschnitt 6).''', F,
   """unscharf = foto.filter(ImageFilter.GaussianBlur(6))
@@ -252,27 +251,31 @@ Genauso funktionieren `Contrast` (Kontrast), `Color` (Sättigung; 0 ergibt Graus
      B + """
 from PIL import ImageEnhance
 
+""" + NEBEN + """
+
 klein = foto.resize((213, 142))
-display(ImageEnhance.Brightness(klein).enhance(1.5))
-display(ImageEnhance.Contrast(klein).enhance(2.0))
-ImageEnhance.Color(klein).enhance(0.3)""")
+nebeneinander([ImageEnhance.Brightness(klein).enhance(1.5), ImageEnhance.Contrast(klein).enhance(2.0),
+               ImageEnhance.Color(klein).enhance(0.3)])""")
 
 E = KB + '\nfrom PIL import ImageEnhance'
-t('Zeige die Blüte mit den Helligkeitsfaktoren 0.5 und 1.5 an. Gib jeweils die Farbe des Pixels (100 | 70) aus.', E,
-  """for faktor in [0.5, 1.5]:
+t('Zeige die Blüte mit den Helligkeitsfaktoren 0.5 und 1.5 nebeneinander an. Gib jeweils die Farbe des Pixels (100 | 70) aus.', E + N,
+  """bilder = []
+for faktor in [0.5, 1.5]:
     hell = ImageEnhance.Brightness(klein).enhance(faktor)
     print(faktor, hell.getpixel((100, 70)))
-    display(hell)""")
-t('''Zeige die Blüte mit den Sättigungsfaktoren 0 (grau), 0.5 und 2 (knallig) an.''', E,
-  """for faktor in [0, 0.5, 2]:
-    display(ImageEnhance.Color(klein).enhance(faktor))""")
+    bilder.append(hell)
+nebeneinander(bilder)""")
+t('''Zeige die Blüte mit den Sättigungsfaktoren 0 (grau), 0.5 und 2 (knallig) nebeneinander an.''', E + N,
+  """bilder = []
+for faktor in [0, 0.5, 2]:
+    bilder.append(ImageEnhance.Color(klein).enhance(faktor))
+nebeneinander(bilder)""")
 t('''Ein flaues Foto verbessern: In der Zelle wird die Pagode mit `Contrast(...).enhance(0.4)` künstlich flau gemacht. Zeige sie an, dann mit `ImageOps.autocontrast()` verbessert.
-Gib vorher und nachher das dunkelste und hellste Pixel des Graustufenbilds aus (`convert('L').getextrema()`).''',
-  P + "\nfrom PIL import ImageEnhance, ImageOps\n\nflau = ImageEnhance.Contrast(foto.resize((213, 142))).enhance(0.4)",
+Gib vorher und nachher das dunkelste und hellste Pixel des Graustufenbilds aus (`convert('L').getextrema()`) und zeige beide Bilder nebeneinander an.''',
+  P + "\nfrom PIL import ImageEnhance, ImageOps\n\nflau = ImageEnhance.Contrast(foto.resize((213, 142))).enhance(0.4)" + N,
   """besser = ImageOps.autocontrast(flau)
 print(flau.convert('L').getextrema(), besser.convert('L').getextrema())
-display(flau)
-besser""")
+nebeneinander([flau, besser])""")
 t('''Ein **Retro-Filter**: Verringere die Sättigung der Blüte auf 0.5, erhöhe den Kontrast auf 1.3 und gib ihr einen Rahmen aus 12 Pixeln in `'beige'`.''',
   E + '\nfrom PIL import ImageOps',
   """retro = ImageEnhance.Color(klein).enhance(0.5)
@@ -294,7 +297,12 @@ bluete = Image.open('bluete.png').resize((213, 142))
 leinwand = Image.new('RGB', (446, 162), 'white')
 leinwand.paste(pagode, (10, 10))
 leinwand.paste(bluete, (223, 10))
-display(leinwand)
+leinwand""")
+expl('''`Image.blend()` mischt die beiden Fotos zu gleichen Teilen:''',
+     """from PIL import Image
+
+pagode = Image.open('pagode.png').resize((213, 142))
+bluete = Image.open('bluete.png').resize((213, 142))
 Image.blend(pagode, bluete, 0.5)""")
 
 ZWEI = "from PIL import Image\n\npagode = Image.open('pagode.png').resize((213, 142))\nbluete = Image.open('bluete.png').resize((213, 142))"
@@ -305,9 +313,11 @@ bilder = [pagode, bluete, pagode.convert('L').convert('RGB'), ImageOps.mirror(bl
 for i, bild in enumerate(bilder):
     leinwand.paste(bild, (10 + i % 2 * 213, 10 + i // 2 * 142))
 leinwand""")
-t('Zeige Überblendungen von Pagode und Blüte mit den Anteilen 0.2 und 0.8 an.', ZWEI,
-  """for anteil in [0.2, 0.8]:
-    display(Image.blend(pagode, bluete, anteil))""")
+t('Zeige Überblendungen von Pagode und Blüte mit den Anteilen 0.2 und 0.8 nebeneinander an.', ZWEI + N,
+  """bilder = []
+for anteil in [0.2, 0.8]:
+    bilder.append(Image.blend(pagode, bluete, anteil))
+nebeneinander(bilder)""")
 t('''Ein **Wasserzeichen**: Erzeuge eine durchsichtige Ebene (`Image.new('RGBA', pagode.size, (0, 0, 0, 0))`), schreibe darauf „© Mia“ in Weiß mit Alpha 160 in Größe 28 unten rechts
 (Mittelpunkt (160 | 120)) und lege sie mit `alpha_composite()` über die Pagode (vorher `convert('RGBA')`).''', ZWEI + '\nfrom PIL import ImageDraw, ImageFont',
   """ebene = Image.new('RGBA', pagode.size, (0, 0, 0, 0))

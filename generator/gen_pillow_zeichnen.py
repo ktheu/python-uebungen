@@ -8,8 +8,8 @@
 # Ausgaben wie in JupyterLab (pandasnb.py), Bilder als Anhang. Text wird mit FreeType gerastert: Maße von Text (textbbox, textlength)
 # nur ausgeben, wenn der Pyodide-Check sie bestätigt.
 import pandasnb
-from nbgen import sec, expl, predict, generate, setup
-from pillowhilfe import t, reihe, ANZEIGEN, SCHLUSS, ANZEIGE, ANZEIGE_MD
+from nbgen import sec, expl, predict, generate
+from pillowhilfe import t, reihe, ANZEIGEN, SCHLUSS, NEBEN, N
 
 INTRO = '''Mit `ImageDraw` zeichnest du Linien, Rechtecke, Kreise, Vielecke und Text in ein Bild. Zusammen mit Schleifen und Funktionen entstehen daraus Flaggen,
 Muster, Uhren und Diagramme. (Die Turtle-Grafik, die du vielleicht kennst, gibt es im Browser-Python nicht; Pillow ist ein guter Ersatz.)
@@ -24,8 +24,6 @@ Vorausgesetzt werden *Pillow: Grundlagen* und die Notebooks *Schleifen* und *Fun
 
 D = 'from PIL import Image, ImageDraw'
 LEER = D + "\n\nbild = Image.new('RGB', (300, 200), 'white')\nzeichner = ImageDraw.Draw(bild)"
-
-setup(ANZEIGE_MD, ANZEIGE)
 
 # ---------------------------------------------------------------- 1
 sec('Linien, Rechtecke und Ellipsen')
@@ -277,7 +275,6 @@ an viele Stellen setzen.''',
 def baum(zeichner, x, y):
     zeichner.rectangle((x - 4, y - 20, x + 4, y), fill='saddlebrown')
     zeichner.polygon([(x - 20, y - 15), (x, y - 60), (x + 20, y - 15)], fill='forestgreen')
-
 
 bild = Image.new('RGB', (300, 120), 'lightcyan')
 zeichner = ImageDraw.Draw(bild)

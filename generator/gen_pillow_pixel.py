@@ -9,8 +9,8 @@
 # Pixelschleifen nur mit verkleinerten Fotos (213 x 142), sonst ist Python im Browser zu langsam.
 # numpy: dtype von Ganzzahl-Arrays nie ausgeben (int32 in Pyodide), Überlauf bei uint8 im Text erklärt.
 import pandasnb
-from nbgen import sec, expl, predict, generate, setup
-from pillowhilfe import t, reihe, ANZEIGEN, SCHLUSS, FOTOS, FOTOS_MD, ANZEIGE, ANZEIGE_MD
+from nbgen import sec, expl, predict, generate
+from pillowhilfe import t, reihe, ANZEIGEN, SCHLUSS, FOTOS, FOTOS_MD, NEBEN, N
 
 INTRO = '''Wie funktionieren die Werkzeuge eines Bildbearbeitungsprogramms? In diesem Notebook programmierst du sie selbst: Negativ, Graustufen, Schwarz-Weiß, Sepia,
 Verpixeln, Weichzeichnen und Kanten finden. Zuerst mit Schleifen über alle Pixel, dann viel schneller mit numpy, das ein Bild als Array behandelt.
@@ -30,8 +30,6 @@ KLEIN = "from PIL import Image\n\nfoto = Image.open('bluete.png').resize((213, 1
 KLEIN_P = "from PIL import Image\n\nfoto = Image.open('pagode.png').resize((213, 142))"
 NP = "import numpy as np\nfrom PIL import Image\n\nfoto = Image.open('bluete.png')\na = np.array(foto)"
 NP_P = "import numpy as np\nfrom PIL import Image\n\nfoto = Image.open('pagode.png')\na = np.array(foto)"
-
-setup(ANZEIGE_MD, ANZEIGE)
 
 # ---------------------------------------------------------------- 1
 sec('Effekte mit Pixelschleifen')
@@ -164,14 +162,15 @@ das Bild an.''', 'import numpy as np\nfrom PIL import Image\n\ngrau = np.array(I
 print((sw == 255).sum())
 Image.fromarray(sw)""")
 t('''Mache die Pagode heller, indem du zu jedem Wert 60 addierst, einmal falsch direkt mit `uint8` (Überlauf) und einmal richtig mit `astype(int)` und `np.clip`. Zeige beide an.''',
-  NP_P,
-  """display(Image.fromarray(a + 60))
-Image.fromarray(np.clip(a.astype(int) + 60, 0, 255).astype(np.uint8))""")
+  NP_P + N,
+  """nebeneinander([Image.fromarray(a + 60), Image.fromarray(np.clip(a.astype(int) + 60, 0, 255).astype(np.uint8))])""")
 t('''Spiegeln, drehen und ausschneiden nur mit Slicing: `a[:, ::-1]` (links/rechts), `a[::-1]` (oben/unten), `a[100:300, 200:440]` (Zeilen 100 bis 299, Spalten 200 bis 439).
-Gib die Formen aus und zeige die drei Bilder an.''', NP_P,
-  """for teil in [a[:, ::-1], a[::-1], a[100:300, 200:440]]:
+Gib die Formen aus und zeige die drei Bilder nebeneinander an.''', NP_P + N,
+  """bilder = []
+for teil in [a[:, ::-1], a[::-1], a[100:300, 200:440]]:
     print(teil.shape)
-    display(Image.fromarray(teil))""")
+    bilder.append(Image.fromarray(teil))
+nebeneinander(bilder)""")
 t('''Sepia mit numpy: Die drei neuen Kanäle sind die Formeln aus Abschnitt 1 (mit den Kanälen `r = a[:, :, 0]` usw. als Kommazahlen). Setze sie mit `np.stack([...], axis=2)` zusammen,
 begrenze mit `np.clip` auf 255 und zeige das Bild an. Gib die neue Farbe des Pixels (x = 320 | y = 200) aus.''', NP_P,
   """r = a[:, :, 0].astype(float)
@@ -215,10 +214,13 @@ mosaik = klein.resize(foto.size, Image.NEAREST)
 print(klein.size)
 mosaik""")
 
-t('''Verpixle die Blüte mit Blöcken von 8, 20 und 40 Pixeln (zweimal `resize` wie im Beispiel) und zeige die drei Ergebnisse an.''', 'from PIL import Image\n\nfoto = Image.open(\'bluete.png\')',
-  """for block in [8, 20, 40]:
+t('''Verpixle die Blüte mit Blöcken von 8, 20 und 40 Pixeln (zweimal `resize` wie im Beispiel) und zeige die drei Ergebnisse nebeneinander an.''',
+  'from PIL import Image\n\nfoto = Image.open(\'bluete.png\')' + N,
+  """bilder = []
+for block in [8, 20, 40]:
     klein = foto.resize((foto.width // block, foto.height // block))
-    display(klein.resize(foto.size, Image.NEAREST))""")
+    bilder.append(klein.resize(foto.size, Image.NEAREST))
+nebeneinander(bilder)""")
 t('''Verpixle mit numpy selbst: Schneide das Pagoden-Array auf ein Vielfaches von 20 zu (`a[:420, :640]`), gehe in einer Schleife über alle 20 × 20-Blöcke und setze jeden Block auf
 seinen Mittelwert (`block.mean(axis=(0, 1))`). Gib die neue Farbe des Blocks oben links aus.''', NP_P,
   """b = a[:420, :640].copy()
@@ -270,15 +272,14 @@ plt.plot(h[0:256], color='red')
 plt.plot(h[256:512], color='green')
 plt.plot(h[512:768], color='blue')
 plt.show()""")
-t('''`ImageOps.equalize()` verteilt die Helligkeiten gleichmäßiger und verstärkt so den Kontrast. Zeige die Pagode in Graustufen vorher und nachher an und zeichne beide Histogramme
-übereinander (zwei `plt.plot()` mit Legende).''', G + "\nfrom PIL import ImageOps\nimport matplotlib.pyplot as plt",
+t('''`ImageOps.equalize()` verteilt die Helligkeiten gleichmäßiger und verstärkt so den Kontrast. Zeichne beide Histogramme übereinander (zwei `plt.plot()` mit Legende)
+und zeige danach in der letzten Zeile die Pagode in Graustufen vorher und nachher nebeneinander an.''', G + "\nfrom PIL import ImageOps\nimport matplotlib.pyplot as plt" + N,
   """ausgeglichen = ImageOps.equalize(grau)
-display(grau)
-display(ausgeglichen)
 plt.plot(grau.histogram(), label='vorher')
 plt.plot(ausgeglichen.histogram(), label='nachher')
 plt.legend()
-plt.show()""")
+plt.show()
+nebeneinander([grau.resize((320, 213)), ausgeglichen.resize((320, 213))])""")
 t('''Zeichne das Histogramm der Pagode in Graustufen **selbst mit Pillow**: ein weißes Bild 256 × 100, für jede Helligkeit `w` eine senkrechte Linie bei `x = w`, deren Länge
 der Anzahl entspricht (größte Anzahl = 100 Pixel).''', G + '\nfrom PIL import ImageDraw',
   """histogramm = grau.histogram()
@@ -342,8 +343,9 @@ und daraus `np.sqrt(dx² + dy²)`, mal 2 und auf 255 begrenzt. Zeige das Negativ
 dy = g[1:, :-1] - g[:-1, :-1]
 staerke = np.clip(np.sqrt(dx ** 2 + dy ** 2) * 2, 0, 255)
 Image.fromarray((255 - staerke).astype(np.uint8))""")
-t('''Schreibe eine Funktion `weichzeichnen(g, r)`, die den Mittelwert über ein (2r + 1) × (2r + 1)-Feld berechnet (für `r = 1` wie im Beispiel). Zeige die Ergebnisse für `r` = 2 und 6 an.''',
-  GR,
+t('''Schreibe eine Funktion `weichzeichnen(g, r)`, die den Mittelwert über ein (2r + 1) × (2r + 1)-Feld berechnet (für `r = 1` wie im Beispiel). Zeige die Ergebnisse für `r` = 2 und 6
+nebeneinander an.''',
+  GR + N,
   """
 
 def weichzeichnen(g, r):
@@ -355,8 +357,10 @@ def weichzeichnen(g, r):
     return (summe // (2 * r + 1) ** 2).astype(np.uint8)
 
 
+bilder = []
 for r in [2, 6]:
-    display(Image.fromarray(weichzeichnen(g, r)))""")
+    bilder.append(Image.fromarray(weichzeichnen(g, r)))
+nebeneinander(bilder)""")
 predict("""import numpy as np
 
 g = np.array([[0, 0, 0, 90],
@@ -462,14 +466,13 @@ def lesen(foto):
 print(lesen(Image.open('geheim.png')).decode('utf-8'))
 print(list(lesen(Image.open('pagode.png'))))""")
 t('''Zeige, dass man den Unterschied nicht sieht: Zeige das Original und das Bild mit der Nachricht nebeneinander an (beide verkleinert) und gib den größten Unterschied eines Farbanteils aus
-(`np.abs(... .astype(int) - ...).max()`).''', ST,
+(`np.abs(... .astype(int) - ...).max()`).''', ST + N,
   VERSTECKEN + """
 
 
 geheim = verstecken(foto, 'Treffpunkt 15 Uhr')
 print(np.abs(np.array(geheim).astype(int) - np.array(foto).astype(int)).max())
-display(foto.resize((320, 213)))
-geheim.resize((320, 213))""")
+nebeneinander([foto.resize((320, 213)), geheim.resize((320, 213))])""")
 predict("""for r in [200, 201]:
     print(r - r % 2 + 1, r - r % 2 + 0, r % 2)""", erklaerung='''- Für 200 (gerade, letztes Bit 0): mit Bit 1 wird es `201`, mit Bit 0 bleibt es `200`; `200 % 2` ist `0`.
 - Für 201 (ungerade): `201 - 1 = 200` ist die gerade Zahl darunter, mit Bit 1 also wieder `201`, mit Bit 0 `200`; `201 % 2` ist `1`.''')

@@ -28,38 +28,26 @@ def reihe(nr):
     return '\n'.join(zeilen)
 
 
-ANZEIGEN = '''**Bilder anzeigen:** Steht ein Bild in der **letzten Zeile** einer Zelle, zeigt JupyterLab es an. Mehrere Bilder in einer Zelle zeigt man mit `display(bild)` an.
+ANZEIGEN = '''**Bilder anzeigen:** Steht ein Bild in der **letzten Zeile** einer Zelle, zeigt JupyterLab es an. Jede Zelle zeigt so ein Bild.
+Mehrere Bilder setzt die Funktion `nebeneinander()` zu einem zusammen (erklärt in *Pillow: Grundlagen*; in den Aufgaben steht sie schon in der Zelle).
+(`display(bild)` zeigt Pillow-Bilder im Browser-Python von JupyterLite leider nur leer an.)
 Die erwarteten Ausgaben zeigen die Bilder höchstens 320 Pixel groß; große Bilder (Fotos) sind dort verkleinert.'''
 
 SCHLUSS = '''Jeder Abschnitt beginnt mit kurzen Erklärungen und Beispielen. Führe die Beispiele aus und probiere sie ruhig ein wenig aus.
 Danach folgen viele kleine Übungen. Wenn etwas vorgegeben ist, steht es schon in der Codezelle.'''
 
-# Setup-Zelle für alle Pillow-Notebooks: Im Kernel von JupyterLite (pyodide_kernel 0.8.6) zeigt display(bild) ein leeres Bild,
-# weil display() die PNG-Bytes von Pillow nicht in Base64 umwandelt (nur die letzte Zeile tut das). Liefert der Formatter selbst
-# Base64-Text, funktioniert beides. Außerhalb von Jupyter (Generator, Pyodide-Check) ist get_ipython() None, dann passiert nichts.
-ANZEIGE = """import base64
-import io
-from IPython import get_ipython
-from PIL import Image
-
-def als_png(bild):
-    puffer = io.BytesIO()
-    bild.save(puffer, 'PNG')
-    return base64.b64encode(puffer.getvalue()).decode('ascii')
-
-def kein_jpeg(bild):
-    return None
-
-ipython = get_ipython()
-if ipython is not None:
-    ipython.display_formatter.formatters['image/png'].for_type(Image.Image, als_png)
-    ipython.display_formatter.formatters['image/jpeg'].for_type(Image.Image, kein_jpeg)
-print('Bereit: Bilder werden auch mit display() angezeigt.')"""
-
-ANZEIGE_MD = '''#### Bildanzeige einrichten
-
-**Führe diese Zelle zuerst aus** (nach jedem Neustart des Kernels wieder). Im Browser-Python von JupyterLite zeigt `display(bild)` sonst nur ein leeres Bild an;
-die Zelle sorgt dafür, dass Pillow-Bilder dort richtig übertragen werden. Wie sie funktioniert, musst du nicht verstehen.'''
+# display() zeigt Pillow-Bilder im Kernel von JupyterLite (pyodide_kernel 0.8.6) als leeres Bild (auch ein eigener image/png-Formatter
+# hilft nicht). Deshalb zeigt jede Zelle nur ein Bild, das in der letzten Zeile; mehrere Bilder setzt nebeneinander() zu einem zusammen.
+# Jede Zelle, die es benutzt, enthält die Definition (die Zellen werden beim Prüfen einzeln ausgeführt).
+NEBEN = """def nebeneinander(bilder):
+    \"\"\"Setzt mehrere Bilder mit 10 Pixeln Abstand nebeneinander zu einem Bild zusammen.\"\"\"
+    gesamt = Image.new('RGB', (sum([b.width + 10 for b in bilder]) - 10, max([b.height for b in bilder])), 'lightgray')
+    x = 0
+    for b in bilder:
+        gesamt.paste(b, (x, 0))
+        x += b.width + 10
+    return gesamt"""
+N = '\n\n' + NEBEN  # an vorgegebenen Code anhängen
 
 # Die beiden Fotos liegen als PNG in content/ (einmal lokal aus scikit-learn dekodiert, damit die Pixel überall gleich sind).
 # Generatoren, die sie öffnen, übergeben generate(..., dateien=FOTOS).
