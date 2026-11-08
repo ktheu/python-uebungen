@@ -74,6 +74,18 @@ Colab öffnet eine Kopie; wer seine Lösungen behalten will, wählt *Datei → K
 | PyTorch 3: Netze (nn.Module, Mini-Batches, Überanpassung) | [pytorch_netze.ipynb](https://colab.research.google.com/github/ktheu/python-uebungen/blob/main/extern/pytorch_netze.ipynb) |
 | PyTorch 4: Bilder (MNIST, Faltungsnetze, Grafikkarte) | [pytorch_bilder.ipynb](https://colab.research.google.com/github/ktheu/python-uebungen/blob/main/extern/pytorch_bilder.ipynb) |
 
+### MiniZinc (Arbeitsblätter für die MiniZinc IDE)
+
+MiniZinc läuft weder im Browser-Python der Übungsseite noch in Colab. Diese Notebooks sind **Arbeitsblätter**: Du liest sie auf GitHub (oder lädst sie herunter)
+und schreibst und startest die Modelle in der **MiniZinc IDE** ([minizinc.org](https://www.minizinc.org/), kostenlos) oder ohne Installation im
+[MiniZinc Playground](https://play.minizinc.org/). Die Lösungen kannst du unter jeder Aufgabe aufklappen.
+
+| Thema | Arbeitsblatt |
+|---|---|
+| MiniZinc 1: Grundlagen (Modelle, Variablen, Bedingungen, Optimieren) | [minizinc_grundlagen.ipynb](https://github.com/ktheu/python-uebungen/blob/main/extern/minizinc_grundlagen.ipynb) |
+| MiniZinc 2: Daten (Aufzählungen, Arrays, Datendateien, Mengen) | [minizinc_daten.ipynb](https://github.com/ktheu/python-uebungen/blob/main/extern/minizinc_daten.ipynb) |
+| MiniZinc 3: Zuordnen und Planen (Zuordnungen, Sitz- und Dienstpläne, Gruppen) | [minizinc_zuordnung.ipynb](https://github.com/ktheu/python-uebungen/blob/main/extern/minizinc_zuordnung.ipynb) |
+
 **Merkhilfen** (PDF zum Ausdrucken, nur die Aufrufe als Erinnerung):
 [matplotlib](https://github.com/ktheu/python-uebungen/blob/main/merkhilfen/matplotlib.pdf) ·
 [SQL](https://github.com/ktheu/python-uebungen/blob/main/merkhilfen/sql.pdf)

@@ -40,7 +40,20 @@ SPRACHEN = {
         'language_info': {'name': 'sqlite'},
         'platzhalter': '',  # leere Zelle: wird nicht ausgeführt (eine Zelle nur mit Kommentar gibt im Kernel einen Fehler)
         'codeblock': 'sql'},
+    # Arbeitsblätter, deren Code in einem anderen Programm läuft (MiniZinc IDE): Code in Codezellen, die man nicht ausführt,
+    # Ausgaben als Markdown darunter; unter jeder Aufgabe eine Codezelle für die eigene Lösung, Lösungen als Markdown-Block (mznnb.py).
+    'minizinc': {
+        'kernelspec': {'display_name': 'Python 3 (ipykernel)', 'language': 'python', 'name': 'python3'},
+        'language_info': {'name': 'python'},
+        'platzhalter': '% deine Lösung (ausführen in der MiniZinc IDE)',
+        'codeblock': 'minizinc',
+        'ohne_codezellen': True,
+        'hinweis': '''Unter den Aufgaben kannst du jeweils die Lösung aufklappen. Versuche es aber immer zuerst selbst in der MiniZinc IDE!
+Bei den Aufgaben „Was wird ausgegeben?“ überlegst du zuerst, führst dann das Modell in der IDE aus und vergleichst.
+Die aufklappbare Lösung erklärt dort, wie die Ausgabe zustande kommt.'''},
 }
+code_als_markdown = None  # nur bei 'ohne_codezellen': Funktion code -> Markdown (z. B. Modell und Daten als zwei Blöcke)
+code_als_zellen = None  # nur bei 'ohne_codezellen': Funktion code -> Liste von ('code'|'md', text), z. B. Modell, Überschrift, Daten
 aktuelle_sprache = 'python'
 ausfuehrung = None  # Funktion code -> (ausgabe, fehler, bilder); None bedeutet run_mit_bildern
 ausgabe_markdown = False  # True: die Ausführungsfunktion liefert fertiges Markdown (pandas: Text in Codeblöcken, DataFrames als HTML)
@@ -151,6 +164,7 @@ def _check():
                 if it['code'] is None:
                     continue
                 out, err, bilder = ausf(it['code'])
+                it['out'] = out  # nur bei Notebooks ohne Codezellen sichtbar (Ausgabe unter dem Beispiel)
                 if it.get('error'):
                     if not isinstance(err, it['error']):
                         print('EXPL: EXPECTED ERROR MISSING', s['title']); problems += 1
@@ -235,11 +249,18 @@ def vorhersage_md(it):
     return text + it['erklaerung'].strip() + '\n\n</details>'
 
 
+def code_md(src):
+    """Code als Markdown-Block (bei Notebooks ohne Codezellen über code_als_markdown, z. B. Modell und Daten getrennt)."""
+    if code_als_markdown:
+        return code_als_markdown(src)
+    return f'```{SPRACHEN[aktuelle_sprache]["codeblock"]}\n{src}\n```'
+
+
 def loesung_md(it):
     """Aufklappbare Lösung unter der Codezelle (Vorhersage-Aufgaben: vorhersage_md())."""
     titel = 'Beispiellösung anzeigen' if it['kind'] == 'free' else 'Lösung anzeigen'
     return (f'<details>\n<summary>{titel} (erst selbst probieren!)</summary>\n\n'
-            f'```{SPRACHEN[aktuelle_sprache]["codeblock"]}\n{it["solution"]}\n```\n\n</details>')
+            f'{code_md(it["solution"])}\n\n</details>')
 
 
 AUFKLAPP_HINWEIS = '''Unter den Aufgaben kannst du jeweils die Lösung aufklappen. Versuche es aber immer zuerst selbst!
@@ -247,6 +268,48 @@ Bei den Aufgaben „Was wird ausgegeben?“ gibt es keine Lösung zum Aufklappen
 AUFKLAPP_HINWEIS_ERKLAERT = '''Unter den Aufgaben kannst du jeweils die Lösung aufklappen. Versuche es aber immer zuerst selbst!
 Bei den Aufgaben „Was wird ausgegeben?“ überlegst du zuerst, führst dann die Zelle aus und vergleichst.
 Die aufklappbare Lösung erklärt dort, wie die Ausgabe zustande kommt.'''
+
+
+def code_zellen(src):
+    """Code als (nicht ausführbare) Codezellen, bei Bedarf mit Markdown dazwischen (z. B. 'Daten (Datei ...):')."""
+    teile = code_als_zellen(src) if code_als_zellen else [('code', src)]
+    return [code(text) if art == 'code' else md(text) for art, text in teile]
+
+
+def zellen_ohne_code(it, aufklappbar):
+    """Zellen eines Beispiels oder einer Aufgabe in einem Arbeitsblatt, dessen Code in einem anderen Programm läuft
+    (z. B. MiniZinc): Der Code steht in Codezellen, die man nicht ausführt; Ausgaben stehen als Markdown darunter."""
+    if it['type'] == 'expl':
+        zelle = md(it['md'])
+        if it['anhaenge']:
+            zelle['attachments'] = png_anhang(it['anhaenge'])
+        zellen = [zelle]
+        if it['code'] is not None:
+            zellen += code_zellen(it['code'])
+            if it.get('out', '').strip():
+                zellen.append(md('**Ausgabe:**\n\n' + it['out'].rstrip()))
+        return zellen
+    if it['kind'] == 'predict':
+        text = f'#### Aufgabe {it["nr"]}\n\n{it["text"]}'
+    else:
+        text = task_md(it)
+    zelle = md(text)
+    if it['anhaenge'] or (it['kind'] == 'normal' and it['bilder']):
+        zelle['attachments'] = png_anhang(it['anhaenge'])
+        if it['kind'] == 'normal':
+            zelle['attachments'].update(bilder_anhang(it))
+    zellen = [zelle]
+    if it['kind'] == 'predict':
+        zellen += code_zellen(it['solution'])
+    else:
+        # Zelle für die eigene Lösung (wird nicht ausgeführt, nur zum Aufschreiben und Nachlesen)
+        platzhalter = SPRACHEN[aktuelle_sprache]['platzhalter']
+        zellen.append(code(it['given'] + '\n' + platzhalter if it['given'] else platzhalter))
+    if aufklappbar and it['kind'] != 'predict':
+        zellen.append(md(loesung_md(it)))
+    elif aufklappbar and it['erklaerung']:
+        zellen.append(md(vorhersage_md(it)))
+    return zellen
 
 
 def build(titel, intro, loesung, aufklappbar):
@@ -257,15 +320,20 @@ def build(titel, intro, loesung, aufklappbar):
         vorhersagen = [it for s in sections for it in s['items'] if it['type'] == 'task' and it['kind'] == 'predict']
         alle_erklaert = vorhersagen and all(it['erklaerung'] for it in vorhersagen)
         hinweis = AUFKLAPP_HINWEIS_ERKLAERT if alle_erklaert else AUFKLAPP_HINWEIS
+        hinweis = SPRACHEN[aktuelle_sprache].get('hinweis', hinweis)
         cells.append(md(f'### {titel} - Übungen\n\n{intro}\n\n{hinweis}'))
     else:
         cells.append(md(f'### {titel} - Übungen\n\n{intro}'))
     if setup_cell:
         cells.append(md(setup_cell['md']))
         cells.append(code(setup_cell['code']))
+    ohne_code = SPRACHEN[aktuelle_sprache].get('ohne_codezellen', False)
     for s_i, s in enumerate(sections, 1):
         cells.append(md(f'## {s_i}. {s["title"]}'))
         for it in s['items']:
+            if ohne_code:
+                cells += zellen_ohne_code(it, aufklappbar and not loesung)
+                continue
             if it['type'] == 'expl':
                 if not loesung:
                     cells.append(md(it['md']))
@@ -308,7 +376,7 @@ Danach folgen viele kleine Übungen. Wenn etwas vorgegeben ist, steht es schon i
 
 
 def generate(name, titel, intro=INTRO, aufklappbar=True, loesungsnotebook=False, sprache='python', ausfuehren=None,
-             ausgabe_markdown=False, ordner='content', dateien=None):
+             ausgabe_markdown=False, ordner='content', dateien=None, darstellung=None, zellen=None):
     """Schreibt <name>.ipynb nach ../<ordner>/ (Standard ../content/).
     aufklappbar: Lösungen aufklappbar unter jede Aufgabe schreiben.
     loesungsnotebook: zusätzlich ein getrenntes <name>_loesungen.ipynb schreiben (wird normalerweise nicht gebraucht).
@@ -317,10 +385,14 @@ def generate(name, titel, intro=INTRO, aufklappbar=True, loesungsnotebook=False,
     ordner: 'content' kommt auf die JupyterLite-Seite; 'extern' ist für Notebooks mit Paketen, die es im Browser nicht gibt
     (z. B. PyTorch, geöffnet in Google Colab).
     dateien: Namen von Dateien in ../<ordner>/, die das Notebook öffnet (z. B. Fotos). Sie werden beim Prüfen in den temporären
-    Ordner kopiert (und vom Pyodide-Check nach Pyodide)."""
-    global aktuelle_sprache, ausfuehrung
+    Ordner kopiert (und vom Pyodide-Check nach Pyodide).
+    darstellung: bei Sprachen ohne ausführbaren Code (z. B. 'minizinc') Funktion code -> Markdown für Code-Blöcke (Lösungen).
+    zellen: ebenso Funktion code -> Liste von ('code'|'md', text) für die Codezellen (Beispiele, Vorgaben, Vorhersagen)."""
+    global aktuelle_sprache, ausfuehrung, code_als_markdown, code_als_zellen
     aktuelle_sprache = sprache
     ausfuehrung = ausfuehren
+    code_als_markdown = darstellung
+    code_als_zellen = zellen
     globals()['ausgabe_markdown'] = ausgabe_markdown  # ausgabe_markdown: Ausgabe von ausfuehren ist schon Markdown (pandasnb.py)
     standard = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(sys.argv[0]))), ordner)
     beilagen[:] = [os.path.join(standard, name) for name in (dateien or [])]
