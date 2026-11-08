@@ -1,4 +1,4 @@
-"""Ausführung und Darstellung von MiniZinc-Modellen für die Arbeitsblätter in extern/ (gen_minizinc_*.py).
+"""Ausführung und Darstellung von MiniZinc-Modellen für die Arbeitsblätter content/minizinc_*.ipynb (gen_minizinc_*.py).
 
 Die Notebooks (nbgen-Sprache 'minizinc') zeigen Modelle in Codezellen, die man nicht ausführt (nur zum Lesen und Kopieren),
 die Ausgaben als Markdown darunter; unter jeder Aufgabe eine Codezelle für die eigene Lösung; Musterlösungen als Markdown-Block. Gerechnet wird in der MiniZinc IDE oder im Playground. Beim Erzeugen führt dieses Modul jedes Modell mit dem lokal
@@ -40,8 +40,9 @@ def reihe(nr):
     return '\n'.join(zeilen)
 
 
-ARBEITSBLATT = '''**Dieses Notebook ist ein Arbeitsblatt.** MiniZinc läuft weder im Browser-Python der Übungsseite noch in Colab. Die Codezellen enthalten
-MiniZinc-Code, keinen Python-Code: **Führe sie hier nicht aus**, sondern kopiere sie. Lies die Erklärungen hier und schreibe und starte die Modelle in der **MiniZinc IDE**
+ARBEITSBLATT = '''**Dieses Notebook ist ein Arbeitsblatt.** MiniZinc läuft nicht im Browser-Python dieser Übungsseite. Die Codezellen enthalten
+MiniZinc-Code, keinen Python-Code: **Führe sie hier nicht aus**, sondern kopiere sie (wenn du es aus Versehen tust, gibt es nur eine harmlose Fehlermeldung).
+Lies die Erklärungen hier und schreibe und starte die Modelle in der **MiniZinc IDE**
 (kostenlos für Windows, macOS und Linux: [minizinc.org](https://www.minizinc.org/)). Ohne Installation geht es auch im Browser im
 [MiniZinc Playground](https://play.minizinc.org/).
 

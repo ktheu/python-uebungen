@@ -1,4 +1,4 @@
-# Erzeugt ../extern/minizinc_zuordnung.ipynb (siehe nbgen.py, mznnb.py). Drittes Notebook der MiniZinc-Reihe:
+# Erzeugt ../content/minizinc_zuordnung.ipynb (siehe nbgen.py, mznnb.py). Drittes Notebook der MiniZinc-Reihe:
 # minizinc_grundlagen, minizinc_daten, minizinc_zuordnung.
 #
 # Arbeitsblatt: Die Modelle stehen in Codezellen, die man nicht ausführt (nur kopiert); gerechnet wird in der MiniZinc IDE.
@@ -595,4 +595,4 @@ solve satisfy;
 output [show(plan[t, 1]) ++ " " ++ show(plan[t, 2]) ++ "\n" | t in TAG];""", kind='free')
 
 generate('minizinc_zuordnung', 'MiniZinc 3: Zuordnen und Planen', INTRO, sprache='minizinc', ausfuehren=mznnb.ausfuehrung(),
-         darstellung=mznnb.darstellung, zellen=mznnb.zellen, ordner='extern')
+         darstellung=mznnb.darstellung, zellen=mznnb.zellen)

@@ -1,4 +1,4 @@
-# Erzeugt ../extern/minizinc_daten.ipynb (siehe nbgen.py, mznnb.py). Zweites Notebook der MiniZinc-Reihe:
+# Erzeugt ../content/minizinc_daten.ipynb (siehe nbgen.py, mznnb.py). Zweites Notebook der MiniZinc-Reihe:
 # minizinc_grundlagen, minizinc_daten, minizinc_zuordnung.
 #
 # Arbeitsblatt: Die Modelle stehen in Codezellen, die man nicht ausführt (nur kopiert); gerechnet wird in der MiniZinc IDE.
@@ -609,4 +609,4 @@ preis = [3, 2, 4, 12];
 freude = [4, 3, 5, 15];""", kind='free')
 
 generate('minizinc_daten', 'MiniZinc 2: Daten', INTRO, sprache='minizinc', ausfuehren=mznnb.ausfuehrung(),
-         darstellung=mznnb.darstellung, zellen=mznnb.zellen, ordner='extern')
+         darstellung=mznnb.darstellung, zellen=mznnb.zellen)

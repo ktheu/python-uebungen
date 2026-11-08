@@ -76,15 +76,15 @@ Colab öffnet eine Kopie; wer seine Lösungen behalten will, wählt *Datei → K
 
 ### MiniZinc (Arbeitsblätter für die MiniZinc IDE)
 
-MiniZinc läuft weder im Browser-Python der Übungsseite noch in Colab. Diese Notebooks sind **Arbeitsblätter**: Du liest sie auf GitHub (oder lädst sie herunter)
-und schreibst und startest die Modelle in der **MiniZinc IDE** ([minizinc.org](https://www.minizinc.org/), kostenlos) oder ohne Installation im
-[MiniZinc Playground](https://play.minizinc.org/). Die Lösungen kannst du unter jeder Aufgabe aufklappen.
+MiniZinc läuft nicht im Browser-Python der Übungsseite. Diese Notebooks sind **Arbeitsblätter**: Du liest sie auf der Übungsseite, schreibst deine Lösungen
+in die Codezellen (ohne sie auszuführen) und startest die Modelle in der **MiniZinc IDE** ([minizinc.org](https://www.minizinc.org/), kostenlos) oder ohne
+Installation im [MiniZinc Playground](https://play.minizinc.org/).
 
-| Thema | Arbeitsblatt |
+| Thema | Arbeitsblatt öffnen |
 |---|---|
-| MiniZinc 1: Grundlagen (Modelle, Variablen, Bedingungen, Optimieren) | [minizinc_grundlagen.ipynb](https://github.com/ktheu/python-uebungen/blob/main/extern/minizinc_grundlagen.ipynb) |
-| MiniZinc 2: Daten (Aufzählungen, Arrays, Datendateien, Mengen) | [minizinc_daten.ipynb](https://github.com/ktheu/python-uebungen/blob/main/extern/minizinc_daten.ipynb) |
-| MiniZinc 3: Zuordnen und Planen (Zuordnungen, Sitz- und Dienstpläne, Gruppen) | [minizinc_zuordnung.ipynb](https://github.com/ktheu/python-uebungen/blob/main/extern/minizinc_zuordnung.ipynb) |
+| MiniZinc 1: Grundlagen (Modelle, Variablen, Bedingungen, Optimieren) | [minizinc_grundlagen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=minizinc_grundlagen.ipynb) |
+| MiniZinc 2: Daten (Aufzählungen, Arrays, Datendateien, Mengen) | [minizinc_daten.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=minizinc_daten.ipynb) |
+| MiniZinc 3: Zuordnen und Planen (Zuordnungen, Sitz- und Dienstpläne, Gruppen) | [minizinc_zuordnung.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=minizinc_zuordnung.ipynb) |
 
 **Merkhilfen** (PDF zum Ausdrucken, nur die Aufrufe als Erinnerung):
 [matplotlib](https://github.com/ktheu/python-uebungen/blob/main/merkhilfen/matplotlib.pdf) ·

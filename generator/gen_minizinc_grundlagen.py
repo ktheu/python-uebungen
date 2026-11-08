@@ -1,4 +1,4 @@
-# Erzeugt ../extern/minizinc_grundlagen.ipynb (siehe nbgen.py, mznnb.py). Erstes Notebook der MiniZinc-Reihe:
+# Erzeugt ../content/minizinc_grundlagen.ipynb (siehe nbgen.py, mznnb.py). Erstes Notebook der MiniZinc-Reihe:
 # minizinc_grundlagen, minizinc_daten, minizinc_zuordnung.
 #
 # Arbeitsblatt: Die Modelle stehen in Codezellen, die man nicht ausführt (nur kopiert); gerechnet wird in der MiniZinc IDE.
@@ -675,4 +675,4 @@ constraint alldifferent([M, I, A, P, Z]);
 solve satisfy;""", kind='free')
 
 generate('minizinc_grundlagen', 'MiniZinc 1: Grundlagen', INTRO, sprache='minizinc', ausfuehren=mznnb.ausfuehrung(),
-         darstellung=mznnb.darstellung, zellen=mznnb.zellen, ordner='extern')
+         darstellung=mznnb.darstellung, zellen=mznnb.zellen)
