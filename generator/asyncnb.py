@@ -1,7 +1,7 @@
 """Ausführung von Zellen für die asyncio-Notebooks, so wie Jupyter sie ausführt.
 
 In einer Notebook-Zelle läuft schon eine Event-Loop. Deshalb darf man dort `await` direkt hinschreiben (Top-Level-await),
-und `asyncio.run()` gibt einen RuntimeError. Genau das macht diese Ausführung nach: Der Code der Zelle wird mit
+und `asyncio.run()` gibt (in JupyterLab/Colab, nicht in JupyterLite) einen RuntimeError. Genau das macht diese Ausführung nach: Der Code der Zelle wird mit
 PyCF_ALLOW_TOP_LEVEL_AWAIT übersetzt und **innerhalb** einer laufenden Loop ausgeführt.
 Nach der Zelle werden übrig gebliebene Tasks abgebrochen (asyncio.run() räumt so auf; im Notebook liefen sie weiter,
 deshalb dürfen die Beispiele nicht darauf angewiesen sein).

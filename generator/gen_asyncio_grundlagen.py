@@ -1,5 +1,6 @@
 # Erzeugt ../content/asyncio_grundlagen.ipynb (siehe nbgen.py). Erstes Notebook der asyncio-Reihe (asynchilfe.py).
-# Die Zellen laufen wie in Jupyter: `await` steht direkt in der Zelle (asyncnb.py), asyncio.run() gibt einen RuntimeError.
+# Die Zellen laufen wie in Jupyter: `await` steht direkt in der Zelle (asyncnb.py). asyncio.run() gibt in JupyterLab/Colab einen RuntimeError,
+# geht aber in JupyterLite (Pyodide, vom Nutzer im Browser beobachtet): deshalb steht asyncio.run() nur im Text, nie in einer Codezelle.
 # Zeiten: nur ganze Sekunden mit round(), nie genauere Werte. Reihenfolgen von Ausgaben nur, wenn die Wartezeiten sich deutlich
 # unterscheiden (mindestens 0.1 s) oder mit asyncio.sleep(0) gesteuert werden.
 from nbgen import sec, expl, task, predict, generate
@@ -456,7 +457,7 @@ asyncio.run(main())
 `asyncio.run(coroutine)` startet die **Event-Loop**, das ist die Schleife, die alle Coroutinen ausführt. Sie läuft, bis die Coroutine fertig ist, und gibt deren Rückgabewert zurück.
 Man ruft `asyncio.run()` nur **einmal** auf, ganz unten im Programm.
 
-Das kannst du in einer Python-Datei ausprobieren (zum Beispiel in Thonny oder VS Code), aber nicht in diesem Notebook (siehe unten).''', None)
+Das kannst du in einer Python-Datei ausprobieren (zum Beispiel in Thonny oder VS Code), aber in einem Notebook besser nicht (siehe unten).''', None)
 expl('''#### Im Notebook: direkt `await`
 
 Ein Jupyter-Notebook hat die Event-Loop schon gestartet. Deshalb darf man hier `await` direkt in eine Zelle schreiben.
@@ -469,18 +470,12 @@ async def main():
     print('Tschüss')
 
 await main()""")
-expl('''#### Fehler: `asyncio.run()` im Notebook
+expl('''#### `asyncio.run()` im Notebook
 
-Weil die Loop im Notebook schon läuft, kann `asyncio.run()` keine zweite starten. Das gibt einen `RuntimeError`:
-`asyncio.run() cannot be called from a running event loop`.
+Weil die Loop im Notebook schon läuft, kann `asyncio.run()` dort keine zweite starten. In **JupyterLab**, **Google Colab** und **VS Code** gibt das einen `RuntimeError`:
+`asyncio.run() cannot be called from a running event loop`. Auf dieser Übungsseite (JupyterLite) läuft es zwar durch, aber verlass dich nicht darauf.
 
-**Merke:** In einer `.py`-Datei `asyncio.run(main())`, in einem Notebook `await main()`.''',
-     """import asyncio
-
-async def main():
-    print('Hallo')
-
-asyncio.run(main())""", error=RuntimeError)
+**Merke:** In einer `.py`-Datei `asyncio.run(main())`, in einem Notebook `await main()`. So läuft der Code überall.''', None)
 expl('''#### `main()` als Einstieg
 
 Das Programm besteht aus einer Coroutine `main()`, die die anderen Coroutinen aufruft. Auch im Notebook ist diese Struktur sinnvoll:
@@ -498,15 +493,6 @@ async def main():
 
 await main()""")
 
-predict("""import asyncio
-
-async def main():
-    print('Hallo')
-
-print('Start')
-asyncio.run(main())
-print('Ende')""", error=RuntimeError, erklaerung='''`Start` wird noch ausgegeben. Dann bricht `asyncio.run(main())` mit einem `RuntimeError` ab, weil im Notebook die Event-Loop schon läuft.
-`Hallo` und `Ende` erscheinen nicht. Im Notebook schreibt man stattdessen `await main()`.''')
 predict("""import asyncio
 
 async def main():
@@ -532,7 +518,7 @@ t('''Schreibe eine Coroutine `main()`. Sie gibt `Start` aus, wartet 0,5 Sekunden
     print('Ende')
 
 await main()""")
-task('''Dieser Code stammt aus einer Python-Datei und gibt im Notebook einen `RuntimeError`:
+task('''Dieser Code stammt aus einer Python-Datei. In einem Notebook (JupyterLab, Colab) würde er einen `RuntimeError` geben:
 ```python
 import asyncio
 
@@ -541,7 +527,7 @@ async def main():
 
 asyncio.run(main())
 ```
-Schreibe ihn so, dass er im Notebook läuft.''',
+Schreibe ihn so, dass er in jedem Notebook läuft.''',
      solution="""import asyncio
 
 async def main():

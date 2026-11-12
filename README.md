@@ -22,6 +22,7 @@
 | Fehler und Ausnahmen (Exceptions) | [exceptions.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=exceptions.ipynb) |
 | asyncio 1: Grundlagen (Coroutinen, async/await, gleichzeitig warten mit gather) | [asyncio_grundlagen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=asyncio_grundlagen.ipynb) |
 | asyncio 2: Tasks (create_task, gather, as_completed, wait, TaskGroup) | [asyncio_tasks.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=asyncio_tasks.ipynb) |
+| asyncio 3: Steuerung (Zeitlimits, Abbrechen, Fehler, Lock, Semaphore, Event) | [asyncio_steuerung.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=asyncio_steuerung.ipynb) |
 | OOP 1: Klassen und Objekte | [oop_klassen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=oop_klassen.ipynb) |
 | OOP 2: Datenkapselung | [oop_kapselung.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=oop_kapselung.ipynb) |
 | OOP 3: Beziehungen zwischen Klassen | [oop_beziehungen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=oop_beziehungen.ipynb) |
