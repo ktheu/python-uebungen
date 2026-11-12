@@ -37,6 +37,13 @@ for z in zellen:
         teile, f = renderer['zelle_ausfuehren'](z['code'])
         buf.write(renderer['als_markdown'](teile))
         fehler = type(f).__name__ if f else None
+    elif zellen[0].get('asynchron'):  # asyncio: Top-Level-await wie im Kernel von JupyterLite
+        from pyodide.code import eval_code_async
+        with contextlib.redirect_stdout(buf):
+            try:
+                await eval_code_async(z['code'], {})
+            except Exception as e:
+                fehler = type(e).__name__
     else:
         with contextlib.redirect_stdout(buf):
             try:

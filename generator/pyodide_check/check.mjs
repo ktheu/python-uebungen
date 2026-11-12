@@ -11,5 +11,5 @@ const py = await loadPyodide();
 const alleCodes = JSON.parse(zellen).map(z => z.code).join('\n');
 await py.loadPackagesFromImports(alleCodes, { messageCallback: () => {} });
 py.globals.set('zellen_json', zellen);
-py.runPython(fs.readFileSync(path.join(hier, 'inner.py'), 'utf-8'));
+await py.runPythonAsync(fs.readFileSync(path.join(hier, 'inner.py'), 'utf-8'));
 console.log(py.globals.get('ergebnis'));

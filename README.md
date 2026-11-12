@@ -20,6 +20,8 @@
 | Datum und Uhrzeit mit datetime | [datetime.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=datetime.ipynb) |
 | Das Modul collections | [collections.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=collections.ipynb) |
 | Fehler und Ausnahmen (Exceptions) | [exceptions.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=exceptions.ipynb) |
+| asyncio 1: Grundlagen (Coroutinen, async/await, gleichzeitig warten mit gather) | [asyncio_grundlagen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=asyncio_grundlagen.ipynb) |
+| asyncio 2: Tasks (create_task, gather, as_completed, wait, TaskGroup) | [asyncio_tasks.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=asyncio_tasks.ipynb) |
 | OOP 1: Klassen und Objekte | [oop_klassen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=oop_klassen.ipynb) |
 | OOP 2: Datenkapselung | [oop_kapselung.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=oop_kapselung.ipynb) |
 | OOP 3: Beziehungen zwischen Klassen | [oop_beziehungen.ipynb](https://ktheu.github.io/python-uebungen/notebooks/index.html?path=oop_beziehungen.ipynb) |
